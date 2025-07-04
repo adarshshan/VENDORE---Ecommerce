@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Cute Floral Dress",
+    "price": 29.99,
+    "image": "checkblack.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Teddy Bear Backpack",
+    "price": 19.99,
+    "image": "checkshirt.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Star Print T-Shirt",
+    "price": 14.99,
+    "image": "skyblue.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Rainbow Sneakers",
+    "price": 34.99,
+    "image": "yellowdress.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Cute Floral Dress",
+    "price": 29.99,
+    "image": "checkblack.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Teddy Bear Backpack",
+    "price": 19.99,
+    "image": "checkshirt.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Star Print T-Shirt",
+    "price": 14.99,
+    "image": "skyblue.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Rainbow Sneakers",
+    "price": 34.99,
+    "image": "yellowdress.jpg"
+  }
+]
