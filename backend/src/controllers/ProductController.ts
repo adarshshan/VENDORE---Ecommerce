@@ -59,7 +59,7 @@ export class ProductController {
         res.status(404).json({ message: "Product not found" });
         return;
       }
-      res.status(204).send();
+      res.status(204).json({ message: "Product deleted Successfully" });
     } catch (error) {
       res.status(500).json({ message: "Error deleting product" });
     }

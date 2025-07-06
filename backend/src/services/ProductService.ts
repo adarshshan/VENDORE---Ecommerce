@@ -1,6 +1,5 @@
 import { Product } from "../models/products";
 import { IProductRepository } from "../repositories/ProductRepository";
-import { v4 as uuidv4 } from "uuid";
 
 export class ProductService {
   constructor(private productRepository: IProductRepository) {}
