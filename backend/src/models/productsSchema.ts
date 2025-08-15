@@ -5,6 +5,8 @@ export interface ProductDocument extends Document {
   price: number;
   description: string;
   stock: number;
+  category: string;
+  image?: string;
 }
 
 const productSchema = new Schema<ProductDocument>(
@@ -13,6 +15,8 @@ const productSchema = new Schema<ProductDocument>(
     price: { type: Number, required: true, min: 0 },
     description: { type: String, required: true, trim: true },
     stock: { type: Number, required: true, min: 0 },
+    category: { type: String, required: true, trim: true },
+    image: { type: String, required: false },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

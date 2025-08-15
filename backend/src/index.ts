@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express, { Express } from "express";
+import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs } from "./graphql/schema";
@@ -15,6 +16,7 @@ import { userRoutes } from "./routes/UserRoutes";
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 // Initialize ProductService and ProductRepository
