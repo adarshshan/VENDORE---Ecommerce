@@ -5,6 +5,8 @@ import ProductDetails from "./components/ProductDetails";
 import Cart from "./components/Cart";
 import Login from "./components/Login";
 import AppLayout from "./layouts/AppLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminPanel from "./pages/AdminPanel";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +34,14 @@ const router = createBrowserRouter([
         element: <Cart />,
       },
     ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminLayout>
+        <AdminPanel />
+      </AdminLayout>
+    ),
   },
 ]);
 

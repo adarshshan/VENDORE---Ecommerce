@@ -1,14 +1,30 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import AlertModal from "./AlertModal";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [open, setOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleClose = () => setOpen(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Placeholder for authentication logic
     console.log("Login attempt with:", { email, password });
+
+    // Simulate a failed API response
+    const simulatedApiResponse = {
+      status: "failed",
+      message: "Invalid email or password",
+    };
+
+    if (simulatedApiResponse.status === "failed") {
+      setErrorMessage(simulatedApiResponse.message);
+      setOpen(true);
+    }
   };
 
   return (
@@ -83,6 +99,7 @@ const Login: React.FC = () => {
           </Link>
         </p>
       </div>
+      <AlertModal open={open} onClose={handleClose} message={errorMessage} />
     </div>
   );
 };
