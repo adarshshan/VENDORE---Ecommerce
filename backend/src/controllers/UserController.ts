@@ -60,4 +60,30 @@ export class UserController {
       res.status(500).json({ message: "Error deleting user" });
     }
   }
+
+  async blockUser(req: Request, res: Response): Promise<void> {
+    try {
+      const user = await this.userService.blockUser(req.params.id);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Error blocking user" });
+    }
+  }
+
+  async unblockUser(req: Request, res: Response): Promise<void> {
+    try {
+      const user = await this.userService.unblockUser(req.params.id);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Error unblocking user" });
+    }
+  }
 }

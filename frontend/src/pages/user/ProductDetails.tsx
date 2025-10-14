@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import { type Product } from "../types/Product";
 import { useState, useEffect } from "react";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useQuery } from "@tanstack/react-query";
-import { getProductsById } from "../services/api";
+import type { Product } from "../../types/Product";
+import { getProductsById } from "../../services/api";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

@@ -5,15 +5,15 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from "../services/api";
-import type { Product } from "../types/Product";
-import ProductForm from "../components/ProductForm";
-import CustomModal from "../components/Modal";
-import { useStore } from "../store/useStore";
+} from "../../services/api";
+import type { Product } from "../../types/Product";
+import ProductForm from "../../components/ProductForm";
+import CustomModal from "../../components/Modal";
+import { useStore } from "../../store/useStore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const AdminPanel: React.FC = () => {
+const ProductManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { isModalOpen, openModal, closeModal } = useStore();
@@ -139,4 +139,4 @@ const AdminPanel: React.FC = () => {
   );
 };
 
-export default AdminPanel;
+export default ProductManagement;

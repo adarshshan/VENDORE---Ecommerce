@@ -1,12 +1,14 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomePage from "./components/HomePage";
-import ProductList from "./components/ProductList";
-import ProductDetails from "./components/ProductDetails";
-import Cart from "./components/Cart";
+import HomePage from "./pages/user/HomePage";
+import Cart from "./pages/user/Cart";
 import Login from "./components/Login";
 import AppLayout from "./layouts/AppLayout";
 import AdminLayout from "./layouts/AdminLayout";
-import AdminPanel from "./pages/AdminPanel";
+import ProductManagement from "./pages/admin/ProductManagement";
+import UserManagement from "./pages/admin/UserManagement";
+import ProductList from "./pages/user/ProductList";
+import ProductDetails from "./pages/user/ProductDetails";
+import Dashboard from "./pages/admin/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -37,11 +39,21 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: (
-      <AdminLayout>
-        <AdminPanel />
-      </AdminLayout>
-    ),
+    element: <AdminLayout />,
+    children: [
+      {
+        path: "",
+        element: <Dashboard />,
+      },
+      {
+        path: "product-management",
+        element: <ProductManagement />,
+      },
+      {
+        path: "user-management",
+        element: <UserManagement />,
+      },
+    ],
   },
 ]);
 
