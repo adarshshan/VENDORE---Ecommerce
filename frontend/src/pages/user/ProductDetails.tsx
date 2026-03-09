@@ -46,28 +46,30 @@ const ProductDetails: React.FC = () => {
             <div className="w-full h-96">
               <img
                 src={selectedImage}
-                alt={product.name}
+                alt={product?.name}
                 className="w-full h-full object-cover rounded"
               />
             </div>
           </Zoom>
           <div className="flex gap-2">
-            {product.images?.map((image, index) => (
-              <img
-                key={index}
-                src={image as string}
-                alt={`${product.name} thumbnail ${index}`}
-                className={`w-20 h-20 object-cover rounded cursor-pointer ${
-                  selectedImage === image ? "border-2 border-pink-500" : ""
-                }`}
-                onClick={() => setSelectedImage(image as string)}
-              />
-            ))}
+            {product?.images &&
+              product?.images?.length &&
+              product?.images?.map((image, index) => (
+                <img
+                  key={index}
+                  src={image as string}
+                  alt={`${product?.name} thumbnail ${index}`}
+                  className={`w-20 h-20 object-cover rounded cursor-pointer ${
+                    selectedImage === image ? "border-2 border-pink-500" : ""
+                  }`}
+                  onClick={() => setSelectedImage(image as string)}
+                />
+              ))}
           </div>
         </div>
         <div className="flex-1">
-          <h2 className="text-2xl font-bold mb-4">{product.name}</h2>
-          <p className="text-gray-600 mb-4">${product.price.toFixed(2)}</p>
+          <h2 className="text-2xl font-bold mb-4">{product?.name}</h2>
+          <p className="text-gray-600 mb-4">${product?.price.toFixed(2)}</p>
           <p className="text-gray-700 mb-4">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.

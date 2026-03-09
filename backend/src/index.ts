@@ -42,9 +42,8 @@ const startApolloServer = async () => {
         productService,
         userService,
       }),
-    })
+    }),
   );
-
 
   // Keep REST routes if you want to support both REST and GraphQL
   app.use("/api/products", productRoutes);
@@ -53,7 +52,7 @@ const startApolloServer = async () => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(
-      `GraphQL endpoint available at http://localhost:${PORT}/graphql`
+      `GraphQL endpoint available at http://localhost:${PORT}/graphql`,
     );
   });
 };
@@ -66,7 +65,7 @@ connectToDatabase()
   .catch((error) => {
     console.error(
       "Failed to start server due to database connection error",
-      error
+      error,
     );
     process.exit(1);
   });
