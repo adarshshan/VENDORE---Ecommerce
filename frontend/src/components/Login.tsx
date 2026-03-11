@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AlertModal from "./AlertModal";
+import { GoogleLogin } from "@react-oauth/google";
+import { googleAuth } from "../services/api";
+import { useStore } from "../store/useStore";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const setUser = useStore((state) => state.setUser);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [open, setOpen] = useState(false);
@@ -23,6 +28,24 @@ const Login: React.FC = () => {
 
     if (simulatedApiResponse.status === "failed") {
       setErrorMessage(simulatedApiResponse.message);
+      setOpen(true);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      if (credentialResponse.credential) {
+        const response = await googleAuth(
+          credentialResponse.credential,
+          credentialResponse.clientId,
+        );
+        setUser(response.user);
+        navigate("/");
+      }
+    } catch (error: any) {
+      setErrorMessage(
+        error.response?.data?.message || "Google Authentication Failed",
+      );
       setOpen(true);
     }
   };
@@ -89,6 +112,13 @@ const Login: React.FC = () => {
             </button>
           </div>
         </form>
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => {
+            setErrorMessage("Google Login Failed");
+            setOpen(true);
+          }}
+        />
         <p className="mt-2 text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <Link

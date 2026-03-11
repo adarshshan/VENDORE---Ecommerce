@@ -72,3 +72,14 @@ export const unblockUser = async (id: string): Promise<User> => {
   const response = await axios.put(`${VITE_API_URL}/users/${id}/unblock`);
   return response.data;
 };
+
+export const googleAuth = async (
+  credential: string,
+  client_id: string,
+): Promise<{ message: string; user: User }> => {
+  const response = await axios.post(`${VITE_API_URL}/users/google-auth`, {
+    credential,
+    client_id,
+  });
+  return response.data;
+};
