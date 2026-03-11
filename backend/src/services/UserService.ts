@@ -32,6 +32,14 @@ export class UserService {
     return this.userRepository.delete(id);
   }
 
+  async blockUser(id: string): Promise<UserDocument | null> {
+    return this.userRepository.update(id, { status: "blocked" });
+  }
+
+  async unblockUser(id: string): Promise<UserDocument | null> {
+    return this.userRepository.update(id, { status: "active" });
+  }
+
   async validateUser(
     email: string,
     password: string

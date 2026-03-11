@@ -1,31 +1,44 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
-    <div className="bg-gray-800 text-white w-64 h-screen p-4">
-      <h2 className="text-2xl font-bold mb-4">Admin Menu</h2>
-      <ul>
-        <li className="mb-2">
-          <a href="#" className="hover:text-gray-300">
-            Dashboard
-          </a>
-        </li>
-        <li className="mb-2">
-          <a href="#" className="hover:text-gray-300">
-            Products
-          </a>
-        </li>
-        <li className="mb-2">
-          <a href="#" className="hover:text-gray-300">
-            Orders
-          </a>
-        </li>
-        <li className="mb-2">
-          <a href="#" className="hover:text-gray-300">
-            Customers
-          </a>
-        </li>
-      </ul>
+    <div className="bg-gray-800 text-white w-64 h-screen">
+      <h2 className="text-2xl font-bold mb-4 p-4">Admin Menu</h2>
+
+      <div className="flex flex-col">
+        <div
+          onClick={() => navigate("/admin")}
+          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
+            location.pathname === "/admin" ? "bg-gray-400 text-white" : ""
+          }`}
+        >
+          Dashboard
+        </div>
+        <div
+          onClick={() => navigate("/admin/product-management")}
+          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
+            location.pathname === "/admin/product-management"
+              ? "bg-gray-400 text-white"
+              : ""
+          }`}
+        >
+          Products
+        </div>
+        <div
+          onClick={() => navigate("/admin/user-management")}
+          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
+            location.pathname === "/admin/user-management"
+              ? "bg-gray-400 text-white"
+              : ""
+          }`}
+        >
+          Customers
+        </div>
+      </div>
     </div>
   );
 };
