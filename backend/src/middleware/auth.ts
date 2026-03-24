@@ -63,8 +63,6 @@ export const protect = async (
       let user = await userRepository.findById(
         decoded.decoded?.data?.toString(),
       );
-      console.log("this is the user i got");
-      console.log(user);
       if (user?.status === "blocked") {
         return res.status(403).json({
           success: false,

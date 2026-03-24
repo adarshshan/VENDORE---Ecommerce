@@ -142,8 +142,9 @@ export class OrderController {
 
   async getOrderById(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.userId;
-      const order = await OrderModel.findById(userId).populate(
+      const orderId = req.params.id;
+
+      const order = await OrderModel.findById(orderId).populate(
         "user",
         "name email",
       );
