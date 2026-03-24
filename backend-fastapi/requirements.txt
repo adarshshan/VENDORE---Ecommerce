@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+motor
+beanie
+pydantic
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+razorpay
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+requests
+python-dotenv
+cors

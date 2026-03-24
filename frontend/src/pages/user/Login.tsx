@@ -21,8 +21,9 @@ const Login: React.FC = () => {
           credentialResponse.credential,
           credentialResponse.clientId,
         );
-        setUser(response.user);
-        localStorage.setItem("user", JSON.stringify(response.user));
+        const userWithToken = { ...response.user, token: response.token };
+        setUser(userWithToken);
+        localStorage.setItem("user", JSON.stringify(userWithToken));
         navigate("/");
       }
     } catch (error: any) {

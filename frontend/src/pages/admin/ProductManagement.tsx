@@ -22,7 +22,10 @@ const ProductManagement: React.FC = () => {
     data: products,
     isLoading,
     isError,
-  } = useQuery<Product[]>({ queryKey: ["products"], queryFn: getProducts });
+  } = useQuery<Product[]>({
+    queryKey: ["products"],
+    queryFn: () => getProducts(),
+  });
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,

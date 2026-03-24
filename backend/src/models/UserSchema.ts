@@ -1,5 +1,17 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
+
+export interface Address {
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  isDefault: boolean;
+}
 
 export interface UserDocument extends Document {
   email: string;
@@ -9,7 +21,21 @@ export interface UserDocument extends Document {
   status: "active" | "blocked";
   comparePassword(candidatePassword: string): Promise<boolean>;
   authSource: string;
+  addresses: Address[];
+  wishlist: Types.ObjectId[];
 }
+
+const addressSchema = new Schema<Address>({
+  fullName: { type: String, required: true },
+  addressLine1: { type: String, required: true },
+  addressLine2: { type: String },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  postalCode: { type: String, required: true },
+  country: { type: String, required: true },
+  phone: { type: String, required: true },
+  isDefault: { type: Boolean, default: false },
+}, { _id: true });
 
 const userSchema = new Schema<UserDocument>(
   {
@@ -29,6 +55,8 @@ const userSchema = new Schema<UserDocument>(
       enum: ["self", "google"],
       default: "self",
     },
+    addresses: [addressSchema],
+    wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   },
   {
     timestamps: true,
