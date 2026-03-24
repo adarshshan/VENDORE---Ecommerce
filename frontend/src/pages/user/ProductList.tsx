@@ -10,12 +10,9 @@ import {
   Slider,
   Typography,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
-  TextField,
   Button,
-  IconButton,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
@@ -43,7 +40,6 @@ const ProductList: React.FC = () => {
     data: products,
     isLoading,
     isError,
-    refetch,
   } = useQuery<Product[]>({
     queryKey: ["products", filters],
     queryFn: () => getProducts(filters),
@@ -198,7 +194,7 @@ const ProductList: React.FC = () => {
               Error loading products. Please try again.
             </div>
           ) : products && products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
               {products.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
