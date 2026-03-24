@@ -28,6 +28,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         alt={product?.name}
         className="w-full h-48 object-cover rounded-t-lg"
       />
+      {product?.category && (
+        <span className="absolute top-2 left-2 bg-pink-500 text-white text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wider">
+          {typeof product.category === 'object' ? product.category.name : 'Category'}
+        </span>
+      )}
       <div className="flex-1 flex flex-col p-4">
         <h3 className="text-lg font-semibold truncate mb-1">
           {product?.name}

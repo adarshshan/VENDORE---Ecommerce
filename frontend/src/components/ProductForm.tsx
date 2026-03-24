@@ -6,9 +6,11 @@ import {
   Typography,
   Paper,
   IconButton,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Product } from "../types/Product";
+import { getCategories } from "../services/api";
 
 interface ProductFormProps {
   product?: Product | null;
@@ -25,6 +27,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [price, setPrice] = useState<number | null>(null);
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<any[]>([]);
   const [stock, setStock] = useState<number | null>(null);
   const [images, setImages] = useState<(File | string | null | undefined)[]>(
     []
@@ -32,11 +35,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [picMessage, setPicMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const data = await getCategories("Active");
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCats();
+
     if (product) {
       setName(product.name);
       setPrice(product.price);
       setDescription(product?.description ?? "");
-      setCategory(product?.category ?? "");
+      // Handle both string ID and populated object
+      setCategory(typeof product?.category === 'object' ? (product.category as any)._id : product?.category ?? "");
       setStock(product?.stock ?? 0);
       setImages(product.images ?? []);
     } else {
@@ -197,6 +211,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         />
         <TextField
           id="category"
+          select
           label="Category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -204,13 +219,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
           fullWidth
           required
           className="rounded-md"
-          InputProps={{
-            className: "text-gray-700",
-          }}
-          InputLabelProps={{
-            className: "text-gray-600",
-          }}
-        />
+        >
+          {categories.map((cat) => (
+            <MenuItem key={cat._id} value={cat._id}>
+              {cat.name}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           id="stock"
           label="Stock"

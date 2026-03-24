@@ -58,12 +58,17 @@ export class ProductRepository implements IProductRepository {
       }
     }
 
-    return await ProductModel.find(query).sort(sortOption).exec() as ProductDocument[];
+    return await ProductModel.find(query)
+      .populate("category")
+      .sort(sortOption)
+      .exec() as ProductDocument[];
   }
 
   async findById(id: string): Promise<ProductDocument | null> {
     try {
-      return (await ProductModel.findById(id).exec()) as ProductDocument | null;
+      return (await ProductModel.findById(id)
+        .populate("category")
+        .exec()) as ProductDocument | null;
     } catch (error) {
       if (
         error instanceof Error &&
@@ -77,7 +82,8 @@ export class ProductRepository implements IProductRepository {
 
   async create(product: ProductDocument): Promise<ProductDocument> {
     const newProduct = new ProductModel(product);
-    return (await newProduct.save()) as ProductDocument;
+    const savedProduct = await newProduct.save();
+    return (await savedProduct.populate("category")) as ProductDocument;
   }
 
   async update(
@@ -89,7 +95,9 @@ export class ProductRepository implements IProductRepository {
         id,
         { $set: productData },
         { new: true }
-      ).exec()) as ProductDocument | null;
+      )
+        .populate("category")
+        .exec()) as ProductDocument | null;
     } catch (error) {
       if (
         error instanceof Error &&

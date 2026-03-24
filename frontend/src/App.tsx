@@ -6,6 +6,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import ProductManagement from "./pages/admin/ProductManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import OrderManagement from "./pages/admin/OrderManagement";
+import CategoryManagement from "./pages/admin/CategoryManagement";
 import ProductList from "./pages/user/ProductList";
 import ProductDetails from "./pages/user/ProductDetails";
 import Dashboard from "./pages/admin/Dashboard";
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: "order-management",
         element: <OrderManagement />,
+      },
+      {
+        path: "category-management",
+        element: <CategoryManagement />,
       },
     ],
   },

@@ -7,6 +7,7 @@ import { productRoutes } from "./routes/ProductRoutes";
 import { userRoutes } from "./routes/UserRoutes";
 import { orderRoutes } from "./routes/OrderRoutes";
 import { adminRoutes } from "./routes/AdminRoutes";
+import { categoryRoutes } from "./routes/CategoryRoutes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +16,7 @@ app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(cookieParser());
@@ -25,6 +26,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // Start Server
 const startServer = async () => {

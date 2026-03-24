@@ -117,6 +117,41 @@ export const googleAuth = async (
   return response.data;
 };
 
+// Category API
+export const getCategories = async (status?: string) => {
+  const params = new URLSearchParams();
+  if (status) params.append("status", status);
+  const response = await axios.get(`${VITE_API_URL}/categories?${params.toString()}`);
+  return response.data;
+};
+
+export const createCategory = async (categoryData: any) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: { Authorization: `Bearer ${user.token}` },
+  };
+  const response = await axios.post(`${VITE_API_URL}/categories`, categoryData, config);
+  return response.data;
+};
+
+export const updateCategory = async (id: string, categoryData: any) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: { Authorization: `Bearer ${user.token}` },
+  };
+  const response = await axios.put(`${VITE_API_URL}/categories/${id}`, categoryData, config);
+  return response.data;
+};
+
+export const deleteCategory = async (id: string) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: { Authorization: `Bearer ${user.token}` },
+  };
+  const response = await axios.delete(`${VITE_API_URL}/categories/${id}`, config);
+  return response.data;
+};
+
 // Order & Payment
 export const createRazorpayOrder = async (items: any[]) => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");

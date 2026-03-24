@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "../../types/Product";
-import { getProducts } from "../../services/api";
+import { getProducts, getCategories } from "../../services/api";
 import type { ProductFilters } from "../../services/api";
 import ProductCard from "../../components/ProductCard";
 import {
@@ -20,13 +20,24 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 
-const CATEGORIES = ["All", "Men", "Women", "Kids", "Accessories"];
-
 const ProductList: React.FC = () => {
   const [filters, setFilters] = useState<ProductFilters>({});
+  const [categories, setCategories] = useState<any[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const data = await getCategories("Active");
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCats();
+  }, []);
 
   const {
     data: products,
@@ -78,9 +89,10 @@ const ProductList: React.FC = () => {
             value={filters.category || "All"}
             onChange={(e) => handleCategoryChange(e.target.value)}
           >
-            {CATEGORIES.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {cat}
+            <MenuItem value="All">All Categories</MenuItem>
+            {categories.map((cat) => (
+              <MenuItem key={cat._id} value={cat._id}>
+                {cat.name}
               </MenuItem>
             ))}
           </Select>

@@ -108,7 +108,9 @@ const ProductManagement: React.FC = () => {
                 <td className="py-2 px-4 border-b text-center">
                   ${product.price}
                 </td>
-                <td className="py-2 px-4 border-b">{product.category}</td>
+                <td className="py-2 px-4 border-b text-center">
+                  {typeof product.category === 'object' ? product.category.name : 'Uncategorized'}
+                </td>
                 <td className="py-2 px-4 border-b text-center">
                   {product.stock}
                 </td>

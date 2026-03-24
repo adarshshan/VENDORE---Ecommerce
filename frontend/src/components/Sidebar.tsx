@@ -48,6 +48,16 @@ const Sidebar: React.FC = () => {
         >
           Orders
         </div>
+        <div
+          onClick={() => navigate("/admin/category-management")}
+          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
+            location.pathname === "/admin/category-management"
+              ? "bg-gray-400 text-white"
+              : ""
+          }`}
+        >
+          Categories
+        </div>
       </div>
     </div>
   );

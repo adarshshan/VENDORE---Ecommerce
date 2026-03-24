@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface ProductVariant {
   size: string;
@@ -11,7 +11,7 @@ export interface ProductDocument extends Document {
   price: number;
   description: string;
   stock: number; // Total stock (sum of variants or standalone)
-  category: string;
+  category: Types.ObjectId | string;
   subCategory?: string;
   images: string[];
   variants: ProductVariant[];
@@ -32,7 +32,7 @@ const productSchema = new Schema<ProductDocument>(
     price: { type: Number, required: true, min: 0 },
     description: { type: String, required: true, trim: true },
     stock: { type: Number, required: true, min: 0, default: 0 },
-    category: { type: String, required: true, trim: true, index: true },
+    category: { type: Schema.Types.ObjectId, ref: "Category", required: true, index: true },
     subCategory: { type: String, trim: true },
     images: { type: [String], default: [] },
     variants: [variantSchema],
