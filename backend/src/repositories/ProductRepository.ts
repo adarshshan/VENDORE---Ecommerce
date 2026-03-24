@@ -1,8 +1,16 @@
 import { connectToDatabase } from "../config/database";
 import { ProductDocument, ProductModel } from "../models/productsSchema";
 
+export interface ProductFilters {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+  sort?: string;
+}
+
 export interface IProductRepository {
-  findAll(): Promise<ProductDocument[]>;
+  findAll(filters?: ProductFilters): Promise<ProductDocument[]>;
   findById(id: string): Promise<ProductDocument | null>;
   create(product: Omit<ProductDocument, "_id">): Promise<ProductDocument>;
   update(
@@ -18,8 +26,39 @@ export class ProductRepository implements IProductRepository {
     connectToDatabase();
   }
 
-  async findAll(): Promise<ProductDocument[]> {
-    return await ProductModel.find().sort({ createdAt: -1 }).exec() as ProductDocument[];
+  async findAll(filters: ProductFilters = {}): Promise<ProductDocument[]> {
+    const query: any = {};
+
+    if (filters.category) {
+      query.category = filters.category;
+    }
+
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      query.price = {};
+      if (filters.minPrice !== undefined) query.price.$gte = filters.minPrice;
+      if (filters.maxPrice !== undefined) query.price.$lte = filters.maxPrice;
+    }
+
+    if (filters.search) {
+      query.$text = { $search: filters.search };
+    }
+
+    let sortOption: any = { createdAt: -1 };
+    if (filters.sort) {
+      switch (filters.sort) {
+        case "price_asc":
+          sortOption = { price: 1 };
+          break;
+        case "price_desc":
+          sortOption = { price: -1 };
+          break;
+        case "newest":
+          sortOption = { createdAt: -1 };
+          break;
+      }
+    }
+
+    return await ProductModel.find(query).sort(sortOption).exec() as ProductDocument[];
   }
 
   async findById(id: string): Promise<ProductDocument | null> {

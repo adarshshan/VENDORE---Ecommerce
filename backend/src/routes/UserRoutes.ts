@@ -63,7 +63,7 @@ router.post("/google-auth", async (req, res) => {
         secure: false, // Set to true in production when using HTTPS
         maxAge: 3600000, // 1 hour in milliseconds
       })
-      .json({ message: "Authentication successful", user });
+      .json({ message: "Authentication successful", user, token });
   } catch (err) {
     res.status(400).json({ err });
   }

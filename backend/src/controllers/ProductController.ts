@@ -6,7 +6,15 @@ export class ProductController {
 
   async getAllProducts(req: Request, res: Response): Promise<void> {
     try {
-      const products = await this.productService.getAllProducts();
+      const filters = {
+        category: req.query.category as string,
+        minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
+        maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
+        search: req.query.search as string,
+        sort: req.query.sort as string,
+      };
+      
+      const products = await this.productService.getAllProducts(filters);
       res.json(products);
     } catch (error) {
       res.status(500).json({ message: "Error fetching products" });

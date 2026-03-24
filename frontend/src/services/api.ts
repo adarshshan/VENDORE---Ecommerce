@@ -4,9 +4,25 @@ import type { User } from "../types/User";
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
-export const getProducts = async (): Promise<Product[]> => {
-  const response = await axios.get(`${VITE_API_URL}/products`);
-  console.log("API response data:", response.data);
+export interface ProductFilters {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+  sort?: string;
+}
+
+export const getProducts = async (filters?: ProductFilters): Promise<Product[]> => {
+  const params = new URLSearchParams();
+  if (filters) {
+    if (filters.category) params.append("category", filters.category);
+    if (filters.minPrice) params.append("minPrice", filters.minPrice.toString());
+    if (filters.maxPrice) params.append("maxPrice", filters.maxPrice.toString());
+    if (filters.search) params.append("search", filters.search);
+    if (filters.sort) params.append("sort", filters.sort);
+  }
+  
+  const response = await axios.get(`${VITE_API_URL}/products?${params.toString()}`);
   return response.data;
 };
 
@@ -80,10 +96,153 @@ export const unblockUser = async (id: string): Promise<User> => {
 export const googleAuth = async (
   credential: string,
   client_id: string,
-): Promise<{ message: string; user: User }> => {
+): Promise<{ message: string; user: User; token: string }> => {
   const response = await axios.post(`${VITE_API_URL}/users/google-auth`, {
     credential,
     client_id,
   });
+  return response.data;
+};
+
+// Order & Payment
+export const createRazorpayOrder = async (items: any[]) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.post(
+    `${VITE_API_URL}/orders/create-razorpay-order`,
+    { items },
+    config
+  );
+  return response.data;
+};
+
+export const verifyPayment = async (paymentData: any) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.post(
+    `${VITE_API_URL}/orders/verify-payment`,
+    paymentData,
+    config
+  );
+  return response.data;
+};
+
+export const createOrder = async (orderData: any) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.post(
+    `${VITE_API_URL}/orders`,
+    orderData,
+    config
+  );
+  return response.data;
+};
+
+export const getMyOrders = async () => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.get(`${VITE_API_URL}/orders/myorders`, config);
+  return response.data;
+};
+
+export const getOrderById = async (id: string) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.get(`${VITE_API_URL}/orders/${id}`, config);
+  return response.data;
+};
+
+export const cancelOrder = async (id: string, reason: string) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.post(
+    `${VITE_API_URL}/orders/${id}/cancel`,
+    { reason },
+    config
+  );
+  return response.data;
+};
+
+export const requestReturn = async (id: string, reason: string) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.post(
+    `${VITE_API_URL}/orders/${id}/return`,
+    { reason },
+    config
+  );
+  return response.data;
+};
+
+// Admin Order API
+export const getAllOrders = async (page: number = 1) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.get(
+    `${VITE_API_URL}/orders?pageNumber=${page}`,
+    config
+  );
+  return response.data;
+};
+
+export const updateOrderStatus = async (id: string, status: string) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.put(
+    `${VITE_API_URL}/orders/${id}/status`,
+    { status },
+    config
+  );
+  return response.data;
+};
+
+export const handleReturnRequest = async (id: string, status: string) => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const response = await axios.put(
+    `${VITE_API_URL}/orders/${id}/return`,
+    { status },
+    config
+  );
   return response.data;
 };

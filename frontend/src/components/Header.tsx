@@ -22,6 +22,7 @@ import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import LocalMall from "@mui/icons-material/LocalMall";
 import { Fragment, useState } from "react";
 
 const Header: React.FC = () => {
@@ -151,6 +152,9 @@ const DropdownMenu = () => {
       case "profile":
         console.log("profile option clicked");
         break;
+      case "myorders":
+        navigate("/orders");
+        break;
 
       default:
         break;
@@ -233,8 +237,11 @@ const DropdownMenu = () => {
           <MenuItem onClick={() => handleItemClick("profile")}>
             <Avatar /> Profile
           </MenuItem>
-          <MenuItem onClick={() => handleItemClick("myaccount")}>
-            <Avatar /> My account
+          <MenuItem onClick={() => handleItemClick("myorders")}>
+            <ListItemIcon>
+              <LocalMall fontSize="small" />
+            </ListItemIcon>
+            My Orders
           </MenuItem>
           <Divider />
           <MenuItem onClick={() => handleItemClick("another")}>
