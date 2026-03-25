@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "../../types/Product";
 import { getProductsById } from "../../services/api";
 import { useStore } from "../../store/useStore";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import HistoryIcon from "@mui/icons-material/History";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState<string | undefined>();
   const addToCart = useStore((state) => state.addToCart);
 
@@ -28,54 +34,156 @@ const ProductDetails: React.FC = () => {
     }
   }, [product]);
 
-  if (isLoading) return <div className="text-center py-20">Loading...</div>;
-  if (isError || !product) return <div className="text-center py-20 text-red-500">Product not found</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-[1rem] sm:px-[2rem]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+      </div>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-4">
+        <h2 className="text-3xl font-serif font-bold text-white mb-4">
+          Product Not Found
+        </h2>
+        <p className="text-text-secondary mb-8">
+          The product you're looking for doesn't exist or has been removed.
+        </p>
+        <button onClick={() => navigate("/products")} className="btn-primary">
+          Back to Shop
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="flex flex-col gap-4 md:w-1/2">
-          <Zoom>
-            <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden">
-              <img
-                src={selectedImage}
-                alt={product.name}
-                className="w-full h-full object-contain"
-              />
+    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[2rem]">
+      <div className="container-custom py-8">
+        {/* Breadcrumbs / Back button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors mb-8 group"
+        >
+          <ArrowBackIcon
+            fontSize="small"
+            className="group-hover:-translate-x-1 transition-transform"
+          />
+          <span className="text-sm font-bold uppercase tracking-widest">
+            Back to Collection
+          </span>
+        </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* Image Gallery Section */}
+          <div className="space-y-4">
+            <div className="card bg-surface overflow-hidden border-border-light shadow-2xl">
+              <Zoom>
+                <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
+                  <img
+                    src={selectedImage}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Zoom>
             </div>
-          </Zoom>
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {product.images?.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`${product.name} thumbnail ${index}`}
-                className={`w-20 h-20 object-cover rounded cursor-pointer border-2 transition-colors ${
-                  selectedImage === image ? "border-pink-500" : "border-transparent hover:border-pink-200"
-                }`}
-                onClick={() => setSelectedImage(image)}
-              />
-            ))}
-          </div>
-        </div>
-        
-        <div className="flex-1 space-y-6">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h2>
-            <p className="text-2xl font-semibold text-pink-600">${product.price.toFixed(2)}</p>
-          </div>
-          
-          <div className="prose text-gray-600">
-            <p>{product.description}</p>
+
+            {/* Thumbnails */}
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {product.images?.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(image)}
+                  className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                    selectedImage === image
+                      ? "border-accent scale-95 shadow-[0_0_15px_rgba(56,189,248,0.4)]"
+                      : "border-border hover:border-border-light"
+                  }`}
+                >
+                  <img
+                    src={image}
+                    alt={`${product.name} thumb ${index}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="pt-4">
-            <button 
-              onClick={() => addToCart(product)}
-              className="w-full md:w-auto px-8 py-3 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              Add to Cart
-            </button>
+          {/* Product Info Section */}
+          <div className="flex flex-col space-y-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="badge badge-accent">New Arrival</span>
+                <span className="text-text-muted text-xs font-bold uppercase tracking-tighter">
+                  In Stock
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-serif font-black text-white mb-4 leading-tight">
+                {product.name}
+              </h1>
+              <div className="flex items-baseline gap-4">
+                <p className="text-3xl font-bold text-white">
+                  ${product.price.toFixed(2)}
+                </p>
+                <p className="text-text-muted line-through text-lg">
+                  ${(product.price * 1.2).toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-surface-light/50 p-6 rounded-2xl border border-border backdrop-blur-sm">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-3">
+                Product Description
+              </h3>
+              <p className="text-text-secondary leading-relaxed">
+                {product.description ||
+                  "No description available for this premium piece."}
+              </p>
+            </div>
+
+            {/* Features/Trust Badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-y border-border py-8">
+              <div className="flex flex-col items-center text-center space-y-2">
+                <VerifiedIcon className="text-accent" />
+                <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                  Premium Quality
+                </span>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2">
+                <LocalShippingIcon className="text-accent" />
+                <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                  Free Shipping
+                </span>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2">
+                <HistoryIcon className="text-accent" />
+                <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                  14-Day Returns
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => addToCart(product)}
+                className="btn-accent btn-lg flex-grow flex items-center justify-center gap-3"
+              >
+                <ShoppingCartIcon />
+                Add to Cart
+              </button>
+              <button className="btn-outline btn-lg flex-grow">
+                Add to Wishlist
+              </button>
+            </div>
+
+            <div className="pt-4">
+              <p className="text-xs text-text-muted text-center italic">
+                Secure payment options available. Fast worldwide shipping.
+              </p>
+            </div>
           </div>
         </div>
       </div>

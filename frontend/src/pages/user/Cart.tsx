@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useStore } from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Cart: React.FC = () => {
-  const { cart, removeFromCart, updateQuantity } = useStore();
+  const cart = useStore((state) => state.cart);
+  const removeFromCart = useStore((state) => state.removeFromCart);
+  const updateQuantity = useStore((state) => state.updateQuantity);
+
   const navigate = useNavigate();
 
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const total = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }, [cart]);
 
   const handleCheckout = () => {
-    // Check if user is logged in
     const user = JSON.parse(localStorage.getItem("user") || "null");
     if (!user) {
       navigate("/login");
@@ -21,85 +28,219 @@ const Cart: React.FC = () => {
     }
   };
 
-  return (
-    <div className="container mx-auto py-8 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-center">Your Cart</h2>
-      {cart.length === 0 ? (
-        <div className="text-center">
-          <p className="mb-4">Your cart is empty</p>
-          <button 
-            onClick={() => navigate("/products")}
-            className="text-pink-500 hover:text-pink-600 underline"
-          >
-            Continue Shopping
-          </button>
-        </div>
-      ) : (
-        <div className="bg-white rounded shadow-sm p-4">
-          {cart.map((item) => (
-            <div key={`${item._id}-${item.selectedSize}-${item.selectedColor}`} className="flex flex-col sm:flex-row justify-between items-center border-b py-4 gap-4">
-              <div className="flex items-center gap-4 flex-grow">
-                {item.images && item.images.length > 0 && (
-                  <img src={item.images[0]} alt={item.name} className="w-16 h-16 object-cover rounded" />
-                )}
-                <div>
-                  <h3 className="text-lg font-semibold">{item.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    {item.selectedSize && `Size: ${item.selectedSize} `}
-                    {item.selectedColor && `Color: ${item.selectedColor}`}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="flex items-center border rounded">
-                  <button 
-                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200"
-                    onClick={() => updateQuantity(item._id, Math.max(1, item.quantity - 1), item.selectedSize, item.selectedColor)}
-                  >
-                    -
-                  </button>
-                  <span className="px-3">{item.quantity}</span>
-                  <button 
-                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200"
-                    onClick={() => updateQuantity(item._id, item.quantity + 1, item.selectedSize, item.selectedColor)}
-                  >
-                    +
-                  </button>
-                </div>
-                
-                <p className="font-semibold w-24 text-right">
-                  ${(item.price * item.quantity).toFixed(2)}
-                </p>
-                
-                <button 
-                  onClick={() => removeFromCart(item._id, item.selectedSize, item.selectedColor)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Remove
-                </button>
-              </div>
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-background pt-20 pb-20 px-[1rem] sm:px-[2rem]">
+        <div className="container-custom text-center">
+          <div className="bg-surface/50 p-12 rounded-2xl border border-border max-w-lg mx-auto backdrop-blur-sm">
+            <div className="bg-surface-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingBagIcon
+                sx={{ fontSize: 40, color: "var(--color-text-muted)" }}
+              />
             </div>
-          ))}
-          <div className="flex flex-col items-end mt-6">
-            <p className="text-xl font-bold mb-4">Total: ${total.toFixed(2)}</p>
-            <div className="flex gap-4">
-              <button 
-                onClick={() => navigate("/products")}
-                className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50"
-              >
-                Continue Shopping
-              </button>
-              <button 
+            <h2 className="text-3xl font-serif font-bold text-white mb-4">
+              Your cart is empty
+            </h2>
+            <p className="text-text-secondary mb-8 text-lg">
+              Looks like you haven't added anything to your cart yet.
+            </p>
+            <Link
+              to="/products"
+              className="btn-primary inline-flex gap-2 items-center"
+            >
+              Start Shopping
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background py-12 px-[1rem] sm:px-[2rem]">
+      <div className="container-custom">
+        <h1 className="text-3xl md:text-4xl font-serif font-black text-white mb-8">
+          Shopping Cart
+        </h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Cart Items List */}
+          <div className="lg:col-span-2 space-y-4">
+            {cart &&
+              cart?.length > 0 &&
+              cart?.map((item) => (
+                <div
+                  key={`${item?._id}-${item?.selectedSize}-${item?.selectedColor}`}
+                  className="card bg-surface p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center group hover:border-border-light transition-all"
+                >
+                  {/* Product Image */}
+                  <div className="w-full sm:w-24 h-32 sm:h-24 flex-shrink-0 bg-surface-light rounded-lg overflow-hidden">
+                    {item?.images && item?.images?.length > 0 ? (
+                      <img
+                        src={item?.images[0]}
+                        alt={item?.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-text-muted">
+                        <ShoppingBagIcon />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Product Details */}
+                  <div className="flex-grow min-w-0">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-bold text-white truncate pr-4">
+                        <Link
+                          to={`/product/${item?._id}`}
+                          className="hover:text-accent transition-colors"
+                        >
+                          {item?.name}
+                        </Link>
+                      </h3>
+                      <button
+                        onClick={() =>
+                          removeFromCart(
+                            item?._id,
+                            item?.selectedSize,
+                            item?.selectedColor,
+                          )
+                        }
+                        className="text-text-muted hover:text-error transition-colors p-1"
+                        aria-label="Remove item"
+                      >
+                        <DeleteOutlineIcon fontSize="small" />
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 text-sm text-text-secondary mb-4">
+                      {item?.selectedSize && (
+                        <span className="bg-surface-light px-2 py-1 rounded border border-border">
+                          Size:{" "}
+                          <span className="text-white font-medium">
+                            {item?.selectedSize}
+                          </span>
+                        </span>
+                      )}
+                      {item?.selectedColor && (
+                        <span className="bg-surface-light px-2 py-1 rounded border border-border flex items-center gap-2">
+                          Color:{" "}
+                          <span
+                            className="w-3 h-3 rounded-full border border-white/20"
+                            style={{ backgroundColor: item?.selectedColor }}
+                          ></span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between items-end">
+                      {/* Quantity Controls */}
+                      <div className="flex items-center bg-surface-light rounded-lg border border-border">
+                        <button
+                          className="p-2 text-text-secondary hover:text-white hover:bg-surface-hover rounded-l-lg transition-colors"
+                          onClick={() =>
+                            updateQuantity(
+                              item?._id,
+                              Math.max(1, item?.quantity - 1),
+                              item?.selectedSize,
+                              item?.selectedColor,
+                            )
+                          }
+                          disabled={item?.quantity <= 1}
+                        >
+                          <RemoveIcon fontSize="small" />
+                        </button>
+                        <span className="w-10 text-center font-bold text-white">
+                          {item?.quantity}
+                        </span>
+                        <button
+                          className="p-2 text-text-secondary hover:text-white hover:bg-surface-hover rounded-r-lg transition-colors"
+                          onClick={() =>
+                            updateQuantity(
+                              item?._id,
+                              item?.quantity + 1,
+                              item?.selectedSize,
+                              item?.selectedColor,
+                            )
+                          }
+                        >
+                          <AddIcon fontSize="small" />
+                        </button>
+                      </div>
+
+                      <p className="text-xl font-bold text-accent">
+                        ${(item?.price * item?.quantity).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+            <button
+              onClick={() => navigate("/products")}
+              className="hidden sm:inline-flex items-center gap-2 text-text-secondary hover:text-white transition-colors mt-4"
+            >
+              <ArrowBackIcon fontSize="small" />
+              Continue Shopping
+            </button>
+          </div>
+
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="card bg-surface p-6 sticky top-24">
+              <h3 className="text-xl font-bold text-white mb-6 pb-4 border-b border-border">
+                Order Summary
+              </h3>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between text-text-secondary">
+                  <span>Subtotal</span>
+                  <span className="text-white font-medium">
+                    ${total.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-text-secondary">
+                  <span>Shipping</span>
+                  <span className="text-success font-medium">Free</span>
+                </div>
+                <div className="flex justify-between text-text-secondary">
+                  <span>Tax</span>
+                  <span className="text-white font-medium">$0.00</span>
+                </div>
+              </div>
+
+              <div className="border-t border-border pt-4 mb-8">
+                <div className="flex justify-between items-end">
+                  <span className="text-lg font-bold text-white">Total</span>
+                  <span className="text-3xl font-black text-accent">
+                    ${total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              <button
                 onClick={handleCheckout}
-                className="bg-pink-500 text-white px-6 py-2 rounded hover:bg-pink-600 shadow-md"
+                className="btn-primary w-full py-4 text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all"
               >
                 Proceed to Checkout
               </button>
+
+              <p className="text-center text-xs text-text-muted mt-4">
+                Secure Checkout - 100% Satisfaction Guaranteed
+              </p>
             </div>
+
+            <button
+              onClick={() => navigate("/products")}
+              className="sm:hidden w-full mt-6 btn-outline flex items-center justify-center gap-2"
+            >
+              <ArrowBackIcon fontSize="small" />
+              Continue Shopping
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -6,11 +6,13 @@ import cover03 from "../../assets/coverImages/kids-own-03.jpg";
 
 const HomePage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <section className="relative overflow-hidden">
         <SlickComponent />
       </section>
-      <ProductList />
+      <div className="py-12 bg-background">
+        <ProductList />
+      </div>
     </div>
   );
 };
@@ -62,14 +64,14 @@ const SlickComponent = () => {
               alt={slide.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white p-6">
-              <h1 className="text-4xl md:text-6xl font-extrabold mb-4 text-center drop-shadow-lg">
+            <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white p-6">
+              <h1 className="text-4xl md:text-7xl font-serif font-black mb-4 text-center drop-shadow-2xl">
                 {slide.title}
               </h1>
-              <p className="text-lg md:text-2xl font-medium mb-8 text-center drop-shadow-md">
+              <p className="text-lg md:text-2xl font-medium mb-10 text-center drop-shadow-lg text-gray-200 font-sans">
                 {slide.subtitle}
               </p>
-              <button className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105 shadow-xl">
+              <button className="btn-primary btn-lg shadow-2xl hover:scale-105 transition-all duration-300">
                 Shop Now
               </button>
             </div>
