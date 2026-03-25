@@ -37,32 +37,32 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-pink-50">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
       {/* Background Image with Overlay */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000 hover:scale-105"
+        className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000"
         style={{ backgroundImage: `url(${bgImage})` }}
       >
-        <div className="absolute inset-0 bg-pink-900/40 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-[4px]"></div>
       </div>
 
       {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md p-8 m-4 bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 text-center transform transition-all hover:scale-[1.01]">
-        <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-pink-600 tracking-tight mb-2">
+      <div className="relative z-10 w-full max-w-md p-10 m-4 bg-surface/80 backdrop-blur-xl rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-border text-center transform transition-all">
+        <div className="mb-10">
+          <h1 className="text-4xl font-serif font-black text-white tracking-widest mb-2">
             KIDS-OWN
           </h1>
-          <div className="h-1 w-20 bg-pink-400 mx-auto rounded-full mb-6"></div>
-          <p className="text-gray-700 text-lg font-medium">
-            Discover the Joy of Childhood
+          <div className="h-1 w-12 bg-accent mx-auto rounded-full mb-8"></div>
+          <p className="text-white text-xl font-serif mb-2">
+            Welcome Back
           </p>
-          <p className="text-gray-500 text-sm mt-1">
-            Sign in to explore our collection
+          <p className="text-text-secondary text-sm">
+            Sign in to access your account and explore our premium collection.
           </p>
         </div>
 
-        <div className="space-y-6 flex flex-col items-center justify-center py-4">
-          <div className="w-full flex justify-center transform transition-transform hover:scale-105">
+        <div className="space-y-8 flex flex-col items-center justify-center py-2">
+          <div className="w-full flex justify-center transform transition-transform hover:scale-[1.02]">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => {
@@ -71,28 +71,28 @@ const Login: React.FC = () => {
               }}
               useOneTap
               shape="pill"
-              theme="filled_blue"
+              theme="filled_black"
               size="large"
+              width="320px"
               text="continue_with"
             />
           </div>
 
-          <p className="text-xs text-gray-400 max-w-[280px] leading-relaxed">
-            By signing in, you agree to our
-            <span className="text-pink-500 cursor-pointer hover:underline mx-1">
+          <p className="text-xs text-text-muted max-w-[300px] leading-relaxed">
+            By signing in, you agree to our 
+            <span className="text-accent cursor-pointer hover:underline mx-1">
               Terms of Service
-            </span>
-            and
-            <span className="text-pink-500 cursor-pointer hover:underline mx-1">
+            </span> 
+            and 
+            <span className="text-accent cursor-pointer hover:underline mx-1">
               Privacy Policy
-            </span>
-            .
+            </span>.
           </p>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-gray-600 text-sm">
-            Fast, secure, and easy access with Google.
+        <div className="mt-10 pt-8 border-t border-border">
+          <p className="text-text-secondary text-sm">
+            New to KIDS-OWN? Just sign in with Google to get started.
           </p>
         </div>
       </div>

@@ -5,59 +5,35 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  return (
-    <div className="bg-gray-800 text-white w-64 h-screen">
-      <h2 className="text-2xl font-bold mb-4 p-4">Admin Menu</h2>
+  const menuItems = [
+    { label: "Dashboard", path: "/admin" },
+    { label: "Products", path: "/admin/product-management" },
+    { label: "Customers", path: "/admin/user-management" },
+    { label: "Orders", path: "/admin/order-management" },
+    { label: "Categories", path: "/admin/category-management" },
+    { label: "Contact Messages", path: "/admin/contact-management" },
+  ];
 
-      <div className="flex flex-col">
-        <div
-          onClick={() => navigate("/admin")}
-          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
-            location.pathname === "/admin" ? "bg-gray-400 text-white" : ""
-          }`}
-        >
-          Dashboard
-        </div>
-        <div
-          onClick={() => navigate("/admin/product-management")}
-          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
-            location.pathname === "/admin/product-management"
-              ? "bg-gray-400 text-white"
-              : ""
-          }`}
-        >
-          Products
-        </div>
-        <div
-          onClick={() => navigate("/admin/user-management")}
-          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
-            location.pathname === "/admin/user-management"
-              ? "bg-gray-400 text-white"
-              : ""
-          }`}
-        >
-          Customers
-        </div>
-        <div
-          onClick={() => navigate("/admin/order-management")}
-          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
-            location.pathname === "/admin/order-management"
-              ? "bg-gray-400 text-white"
-              : ""
-          }`}
-        >
-          Orders
-        </div>
-        <div
-          onClick={() => navigate("/admin/category-management")}
-          className={`py-2 px-3 cursor-pointer hover:bg-gray-500 hover:text-white ${
-            location.pathname === "/admin/category-management"
-              ? "bg-gray-400 text-white"
-              : ""
-          }`}
-        >
-          Categories
-        </div>
+  return (
+    <div className="bg-surface border-r border-border text-white w-64 h-screen sticky top-0 flex flex-col">
+      <div className="p-6 border-b border-border">
+         <h2 className="text-2xl font-serif font-bold tracking-widest text-white">ADMIN</h2>
+      </div>
+
+      <div className="flex flex-col py-4 gap-1">
+        {menuItems.map((item) => (
+          <div
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className={`py-3 px-6 cursor-pointer text-sm font-medium transition-all duration-200 border-l-4 ${
+              location.pathname === item.path
+                ? "bg-surface-light border-accent text-white"
+                : "border-transparent text-text-secondary hover:bg-surface-light hover:text-white"
+            }`}
+          >
+            {item.label}
+          </div>
+        ))}
       </div>
     </div>
   );

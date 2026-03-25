@@ -14,6 +14,8 @@ import Login from "./pages/user/Login";
 import Checkout from "./pages/user/Checkout";
 import MyOrders from "./pages/user/MyOrders";
 import OrderDetails from "./pages/user/OrderDetails";
+import ContactUs from "./pages/user/ContactUs";
+import ContactManagement from "./pages/admin/ContactManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -40,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         element: <Cart />,
+      },
+      {
+        path: "/contact",
+        element: <ContactUs />,
       },
       // Protected User Routes
       {
@@ -84,6 +90,10 @@ const router = createBrowserRouter([
       {
         path: "category-management",
         element: <CategoryManagement />,
+      },
+      {
+        path: "contact-management",
+        element: <ContactManagement />,
       },
     ],
   },

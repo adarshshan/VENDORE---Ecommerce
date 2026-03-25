@@ -75,71 +75,134 @@ const OrderManagement: React.FC = () => {
     <div>
       <h1 className="text-2xl font-bold mb-4">Order Management</h1>
 
-      <div className="overflow-x-auto bg-white rounded shadow">
-        <table className="min-w-full text-left">
-          <thead className="bg-gray-100 border-b">
-            <tr>
-              <th className="p-3">ID</th>
-              <th className="p-3">User</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Total</th>
-              <th className="p-3">Paid</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Actions</th>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-border bg-surface-light">
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                ID
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                user
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Date
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Total
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Paid
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Status
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order._id} className="border-b hover:bg-gray-50">
-                <td className="p-3 font-mono text-sm">
-                  {order._id.substring(order._id.length - 6).toUpperCase()}
-                </td>
-                <td className="p-3">{(order.user as any)?.name || "N/A"}</td>
-                <td className="p-3">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
-                <td className="p-3">${order.totalPrice.toFixed(2)}</td>
-                <td className="p-3">
-                  <span
-                    className={
-                      order.isPaid ? "text-green-600 font-bold" : "text-red-600"
-                    }
-                  >
-                    {order.isPaid ? "Yes" : "No"}
-                  </span>
-                </td>
-                <td className="p-3">
-                  <span
-                    className={`px-2 py-1 rounded text-xs text-white ${
-                      order.status === "Delivered"
-                        ? "bg-green-500"
-                        : order.status === "Cancelled"
-                          ? "bg-red-500"
-                          : order.status === "Returned"
-                            ? "bg-gray-500"
-                            : order.status === "Shipped"
-                              ? "bg-indigo-500"
-                              : "bg-blue-500"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                  {order.returnStatus === "Requested" && (
-                    <span className="ml-2 px-2 py-1 rounded text-xs bg-orange-500 text-white animate-pulse">
-                      Return Req
-                    </span>
-                  )}
-                </td>
-                <td className="p-3">
-                  <button
-                    onClick={() => openDetails(order)}
-                    className="text-blue-600 hover:underline mr-2"
-                  >
-                    Details
-                  </button>
+
+          <tbody className="divide-y divide-border">
+            {loading ? (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-12 text-center text-text-secondary"
+                >
+                  Loading Order Details...
                 </td>
               </tr>
-            ))}
+            ) : orders?.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-12 text-center text-text-secondary"
+                >
+                  No Orders found.
+                </td>
+              </tr>
+            ) : (
+              orders?.map((order) => (
+                <tr
+                  key={order?._id}
+                  className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      {order._id.substring(order._id.length - 6).toUpperCase()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      {(order.user as any)?.name || "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      ${order.totalPrice.toFixed(2)}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      <span
+                        className={
+                          order.isPaid
+                            ? "text-green-600 font-bold"
+                            : "text-red-600"
+                        }
+                      >
+                        {order.isPaid ? "Yes" : "No"}
+                      </span>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      <span
+                        className={`px-2 py-1 rounded text-xs text-white ${
+                          order.status === "Delivered"
+                            ? "bg-green-500"
+                            : order.status === "Cancelled"
+                              ? "bg-red-500"
+                              : order.status === "Returned"
+                                ? "bg-gray-500"
+                                : order.status === "Shipped"
+                                  ? "bg-indigo-500"
+                                  : "bg-blue-500"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
+
+                    {order.returnStatus === "Requested" && (
+                      <span className="ml-2 px-2 py-1 rounded text-xs bg-orange-500 text-white animate-pulse">
+                        Return Req
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      <button
+                        onClick={() => openDetails(order)}
+                        className="text-blue-600 hover:underline mr-2"
+                      >
+                        Details
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -21,6 +21,9 @@ interface StoreState {
   wishlist: Product[];
   addToWishlist: (product: Product) => void;
   removeFromWishlist: (productId: string | number) => void;
+  
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -31,7 +34,10 @@ export const useStore = create<StoreState>()(
       isModalOpen: false,
       openModal: () => set({ isModalOpen: true }),
       closeModal: () => set({ isModalOpen: false }),
-      logout: () => set({ user: null, cart: [], wishlist: [] }),
+      logout: () => {
+        set({ user: null, cart: [], wishlist: [] });
+        localStorage.removeItem("user");
+      },
 
       cart: [],
       addToCart: (product, quantity = 1, size, color) => {
@@ -43,7 +49,10 @@ export const useStore = create<StoreState>()(
 
         if (existingItemIndex > -1) {
           const newCart = [...currentCart];
-          newCart[existingItemIndex].quantity += quantity;
+          newCart[existingItemIndex] = {
+            ...newCart[existingItemIndex],
+            quantity: newCart[existingItemIndex].quantity + quantity
+          };
           set({ cart: newCart });
         } else {
           set({
@@ -78,9 +87,15 @@ export const useStore = create<StoreState>()(
         set({
           wishlist: get().wishlist.filter((item) => item._id !== productId),
         }),
+
+      _hasHydrated: false,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
-      name: "kids-own-storage", // name of the item in the storage (must be unique)
+      name: "kids-own-storage",
+      onRehydrateStorage: (state) => {
+        return () => state?.setHasHydrated(true);
+      },
       partialize: (state) => ({ 
         user: state.user, 
         cart: state.cart, 

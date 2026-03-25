@@ -1,22 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import {
   Avatar,
   Box,
-  Divider,
-  IconButton,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Tooltip,
-  Typography,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
-  useMediaQuery,
-  useTheme,
+  Menu,
+  MenuItem,
+  Tooltip,
 } from "@mui/material";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
@@ -24,11 +20,13 @@ import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import LocalMall from "@mui/icons-material/LocalMall";
 import { Fragment, useState } from "react";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
+  const location = useLocation();
+  const cart = useStore((state) => state.cart);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -37,71 +35,144 @@ const Header: React.FC = () => {
   const navItems = [
     { label: "Home", path: "/" },
     { label: "Products", path: "/products" },
-    { label: "Contact", path: "/contacts" },
-    { label: "Cart", path: "/cart" },
+    { label: "Contact", path: "/contact" },
   ];
 
-  const navigate = useNavigate();
-
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        KIDS-OWN
-      </Typography>
-      <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton
-              sx={{ textAlign: "center" }}
-              onClick={() => navigate(item.path)}
-            >
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+    <Box
+      onClick={handleDrawerToggle}
+      sx={{
+        textAlign: "center",
+        height: "100%",
+        bgcolor: "var(--color-surface)",
+      }}
+    >
+      <div className="h-full flex flex-col justify-between">
+        <div>
+          <div className="py-6 border-b border-border">
+            <h2 className="text-2xl font-serif font-bold text-white tracking-widest">
+              KIDS-OWN
+            </h2>
+          </div>
+          <List className="!ps-4">
+            {navItems?.map((item) => (
+              <ListItem key={item?.label} disablePadding>
+                <ListItemButton
+                  sx={{ textAlign: "left", py: 2 }}
+                  onClick={() => navigate(item.path)}
+                >
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      style: {
+                        color: "var(--color-text-primary)",
+                        fontWeight: 600,
+                      },
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+            <ListItem onClick={() => navigate("/myorders")} className="gap-2">
+              <LocalMall fontSize="small" className="text-white" />
+              <ListItemText
+                primary={"My Orders"}
+                primaryTypographyProps={{
+                  style: {
+                    color: "var(--color-text-primary)",
+                    fontWeight: 600,
+                  },
+                }}
+              />
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{ textAlign: "left", py: 2 }}
+                onClick={() => navigate("/cart")}
+              >
+                <ListItemText
+                  primary={`Cart (${cart.length})`}
+                  primaryTypographyProps={{
+                    style: {
+                      color: "var(--color-text-primary)",
+                      fontWeight: 600,
+                    },
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </div>
+        <div className="px-4 flex justify-between items-center">
+          <Avatar>A</Avatar>
+          <MenuItem sx={{ color: "var(--color-error) !important" }}>
+            <ListItemIcon sx={{ color: "var(--color-error) !important" }}>
+              <Logout fontSize="small" />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        </div>
+      </div>
     </Box>
   );
 
   return (
-    <header className="bg-pink-500 text-white p-4 sticky top-0 z-50 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center">
-          {isMobile && (
+    <header className="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-all duration-300 px-[1rem] sm:px-[2rem]">
+      <div className="container-custom py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <div className="md:hidden">
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+              className="!text-white"
             >
               <MenuIcon />
             </IconButton>
-          )}
-          <Link to="/" className="text-2xl font-bold">
+          </div>
+          <Link
+            to="/"
+            className="text-2xl md:text-3xl font-serif font-black tracking-tighter text-white hover:text-accent transition-colors"
+          >
             KIDS-OWN
           </Link>
         </div>
 
-        <nav className="flex items-center space-x-4">
-          {!isMobile && (
-            <Box sx={{ display: "flex", gap: 2 }}>
-              {navItems.map((item) => (
-                <Typography
-                  key={item.label}
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": { color: "rgba(255,255,255,0.8)" },
-                  }}
-                  onClick={() => navigate(item.path)}
-                >
-                  {item.label}
-                </Typography>
-              ))}
-            </Box>
-          )}
-          <DropdownMenu />
+        <nav className="flex items-center gap-8">
+          <div className="hidden md:flex gap-8">
+            {navItems.map((item) => (
+              <Link
+                key={item?.label}
+                to={item?.path}
+                className={`text-sm font-bold uppercase tracking-wider transition-all duration-200 hover:text-accent ${
+                  location.pathname === item?.path
+                    ? "text-accent"
+                    : "text-text-secondary"
+                }`}
+              >
+                {item?.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <IconButton
+              onClick={() => navigate("/cart")}
+              className="text-text-secondary hover:text-accent transition-colors relative"
+            >
+              <ShoppingCartIcon />
+              {cart?.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent text-black text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                  {cart?.length}
+                </span>
+              )}
+            </IconButton>
+            <div className="w-px h-6 bg-border hidden md:block"></div>
+            <div className="hidden md:block">
+              <DropdownMenu />
+            </div>
+          </div>
         </nav>
       </div>
 
@@ -110,11 +181,16 @@ const Header: React.FC = () => {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
+          keepMounted: true,
         }}
         sx={{
           display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            width: 280,
+            bgcolor: "var(--color-surface)",
+            borderRight: "1px solid var(--color-border)",
+          },
         }}
       >
         {drawer}
@@ -129,33 +205,33 @@ const DropdownMenu = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const user = useStore((state) => state.user);
+  const user = useStore((state) => state?.user);
   const setUser = useStore((state) => state.setUser);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const handleItemClick = (action: string) => {
+    handleClose();
     switch (action) {
       case "logout":
         setUser(null);
         localStorage.clear();
-        console.log("the log out option clicked");
+        navigate("/login");
         break;
       case "settings":
-        console.log("settings option clicked!");
         break;
       case "profile":
-        console.log("profile option clicked");
         break;
       case "myorders":
         navigate("/orders");
         break;
-
       default:
         break;
     }
@@ -168,30 +244,34 @@ const DropdownMenu = () => {
           <IconButton
             onClick={handleClick}
             size="small"
-            sx={{ ml: 2, color: "inherit" }}
+            sx={{ ml: 0.5 }}
             aria-controls={open ? "account-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
             {user ? (
-              <Avatar sx={{ width: 32, height: 32 }}>
-                {user?.name.charAt(0)}
+              <Avatar
+                sx={{
+                  width: 36,
+                  height: 36,
+                  bgcolor: "var(--color-accent)",
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {user?.name.charAt(0).toUpperCase()}
               </Avatar>
             ) : (
-              <Typography
-                sx={{
-                  color: "white",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  "&:hover": { opacity: 0.8 },
-                }}
+              <button
+                className="btn-primary btn-sm rounded-full"
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate("/login");
                 }}
               >
                 Login
-              </Typography>
+              </button>
             )}
           </IconButton>
         </Tooltip>
@@ -208,13 +288,21 @@ const DropdownMenu = () => {
               elevation: 0,
               sx: {
                 overflow: "visible",
-                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                filter: "drop-shadow(0px 10px 30px rgba(0,0,0,0.5))",
                 mt: 1.5,
-                "& .MuiAvatar-root": {
-                  width: 32,
-                  height: 32,
-                  ml: -0.5,
-                  mr: 1,
+                bgcolor: "var(--color-surface-light)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text-primary)",
+                "& .MuiMenuItem-root": {
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  "&:hover": {
+                    bgcolor: "var(--color-surface-hover)",
+                  },
+                },
+                "& .MuiListItemIcon-root": {
+                  color: "var(--color-text-secondary)",
+                  minWidth: "32px",
                 },
                 "&::before": {
                   content: '""',
@@ -224,7 +312,9 @@ const DropdownMenu = () => {
                   right: 14,
                   width: 10,
                   height: 10,
-                  bgcolor: "background.paper",
+                  bgcolor: "var(--color-surface-light)",
+                  borderTop: "1px solid var(--color-border)",
+                  borderLeft: "1px solid var(--color-border)",
                   transform: "translateY(-50%) rotate(45deg)",
                   zIndex: 0,
                 },
@@ -234,8 +324,15 @@ const DropdownMenu = () => {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
+          <div className="px-4 py-2 border-b border-border mb-2">
+            <p className="text-sm font-bold text-white">{user.name}</p>
+            <p className="text-xs text-text-muted truncate max-w-[150px]">
+              {user.email}
+            </p>
+          </div>
+
           <MenuItem onClick={() => handleItemClick("profile")}>
-            <Avatar /> Profile
+            <Avatar sx={{ width: 24, height: 24, mr: 1 }} /> Profile
           </MenuItem>
           <MenuItem onClick={() => handleItemClick("myorders")}>
             <ListItemIcon>
@@ -243,7 +340,7 @@ const DropdownMenu = () => {
             </ListItemIcon>
             My Orders
           </MenuItem>
-          <Divider />
+          <div className="my-1 border-t border-border"></div>
           <MenuItem onClick={() => handleItemClick("another")}>
             <ListItemIcon>
               <PersonAdd fontSize="small" />
@@ -256,8 +353,11 @@ const DropdownMenu = () => {
             </ListItemIcon>
             Settings
           </MenuItem>
-          <MenuItem onClick={() => handleItemClick("logout")}>
-            <ListItemIcon>
+          <MenuItem
+            onClick={() => handleItemClick("logout")}
+            sx={{ color: "var(--color-error) !important" }}
+          >
+            <ListItemIcon sx={{ color: "var(--color-error) !important" }}>
               <Logout fontSize="small" />
             </ListItemIcon>
             Logout

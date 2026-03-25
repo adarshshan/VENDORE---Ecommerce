@@ -76,7 +76,6 @@ const ProductManagement: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching products</div>;
 
   return (
@@ -91,45 +90,92 @@ const ProductManagement: React.FC = () => {
         </button>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr>
-              <th className="py-2 px-4 border-b">Product Name</th>
-              <th className="py-2 px-4 border-b">Price</th>
-              <th className="py-2 px-4 border-b">Category</th>
-              <th className="py-2 px-4 border-b">Stock</th>
-              <th className="py-2 px-4 border-b">Actions</th>
+            <tr className="border-b border-border bg-surface-light">
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Product Name
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Price
+              </th>
+              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+                Category
+              </th>
+              <th className="px-6 py-4 text-sm fontesemibold text-text-secondary">
+                Stock
+              </th>
+              <th className="px-6 py-4 text-sm fontesemibold text-text-secondary">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {products?.map((product) => (
-              <tr key={product._id}>
-                <td className="py-2 ps-8 pe-4 border-b">{product.name}</td>
-                <td className="py-2 px-4 border-b text-center">
-                  ${product.price}
-                </td>
-                <td className="py-2 px-4 border-b text-center">
-                  {typeof product.category === 'object' ? product.category.name : 'Uncategorized'}
-                </td>
-                <td className="py-2 px-4 border-b text-center">
-                  {product.stock}
-                </td>
-                <td className="py-2 px-4 border-b text-center">
-                  <button
-                    onClick={() => handleEditProduct(product)}
-                    className="text-green-500 px-2 py-1 rounded mr-2"
-                  >
-                    <EditIcon />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(String(product._id))}
-                    className="text-red-500 px-2 py-1 rounded"
-                  >
-                    <DeleteIcon />
-                  </button>
+          <tbody className="divide-y divide-border">
+            {isLoading ? (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-12 text-center text-text-secondary"
+                >
+                  Loading Products...
                 </td>
               </tr>
-            ))}
+            ) : products?.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-12 text-center text-text-secondary"
+                >
+                  No Products found.
+                </td>
+              </tr>
+            ) : (
+              products?.map((product) => (
+                <tr
+                  key={product?._id}
+                  className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      {product?.name}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      ${product?.price}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      {typeof product?.category === "object"
+                        ? product?.category?.name
+                        : "Uncategorized"}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">
+                      {product?.stock}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="text-green-500 px-2 py-1 rounded mr-2"
+                    >
+                      <EditIcon />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(String(product?._id))}
+                      className="text-red-500 px-2 py-1 rounded"
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

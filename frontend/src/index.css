@@ -1,1 +1,144 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* Brand Colors */
+  --color-primary: #0f172a; /* Slate-900 (Dark Blue/Blackish) */
+  --color-primary-light: #334155; /* Slate-700 */
+  --color-accent: #38bdf8; /* Sky-400 */
+  --color-accent-hover: #0ea5e9; /* Sky-500 */
+
+  /* Backgrounds */
+  --color-background: #000000; /* Pure Black */
+  --color-surface: #0a0a0a; /* Almost Black */
+  --color-surface-light: #171717; /* Neutral-900 */
+  --color-surface-hover: #262626; /* Neutral-800 */
+
+  /* Text */
+  --color-text-light: #ffffff; /* Slate-50 */
+  --color-text-primary: #f8fafc; /* Slate-50 */
+  --color-text-secondary: #94a3b8; /* Slate-400 */
+  --color-text-muted: #64748b; /* Slate-500 */
+  --color-text-inverse: #000000;
+
+  /* Borders */
+  --color-border: #262626; /* Neutral-800 */
+  --color-border-light: #404040; /* Neutral-700 */
+
+  /* Status */
+  --color-success: #10b981; /* Emerald-500 */
+  --color-error: #ef4444; /* Red-500 */
+  --color-warning: #f59e0b; /* Amber-500 */
+  --color-info: #3b82f6; /* Blue-500 */
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-white;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl mb-6;
+  }
+  h2 {
+    @apply text-3xl md:text-4xl mb-4;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl mb-3;
+  }
+  h4 {
+    @apply text-xl md:text-2xl mb-2;
+  }
+
+  p {
+    @apply leading-relaxed text-text-secondary mb-4;
+  }
+
+  a {
+    @apply transition-colors duration-200 hover:text-accent;
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-accent;
+  }
+
+  .btn-primary {
+    @apply btn bg-white text-black hover:bg-gray-200 border border-transparent shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.5)];
+  }
+
+  .btn-secondary {
+    @apply btn bg-surface-light text-white hover:bg-surface-hover border border-border;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent text-black hover:bg-accent-hover shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:shadow-[0_0_25px_rgba(56,189,248,0.5)];
+  }
+
+  .btn-outline {
+    @apply btn border border-border text-text-primary hover:border-white hover:text-white bg-transparent;
+  }
+
+  .btn-ghost {
+    @apply btn hover:bg-surface-light text-text-secondary hover:text-white px-4;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+
+  /* Card Component */
+  .card {
+    @apply bg-surface border border-border rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:border-border-light;
+  }
+
+  .card-hover {
+    @apply hover:transform hover:-translate-y-1 hover:shadow-2xl hover:border-accent/30;
+  }
+
+  /* Form Elements */
+  .input {
+    @apply w-full bg-surface-light border border-border rounded-lg px-4 py-3 text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-text-secondary mb-1.5 ml-1;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+
+  .badge-primary {
+    @apply bg-white text-black;
+  }
+  .badge-accent {
+    @apply bg-accent/10 text-accent border border-accent/20;
+  }
+  .badge-outline {
+    @apply border border-border text-text-secondary;
+  }
+
+  /* Utilities */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-6 sm:px-10 lg:px-12;
+  }
+}
