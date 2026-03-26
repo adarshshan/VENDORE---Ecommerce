@@ -27,6 +27,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const cart = useStore((state) => state.cart);
+  const user = useStore((state) => state?.user);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -104,7 +105,12 @@ const Header: React.FC = () => {
           </List>
         </div>
         <div className="px-4 flex justify-between items-center">
-          <Avatar>A</Avatar>
+          {user && (
+            <div className="flex gap-1 items-center">
+              <Avatar>{user?.name?.charAt(0)}</Avatar>
+            </div>
+          )}
+
           <MenuItem sx={{ color: "var(--color-error) !important" }}>
             <ListItemIcon sx={{ color: "var(--color-error) !important" }}>
               <Logout fontSize="small" />
@@ -117,7 +123,7 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-all duration-300 px-[1rem] sm:px-[2rem]">
+    <header className="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-all duration-300 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="md:hidden">

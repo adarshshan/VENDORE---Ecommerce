@@ -207,7 +207,7 @@ const ProductList: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[2rem]">
+    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">

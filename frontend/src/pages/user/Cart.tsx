@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useStore } from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -15,6 +15,10 @@ const Cart: React.FC = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const total = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }, [cart]);
@@ -30,7 +34,7 @@ const Cart: React.FC = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-background pt-20 pb-20 px-[1rem] sm:px-[2rem]">
+      <div className="min-h-screen bg-background pt-20 pb-20 px-[1rem] sm:px-[5rem]">
         <div className="container-custom text-center">
           <div className="bg-surface/50 p-12 rounded-2xl border border-border max-w-lg mx-auto backdrop-blur-sm">
             <div className="bg-surface-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -46,7 +50,7 @@ const Cart: React.FC = () => {
             </p>
             <Link
               to="/products"
-              className="btn-primary inline-flex gap-2 items-center"
+              className="border border-[var(--color-border)] btn-primary inline-flex gap-2 items-center text-[var(--color-text-light)] p-2 px-3 rounded-md"
             >
               Start Shopping
             </Link>
@@ -57,7 +61,7 @@ const Cart: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-[1rem] sm:px-[2rem]">
+    <div className="min-h-screen bg-background py-12 px-[1rem] sm:px-[5rem]">
       <div className="container-custom">
         <h1 className="text-3xl md:text-4xl font-serif font-black text-white mb-8">
           Shopping Cart

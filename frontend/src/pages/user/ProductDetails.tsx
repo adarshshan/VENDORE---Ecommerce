@@ -13,6 +13,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import HistoryIcon from "@mui/icons-material/History";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Slider from "react-slick";
+import Loading from "../../components/Loading";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,11 +42,7 @@ const ProductDetails: React.FC = () => {
   }, [product]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-[1rem] sm:px-[2rem]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (isError || !product) {
@@ -65,7 +62,7 @@ const ProductDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[2rem]">
+    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-8">
         {/* Breadcrumbs / Back button */}
         <button

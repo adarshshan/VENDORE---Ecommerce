@@ -9,7 +9,6 @@ import {
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CustomButton from "../../components/Button";
 
 declare global {
@@ -36,6 +35,10 @@ const Checkout = () => {
     country: "India",
     phone: "",
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Initialize name from user once available
   useEffect(() => {
@@ -151,7 +154,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[2rem]">
+    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -209,13 +212,15 @@ const Checkout = () => {
                     className="space-y-6 text-[var(--color-text-light)]"
                   >
                     <div className="space-y-4">
-                      <div className="flex gap-5 items-center">
-                        <label className="label ">Full Name</label>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                          Full Name
+                        </label>
                         <input
                           type="text"
                           placeholder="Your full name"
                           required
-                          className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                          className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                           value={shippingAddress.fullName}
                           onChange={(e) =>
                             setShippingAddress({
@@ -226,13 +231,15 @@ const Checkout = () => {
                         />
                       </div>
 
-                      <div className="flex gap-5 items-center">
-                        <label className="label">Address Line 1</label>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                          Address Line 1
+                        </label>
                         <input
                           type="text"
                           placeholder="House / Street / Apartment"
                           required
-                          className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                          className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                           value={shippingAddress.addressLine1}
                           onChange={(e) =>
                             setShippingAddress({
@@ -242,14 +249,17 @@ const Checkout = () => {
                           }
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex gap-5 items-center">
-                          <label className="label">City</label>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                            City
+                          </label>
                           <input
                             type="text"
                             placeholder="City"
                             required
-                            className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                            className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                             value={shippingAddress.city}
                             onChange={(e) =>
                               setShippingAddress({
@@ -260,13 +270,15 @@ const Checkout = () => {
                           />
                         </div>
 
-                        <div className="flex gap-5 items-center">
-                          <label className="label">State / Province</label>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                            State / Province
+                          </label>
                           <input
                             type="text"
                             placeholder="State"
                             required
-                            className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                            className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                             value={shippingAddress.state}
                             onChange={(e) =>
                               setShippingAddress({
@@ -277,14 +289,17 @@ const Checkout = () => {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex gap-5 items-center">
-                          <label className="label">Postal Code</label>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                            Postal Code
+                          </label>
                           <input
                             type="text"
                             placeholder="6-digit code"
                             required
-                            className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                            className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                             value={shippingAddress.postalCode}
                             onChange={(e) =>
                               setShippingAddress({
@@ -295,13 +310,15 @@ const Checkout = () => {
                           />
                         </div>
 
-                        <div className="flex gap-5 items-center">
-                          <label className="label">Country</label>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                            Country
+                          </label>
                           <input
                             type="text"
                             placeholder="Country"
                             required
-                            className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                            className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                             value={shippingAddress.country}
                             onChange={(e) =>
                               setShippingAddress({
@@ -313,13 +330,15 @@ const Checkout = () => {
                         </div>
                       </div>
 
-                      <div className="flex gap-5 items-center">
-                        <label className="label">Phone Number</label>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                          Phone Number
+                        </label>
                         <input
                           type="tel"
-                          placeholder="Your contact number "
+                          placeholder="Your contact number"
                           required
-                          className="input border border-[var(--color-border)] hover:border-[var(--color-border-light)] px-3 py-1"
+                          className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
                           value={shippingAddress.phone}
                           onChange={(e) =>
                             setShippingAddress({
@@ -367,6 +386,7 @@ const Checkout = () => {
                     <CustomButton
                       onclick={() => setStep(1)}
                       disabled={isProcessing}
+                      className="text-accent"
                     >
                       Back
                     </CustomButton>
