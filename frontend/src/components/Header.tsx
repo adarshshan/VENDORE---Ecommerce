@@ -73,7 +73,7 @@ const Header: React.FC = () => {
                 </ListItemButton>
               </ListItem>
             ))}
-            <ListItem onClick={() => navigate("/myorders")} className="gap-2">
+            <ListItem onClick={() => navigate("/orders")} className="gap-2">
               <LocalMall fontSize="small" className="text-white" />
               <ListItemText
                 primary={"My Orders"}

@@ -170,7 +170,7 @@ const ProductList: React.FC = () => {
       </div>
 
       <div className="mb-8">
-        <label className="label uppercase tracking-wider text-xs font-bold mb-3 block">
+        <label className="label uppercase tracking-wider text-xs font-bold mb-3 block text-[var(--color-text-light)]">
           Price Range
         </label>
         <div className="px-2">
@@ -192,12 +192,15 @@ const ProductList: React.FC = () => {
           />
         </div>
         <div className="flex justify-between mt-2 text-sm text-text-secondary font-mono">
-          <span>${priceRange[0]}</span>
-          <span>${priceRange[1]}</span>
+          <span>₹{priceRange[0]}</span>
+          <span>₹{priceRange[1]}</span>
         </div>
       </div>
 
-      <button onClick={applyFilters} className="btn-primary w-full mt-auto">
+      <button
+        onClick={applyFilters}
+        className="border border-[var(--color-border)] hover:border-[var(--color-border-light)] opacity-80 hover:opacity-95 btn-primary w-full mt-auto text-[var(--color-text-light)] py-2"
+      >
         Apply Filters
       </button>
     </div>

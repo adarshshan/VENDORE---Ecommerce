@@ -9,6 +9,7 @@ import {
   AccessTime as TimeIcon,
 } from "@mui/icons-material";
 import { submitContact } from "../../services/api";
+import CustomButton from "../../components/Button";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -49,7 +50,9 @@ const ContactUs: React.FC = () => {
     } catch (error: any) {
       setSubmitStatus({
         type: "error",
-        message: error.response?.data?.message || "Failed to send message. Please try again.",
+        message:
+          error.response?.data?.message ||
+          "Failed to send message. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -60,7 +63,9 @@ const ContactUs: React.FC = () => {
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Contact Us</h1>
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+            Contact Us
+          </h1>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">
             Have questions about our products or your order? We're here to help!
           </p>
@@ -70,23 +75,27 @@ const ContactUs: React.FC = () => {
           {/* Contact Details Section */}
           <div className="space-y-8">
             <div className="card p-8 bg-surface-light border-border">
-              <h3 className="text-2xl font-bold text-white mb-8">Get in Touch</h3>
-              
+              <h3 className="text-2xl font-bold text-white mb-8">
+                Get in Touch
+              </h3>
+
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <PhoneIcon className="text-primary" />
+                    <PhoneIcon className="text-[var(--color-text-light)]" />
                   </div>
                   <div>
                     <p className="text-white font-semibold">Phone & Helpline</p>
                     <p className="text-text-secondary">+1 (234) 567-890</p>
-                    <p className="text-text-secondary">1-800-KIDS-OWN (Toll Free)</p>
+                    <p className="text-text-secondary">
+                      1-800-KIDS-OWN (Toll Free)
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <EmailIcon className="text-primary" />
+                    <EmailIcon className="text-[var(--color-text-light)]" />
                   </div>
                   <div>
                     <p className="text-white font-semibold">Email Address</p>
@@ -97,23 +106,31 @@ const ContactUs: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <LocationIcon className="text-primary" />
+                    <LocationIcon className="text-[var(--color-text-light)]" />
                   </div>
                   <div>
                     <p className="text-white font-semibold">Physical Address</p>
-                    <p className="text-text-secondary">123 Fashion Street, Suite 456</p>
-                    <p className="text-text-secondary">New York, NY 10001, USA</p>
+                    <p className="text-text-secondary">
+                      123 Fashion Street, Suite 456
+                    </p>
+                    <p className="text-text-secondary">
+                      New York, NY 10001, USA
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <TimeIcon className="text-primary" />
+                    <TimeIcon className="text-[var(--color-text-light)]" />
                   </div>
                   <div>
                     <p className="text-white font-semibold">Working Hours</p>
-                    <p className="text-text-secondary">Mon - Fri: 9:00 AM - 6:00 PM</p>
-                    <p className="text-text-secondary">Sat: 10:00 AM - 4:00 PM</p>
+                    <p className="text-text-secondary">
+                      Mon - Fri: 9:00 AM - 6:00 PM
+                    </p>
+                    <p className="text-text-secondary">
+                      Sat: 10:00 AM - 4:00 PM
+                    </p>
                   </div>
                 </div>
               </div>
@@ -122,74 +139,103 @@ const ContactUs: React.FC = () => {
 
           {/* Contact Form Section */}
           <div className="card p-8 bg-surface border-border">
-            <h3 className="text-2xl font-bold text-white mb-8">Send us a Message</h3>
-            
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <h3 className="text-2xl font-bold text-white mb-8">
+              Send us a Message
+            </h3>
+
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6 text-[var(--color-text-light)]"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">Name</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                    Name
+                  </label>
                   <input
                     {...register("name")}
-                    className={`input ${errors.name ? "border-error" : ""}`}
+                    className={`input w-full ${errors.name ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
                     placeholder="Your Name"
                   />
-                  {errors.name && <p className="text-error text-xs mt-1">{errors.name.message}</p>}
+                  {errors.name && (
+                    <p className="text-error text-xs mt-1">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">Email</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                    Email
+                  </label>
                   <input
                     {...register("email")}
-                    className={`input ${errors.email ? "border-error" : ""}`}
+                    className={`input w-full ${errors.email ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
                     placeholder="Your Email"
                   />
-                  {errors.email && <p className="text-error text-xs mt-1">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="text-error text-xs mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">Phone (Optional)</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                    Phone (Optional)
+                  </label>
                   <input
                     {...register("phone")}
-                    className="input"
+                    className={`input w-full border border-[var(--color-border)]  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
                     placeholder="Your Phone"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">Subject</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                    Subject
+                  </label>
                   <input
                     {...register("subject")}
-                    className={`input ${errors.subject ? "border-error" : ""}`}
+                    className={`input w-full ${errors.subject ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
                     placeholder="Subject"
                   />
-                  {errors.subject && <p className="text-error text-xs mt-1">{errors.subject.message}</p>}
+                  {errors.subject && (
+                    <p className="text-error text-xs mt-1">
+                      {errors.subject.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">Message</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Message
+                </label>
                 <textarea
                   {...register("message")}
                   rows={4}
-                  className={`input min-h-[120px] ${errors.message ? "border-error" : ""}`}
+                  className={`input w-full min-h-[120px] ${errors.message ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
                   placeholder="How can we help you?"
                 />
-                {errors.message && <p className="text-error text-xs mt-1">{errors.message.message}</p>}
+                {errors.message && (
+                  <p className="text-error text-xs mt-1">
+                    {errors.message.message}
+                  </p>
+                )}
               </div>
 
               {submitStatus && (
-                <div className={`p-4 rounded-lg ${submitStatus.type === "success" ? "bg-success/20 text-success" : "bg-error/20 text-error"}`}>
+                <div
+                  className={`p-4 rounded-lg ${submitStatus.type === "success" ? "bg-success/20 text-success" : "bg-error/20 text-error"}`}
+                >
                   {submitStatus.message}
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="btn-primary w-full py-3 disabled:opacity-50"
-              >
+              <CustomButton type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Sending..." : "Send Message"}
-              </button>
+              </CustomButton>
             </form>
           </div>
         </div>

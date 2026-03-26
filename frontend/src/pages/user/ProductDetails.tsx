@@ -11,6 +11,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import HistoryIcon from "@mui/icons-material/History";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Slider from "react-slick";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +29,10 @@ const ProductDetails: React.FC = () => {
     queryFn: () => getProductsById(id ?? ""),
     enabled: !!id,
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   useEffect(() => {
     if (product?.images?.[0]) {
@@ -75,23 +81,29 @@ const ProductDetails: React.FC = () => {
           </span>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-12 items-start">
           {/* Image Gallery Section */}
           <div className="space-y-4">
-            <div className="card bg-surface overflow-hidden border-border-light shadow-2xl">
-              <Zoom>
-                <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
-                  <img
-                    src={selectedImage}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </Zoom>
+            <div className=" card bg-surface overflow-hidden border-border-light shadow-2xl">
+              <div className="hidden sm:block">
+                <Zoom>
+                  <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
+                    <img
+                      src={selectedImage}
+                      alt={product?.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </Zoom>
+              </div>
+
+              <div className="block sm:hidden">
+                <ImageSlider images={product.images}></ImageSlider>
+              </div>
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="hidden sm:flex  gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {product.images?.map((image, index) => (
                 <button
                   key={index}
@@ -115,21 +127,21 @@ const ProductDetails: React.FC = () => {
           {/* Product Info Section */}
           <div className="flex flex-col space-y-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center text-[var(--color-text-light)] gap-2 mb-4">
                 <span className="badge badge-accent">New Arrival</span>
                 <span className="text-text-muted text-xs font-bold uppercase tracking-tighter">
                   In Stock
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-serif font-black text-white mb-4 leading-tight">
-                {product.name}
+              <h1 className="text-4xl md:text-5xl font-serif font-black text-[var(--color-text-light)] mb-4 leading-tight capitalize">
+                {product?.name}
               </h1>
               <div className="flex items-baseline gap-4">
                 <p className="text-3xl font-bold text-white">
-                  ${product.price.toFixed(2)}
+                  ₹{product?.price.toFixed(2)}
                 </p>
                 <p className="text-text-muted line-through text-lg">
-                  ${(product.price * 1.2).toFixed(2)}
+                  ₹{(product?.price * 1.2).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -139,9 +151,23 @@ const ProductDetails: React.FC = () => {
                 Product Description
               </h3>
               <p className="text-text-secondary leading-relaxed">
-                {product.description ||
+                {product?.description ||
                   "No description available for this premium piece."}
               </p>
+            </div>
+
+            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => addToCart(product)}
+                className="bg-white btn-accent btn-lg flex-grow flex items-center justify-center gap-3 py-2 rounded-md cursor-pointer"
+              >
+                <ShoppingCartIcon />
+                Add to Cart
+              </button>
+              <button className="bg-red-400 btn-outline btn-lg flex-grow py-2 rounded-md cursor-pointer">
+                <FavoriteIcon />
+                Add to Wishlist
+              </button>
             </div>
 
             {/* Features/Trust Badges */}
@@ -166,19 +192,6 @@ const ProductDetails: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-4 flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => addToCart(product)}
-                className="btn-accent btn-lg flex-grow flex items-center justify-center gap-3"
-              >
-                <ShoppingCartIcon />
-                Add to Cart
-              </button>
-              <button className="btn-outline btn-lg flex-grow">
-                Add to Wishlist
-              </button>
-            </div>
-
             <div className="pt-4">
               <p className="text-xs text-text-muted text-center italic">
                 Secure payment options available. Fast worldwide shipping.
@@ -192,3 +205,33 @@ const ProductDetails: React.FC = () => {
 };
 
 export default ProductDetails;
+
+interface ImageSliderInterface {
+  images: string[] | undefined;
+}
+const ImageSlider: React.FC<ImageSliderInterface> = ({ images }) => {
+  var settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+  return (
+    <Slider {...settings}>
+      {images &&
+        images?.length > 0 &&
+        images?.map((item, index) => (
+          <Zoom key={index}>
+            <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
+              <img
+                src={item}
+                alt={item}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </Zoom>
+        ))}
+    </Slider>
+  );
+};

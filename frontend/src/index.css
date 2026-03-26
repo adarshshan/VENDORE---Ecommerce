@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
 @theme {
   --font-sans: "Inter", "Roboto", ui-sans-serif, system-ui, sans-serif;
@@ -70,75 +72,29 @@
   }
 }
 
-@layer components {
-  /* Button Components */
-  .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-accent;
-  }
+.slick-dots {
+  bottom: 8px !important;
+}
 
-  .btn-primary {
-    @apply btn bg-white text-black hover:bg-gray-200 border border-transparent shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.5)];
-  }
+.slick-prev:before,
+.slick-next:before {
+  color: var(--color-accent, #ffffff) !important;
+  font-size: 24px !important;
+}
 
-  .btn-secondary {
-    @apply btn bg-surface-light text-white hover:bg-surface-hover border border-border;
-  }
+.slick-dots li button:before {
+  content: "" !important;
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--color-accent, #ffffff) !important;
+  border-radius: 50% !important;
+  display: block !important;
+  opacity: 0.4 !important;
+  transition: all 0.3s ease !important;
+}
 
-  .btn-accent {
-    @apply btn bg-accent text-black hover:bg-accent-hover shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:shadow-[0_0_25px_rgba(56,189,248,0.5)];
-  }
-
-  .btn-outline {
-    @apply btn border border-border text-text-primary hover:border-white hover:text-white bg-transparent;
-  }
-
-  .btn-ghost {
-    @apply btn hover:bg-surface-light text-text-secondary hover:text-white px-4;
-  }
-
-  .btn-sm {
-    @apply px-3 py-1.5 text-sm;
-  }
-
-  .btn-lg {
-    @apply px-8 py-4 text-lg;
-  }
-
-  /* Card Component */
-  .card {
-    @apply bg-surface border border-border rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:border-border-light;
-  }
-
-  .card-hover {
-    @apply hover:transform hover:-translate-y-1 hover:shadow-2xl hover:border-accent/30;
-  }
-
-  /* Form Elements */
-  .input {
-    @apply w-full bg-surface-light border border-border rounded-lg px-4 py-3 text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200;
-  }
-
-  .label {
-    @apply block text-sm font-medium text-text-secondary mb-1.5 ml-1;
-  }
-
-  /* Badge */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider;
-  }
-
-  .badge-primary {
-    @apply bg-white text-black;
-  }
-  .badge-accent {
-    @apply bg-accent/10 text-accent border border-accent/20;
-  }
-  .badge-outline {
-    @apply border border-border text-text-secondary;
-  }
-
-  /* Utilities */
-  .container-custom {
-    @apply max-w-7xl mx-auto px-6 sm:px-10 lg:px-12;
-  }
+.slick-dots li.slick-active button:before {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+  background: var(--color-accent, #ffffff) !important;
 }
