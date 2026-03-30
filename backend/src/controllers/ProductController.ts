@@ -49,17 +49,15 @@ export class ProductController {
   async createProduct(req: Request, res: Response): Promise<void> {
     try {
       const productData = { ...req.body };
-      console.log("...productData...");
-      console.log(productData);
-
+      
       const product = await this.productService.createProduct({
         ...productData,
+        hasSizes: productData.hasSizes === "true",
         images: JSON.parse(productData.images),
         sizes: productData.sizes ? JSON.parse(productData.sizes) : [],
       });
       res.status(201).json(product);
     } catch (error) {
-      console.log("this is the error getting...");
       console.log(error);
       res.status(500).json({ message: "Error creating product" });
     }
@@ -71,6 +69,7 @@ export class ProductController {
 
       const product = await this.productService.updateProduct(req.params.id, {
         ...productData,
+        hasSizes: productData.hasSizes === "true",
         images: JSON.parse(productData.images),
         sizes: productData.sizes ? JSON.parse(productData.sizes) : [],
       });

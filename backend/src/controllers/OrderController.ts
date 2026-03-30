@@ -26,11 +26,29 @@ export class OrderController {
           res.status(404).json({ message: `Product not found: ${item.name}` });
           return;
         }
-        if (product.stock < item.quantity) {
-          res.status(400).json({ 
-            message: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
-          });
-          return;
+
+        if (product?.hasSizes) {
+          if (!item.size) {
+            res.status(400).json({
+              message: `Size is required for product: ${product.name}`,
+            });
+            return;
+          }
+
+          const sizeObj = product.sizes.find((s) => s.size === item.size);
+          if (!sizeObj || sizeObj.stock < item.quantity) {
+            res.status(400).json({
+              message: `Insufficient stock for ${product.name} (Size: ${item.size}). Available: ${sizeObj ? sizeObj.stock : 0}`,
+            });
+            return;
+          }
+        } else {
+          if (product.stock < item.quantity) {
+            res.status(400).json({
+              message: `Insufficient stock for ${product.name}. Available: ${product.stock}`,
+            });
+            return;
+          }
         }
       }
 
@@ -132,17 +150,31 @@ export class OrderController {
 
       // Update stock atomically and validate again
       for (const item of orderItems) {
-        const updatedProduct = await ProductModel.findOneAndUpdate(
-          { _id: item.product, stock: { $gte: item.quantity } },
-          { $inc: { stock: -item.quantity } },
-          { new: true }
-        );
+        let updatedProduct;
+        const product = await ProductModel.findById(item.product);
+
+        if (product?.hasSizes) {
+          updatedProduct = await ProductModel.findOneAndUpdate(
+            {
+              _id: item.product,
+              "sizes.size": item.size,
+              "sizes.stock": { $gte: item.quantity },
+            },
+            { $inc: { "sizes.$.stock": -item.quantity } },
+            { new: true },
+          );
+        } else {
+          updatedProduct = await ProductModel.findOneAndUpdate(
+            { _id: item.product, stock: { $gte: item.quantity } },
+            { $inc: { stock: -item.quantity } },
+            { new: true },
+          );
+        }
 
         if (!updatedProduct) {
-          // This should ideally not happen if createRazorpayOrder checked stock,
-          // but handles race conditions between payment and order creation.
-          console.error(`Stock race condition for product ${item.product}`);
-          // In a real system, you might want to trigger a manual refund or alert admin here
+          console.error(
+            `Stock race condition for product ${item.product} (Size: ${item.size})`,
+          );
         }
       }
 
@@ -239,9 +271,24 @@ export class OrderController {
 
       // Restore stock
       for (const item of order.items) {
-        await ProductModel.findByIdAndUpdate(item.product, {
-          $inc: { stock: item.quantity },
-        });
+        if (item.size) {
+          // Check if product still has sizes (schema might have changed, but usually we follow order record)
+          const product = await ProductModel.findById(item.product);
+          if (product?.hasSizes) {
+            await ProductModel.findOneAndUpdate(
+              { _id: item.product, "sizes.size": item.size },
+              { $inc: { "sizes.$.stock": item.quantity } },
+            );
+          } else {
+            await ProductModel.findByIdAndUpdate(item.product, {
+              $inc: { stock: item.quantity },
+            });
+          }
+        } else {
+          await ProductModel.findByIdAndUpdate(item.product, {
+            $inc: { stock: item.quantity },
+          });
+        }
       }
 
       res.json(updatedOrder);

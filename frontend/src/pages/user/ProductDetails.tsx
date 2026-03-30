@@ -164,22 +164,50 @@ const ProductDetails: React.FC = () => {
               <div>
                 <div className="flex items-center text-[var(--color-text-light)] gap-2 mb-1 sm:mb-4">
                   <span className="badge badge-accent">New Arrival</span>
-                  {product?.stock && product.stock > 0 ? (
-                    product.stock < 5 ? (
-                      <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter px-1 rounded-md">
-                        Only {product.stock} left
-                      </span>
+                  {product?.hasSizes ? (
+                    selectedSize ? (
+                      (() => {
+                        const sizeStock = product.sizes?.find(s => s.size === selectedSize)?.stock ?? 0;
+                        return sizeStock > 0 ? (
+                          sizeStock < 5 ? (
+                            <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
+                              Only {sizeStock} left
+                            </span>
+                          ) : (
+                            <span className="text-success text-xs font-bold uppercase tracking-tighter">
+                              In Stock
+                            </span>
+                          )
+                        ) : (
+                          <span className="badge bg-red-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
+                            Out of Stock
+                          </span>
+                        );
+                      })()
                     ) : (
-                      <span className="text-success text-xs font-bold uppercase tracking-tighter">
-                        In Stock
+                      <span className="text-text-muted text-xs font-bold uppercase tracking-tighter">
+                        Please Select a Size
                       </span>
                     )
                   ) : (
-                    <span className="badge bg-red-500 text-white border-none text-xs font-bold uppercase tracking-tighter px-1 rounded-md">
-                      Out of Stock
-                    </span>
+                    product?.stock && product.stock > 0 ? (
+                      product.stock < 5 ? (
+                        <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
+                          Only {product.stock} left
+                        </span>
+                      ) : (
+                        <span className="text-success text-xs font-bold uppercase tracking-tighter">
+                          In Stock
+                        </span>
+                      )
+                    ) : (
+                      <span className="badge bg-red-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
+                        Out of Stock
+                      </span>
+                    )
                   )}
                 </div>
+
                 <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-[var(--color-text-light)] mb-4 leading-tight capitalize">
                   {product?.name}
                 </h1>
@@ -193,47 +221,50 @@ const ProductDetails: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-surface-light/50 px-3 py-2 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
-                <div className="flex justify-between items-center mb-1">
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)]">
-                    Select Size
-                  </h3>
-                  {sizeError && (
-                    <span className="text-xs font-bold text-red-500 uppercase animate-pulse">
-                      Please select a size
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {AVAILABLE_SIZES.map((size) => {
-                    const isAvailable = product?.sizes?.includes(size);
-                    const isSelected = selectedSize === size;
+              {product?.hasSizes && (
+                <div className="bg-surface-light/50 px-3 py-2 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
+                  <div className="flex justify-between items-center mb-1">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)]">
+                      Select Size
+                    </h3>
+                    {sizeError && (
+                      <span className="text-xs font-bold text-red-500 uppercase animate-pulse">
+                        Please select a size
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {AVAILABLE_SIZES.map((size) => {
+                      const sizeData = product.sizes?.find((s) => s.size === size);
+                      const isAvailable = sizeData && sizeData.stock > 0;
+                      const isSelected = selectedSize === size;
 
-                    return (
-                      <button
-                        key={size}
-                        disabled={!isAvailable}
-                        onClick={() => {
-                          setSelectedSize(size);
-                          setSizeError(false);
-                        }}
-                        className={`
-                          min-w-[48px] h-12 rounded-xl text-sm font-bold transition-all duration-300 border-2
-                          ${
-                            !isAvailable
-                              ? "border-border text-text-muted opacity-30 cursor-not-allowed line-through"
-                              : isSelected
-                                ? "border-accent bg-accent/10 text-accent shadow-[0_0_15px_rgba(56,189,248,0.2)]"
-                                : "border-border text-white hover:border-border-light hover:bg-surface-hover"
-                          }
-                        `}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={size}
+                          disabled={!isAvailable}
+                          onClick={() => {
+                            setSelectedSize(size);
+                            setSizeError(false);
+                          }}
+                          className={`
+                            min-w-[48px] h-12 rounded-xl text-sm font-bold transition-all duration-300 border-2
+                            ${
+                              !isAvailable
+                                ? "border-border text-text-muted opacity-30 cursor-not-allowed line-through"
+                                : isSelected
+                                  ? "border-accent bg-accent/10 text-accent shadow-[0_0_15px_rgba(56,189,248,0.2)]"
+                                  : "border-border text-white hover:border-border-light hover:bg-surface-hover"
+                            }
+                          `}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="bg-surface-light/50 p-3 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
                 <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)] mb-3">

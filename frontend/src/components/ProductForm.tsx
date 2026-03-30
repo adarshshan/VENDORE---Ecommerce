@@ -6,13 +6,14 @@ import {
   Typography,
   Paper,
   IconButton,
-  MenuItem,
   Checkbox,
   FormControlLabel,
   FormGroup,
+  Switch,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import type { Product } from "../types/Product";
+import type { Product, ProductSize } from "../types/Product";
 import { getCategories } from "../services/api";
 
 const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "3XL"];
@@ -33,8 +34,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
-  const [stock, setStock] = useState<number | null>(null);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [stock, setStock] = useState<number>(0);
+  const [hasSizes, setHasSizes] = useState<boolean>(false);
+  const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
   const [images, setImages] = useState<(File | string | null | undefined)[]>(
     [],
   );
@@ -61,22 +63,43 @@ const ProductForm: React.FC<ProductFormProps> = ({
           : (product?.category ?? ""),
       );
       setStock(product?.stock ?? 0);
-      setSelectedSizes(product?.sizes ?? []);
+      setHasSizes(product?.hasSizes ?? false);
+
+      // Normalize sizes: Handle old string array and new object array
+      const normalizedSizes = (product?.sizes ?? []).map((s: any) => {
+        if (typeof s === "string") return { size: s, stock: 0 };
+        return { size: s.size, stock: s.stock ?? 0 };
+      });
+      setSelectedSizes(normalizedSizes);
+
       setImages(product.images ?? []);
     } else {
       setName("");
       setPrice(null);
       setDescription("");
       setCategory("");
-      setStock(null);
+      setStock(0);
+      setHasSizes(false);
       setSelectedSizes([]);
       setImages([]);
     }
   }, [product]);
 
   const handleSizeToggle = (size: string) => {
+    setSelectedSizes((prev) => {
+      const exists = prev.find((s) => s.size === size);
+      if (exists) {
+        return prev.filter((s) => s.size !== size);
+      } else {
+        // Use explicit key mapping to avoid property index issues
+        return [...prev, { size: size, stock: 0 }];
+      }
+    });
+  };
+
+  const handleSizeStockChange = (size: string, stock: number) => {
     setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size],
+      prev.map((s) => (s.size === size ? { ...s, stock } : s)),
     );
   };
 
@@ -121,7 +144,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     e.preventDefault();
     setPicMessage(null);
 
-    if (selectedSizes.length === 0) {
+    if (hasSizes && selectedSizes.length === 0) {
       setPicMessage("Please select at least one size.");
       return;
     }
@@ -131,8 +154,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
     formData.append("price", price ? price.toString() : "0");
     formData.append("description", description);
     formData.append("category", category);
-    formData.append("stock", stock ? stock.toString() : "0");
-    formData.append("sizes", JSON.stringify(selectedSizes));
+    formData.append("hasSizes", hasSizes.toString());
+
+    if (hasSizes) {
+      formData.append("sizes", JSON.stringify(selectedSizes));
+      formData.append("stock", "0"); // Reset global stock if sizes are used
+    } else {
+      formData.append("stock", stock ? stock.toString() : "0");
+      formData.append("sizes", "[]");
+    }
 
     if (images.length > 0) {
       try {
@@ -174,7 +204,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   return (
     <Paper
       elevation={3}
-      className="w-full max-w-lg mx-auto !shadow-none !bg-transparent rounded-xl !text-[var(--color-text-light)]"
+      className="w-full  !shadow-none !bg-transparent rounded-xl !text-[var(--color-text-light)]"
     >
       <Typography variant="h5" className="font-bold mb-6 text-center">
         {product ? "Edit Product" : "Add Product"}
@@ -197,42 +227,99 @@ const ProductForm: React.FC<ProductFormProps> = ({
             className: "",
           }}
         />
-        <TextField
-          id="price"
-          label="Price"
-          type="number"
-          value={price}
-          onChange={(e) => setPrice(Number(e.target.value))}
-          variant="outlined"
-          fullWidth
-          required
-          className="rounded-md"
-          InputProps={{
-            className:
-              "!text-[var(--color-text-light)] border border-[var(--color-border)]",
-          }}
-          InputLabelProps={{
-            className: "text-gray-600",
-          }}
-        />
-        <TextField
-          id="description"
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={4}
-          className="rounded-md"
-          InputProps={{
-            className:
-              "!text-[var(--color-text-light)] border border-[var(--color-border)]",
-          }}
-          InputLabelProps={{
-            className: "text-gray-600",
-          }}
-        />
+        <div className="flex gap-4 items-center">
+          <TextField
+            id="price"
+            label="Price"
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(Number(e.target.value))}
+            variant="outlined"
+            fullWidth
+            required
+            InputProps={{
+              className:
+                "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+            }}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={hasSizes}
+                onChange={(e) => setHasSizes(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Has Sizes?"
+            className="text-[var(--color-text-light)] min-w-fit"
+          />
+        </div>
+
+        {!hasSizes ? (
+          <TextField
+            id="stock"
+            label="Global Stock"
+            type="number"
+            value={stock}
+            onChange={(e) => setStock(Number(e.target.value))}
+            variant="outlined"
+            fullWidth
+            required
+            InputProps={{
+              className:
+                "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+            }}
+          />
+        ) : (
+          <Box className="p-4 border border-border rounded-lg bg-surface-light/30">
+            <Typography
+              variant="subtitle2"
+              className="mb-3 font-bold uppercase tracking-wider text-accent"
+            >
+              Size-Specific Stock
+            </Typography>
+            <FormGroup row className="mb-4">
+              {AVAILABLE_SIZES.map((size) => (
+                <FormControlLabel
+                  key={size}
+                  control={
+                    <Checkbox
+                      checked={!!selectedSizes.find((s) => s.size === size)}
+                      onChange={() => handleSizeToggle(size)}
+                      size="small"
+                      sx={{
+                        color: "var(--color-border-light)",
+                        "&.Mui-checked": { color: "var(--color-accent)" },
+                      }}
+                    />
+                  }
+                  label={size}
+                  className="text-[var(--color-text-light)]"
+                />
+              ))}
+            </FormGroup>
+
+            <div className="grid grid-cols-2 gap-3">
+              {selectedSizes.map((s) => (
+                <TextField
+                  key={s.size}
+                  label={`Stock for ${s.size}`}
+                  type="number"
+                  size="small"
+                  value={s.stock}
+                  onChange={(e) =>
+                    handleSizeStockChange(s.size, Number(e.target.value))
+                  }
+                  variant="outlined"
+                  InputProps={{
+                    className:
+                      "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+                  }}
+                />
+              ))}
+            </div>
+          </Box>
+        )}
         <TextField
           id="category"
           select
@@ -254,22 +341,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </MenuItem>
           ))}
         </TextField>
+
         <TextField
-          id="stock"
-          label="Stock"
-          type="number"
-          value={stock}
-          onChange={(e) => setStock(Number(e.target.value))}
+          id="description"
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           variant="outlined"
           fullWidth
-          required
-          className="rounded-md"
+          multiline
+          rows={3}
           InputProps={{
             className:
               "!text-[var(--color-text-light)] border border-[var(--color-border)]",
-          }}
-          InputLabelProps={{
-            className: "",
           }}
         />
         <Box>
@@ -317,50 +401,23 @@ const ProductForm: React.FC<ProductFormProps> = ({
           </Typography>
         </Box>
 
-        <Box>
-          <Typography variant="body1" className="font-semibold mb-2 text-[var(--color-text-light)]">
-            Available Sizes
-          </Typography>
-          <FormGroup row>
-            {AVAILABLE_SIZES.map((size) => (
-              <FormControlLabel
-                key={size}
-                control={
-                  <Checkbox
-                    checked={selectedSizes.includes(size)}
-                    onChange={() => handleSizeToggle(size)}
-                    sx={{
-                      color: "var(--color-border)",
-                      "&.Mui-checked": {
-                        color: "var(--color-accent)",
-                      },
-                    }}
-                  />
-                }
-                label={size}
-                className="text-[var(--color-text-light)]"
-              />
-            ))}
-          </FormGroup>
-        </Box>
-
-        <Box className="flex justify-between mt-6">
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
-          >
-            Save
-          </Button>
+        <Box className="flex justify-end mt-3 gap-3">
           <Button
             type="button"
             variant="outlined"
             color="secondary"
             onClick={onCancel}
-            className="border-gray-500 text-gray-700 hover:bg-gray-100 font-bold py-2 px-4 rounded-md"
+            className="!border-gray-500 !text-[var(--color-text-light)] hover:!text-[#000000] hover:!bg-gray-100 !font-bold !py-2 !px-4 !rounded-md"
           >
             Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className="!bg-[var(--color-surface-light)] hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-md"
+          >
+            Save
           </Button>
         </Box>
       </Box>

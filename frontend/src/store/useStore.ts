@@ -52,9 +52,14 @@ export const useStore = create<StoreState>()(
         const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
         const totalRequestedQuantity = currentQuantityInCart + quantity;
 
-        if (product.stock !== undefined && totalRequestedQuantity > product.stock) {
-          // You could trigger an alert here or handle it in UI
-          console.warn("Cannot add more than available stock");
+        if (product.hasSizes) {
+          const sizeObj = product.sizes?.find(s => s.size === size);
+          if (!sizeObj || totalRequestedQuantity > sizeObj.stock) {
+            console.warn("Cannot add more than available stock for this size");
+            return;
+          }
+        } else if (product.stock !== undefined && totalRequestedQuantity > product.stock) {
+          console.warn("Cannot add more than available global stock");
           return;
         }
 
@@ -80,9 +85,15 @@ export const useStore = create<StoreState>()(
         }),
       updateQuantity: (productId, quantity, size, color) => {
         const item = get().cart.find(i => i._id === productId && i.selectedSize === size && i.selectedColor === color);
-        if (item && item.stock !== undefined && quantity > item.stock) {
+        if (!item) return;
+
+        if (item.hasSizes) {
+          const sizeObj = item.sizes?.find(s => s.size === size);
+          if (!sizeObj || quantity > sizeObj.stock) return;
+        } else if (item.stock !== undefined && quantity > item.stock) {
           return;
         }
+
         set({
           cart: get().cart.map((item) =>
             item._id === productId && item.selectedSize === size && item.selectedColor === color 

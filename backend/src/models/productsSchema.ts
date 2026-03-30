@@ -1,5 +1,10 @@
 import { Schema, model, Document, Types } from "mongoose";
 
+export interface ProductSize {
+  size: string;
+  stock: number;
+}
+
 export interface ProductVariant {
   size: string;
   color: string;
@@ -11,16 +16,22 @@ export interface ProductDocument extends Document {
   brand?: string;
   price: number;
   description: string;
-  stock: number; // Total stock (sum of variants or standalone)
+  stock: number; // For products WITHOUT sizes
+  hasSizes: boolean;
   category: Types.ObjectId | string;
   subCategory?: string;
-  sizes: string[];
+  sizes: ProductSize[];
   images: string[];
   variants: ProductVariant[];
   tags?: string[];
   isFeatured: boolean;
   isActive: boolean;
 }
+
+const sizeSchema = new Schema<ProductSize>({
+  size: { type: String, required: true },
+  stock: { type: Number, required: true, min: 0, default: 0 },
+}, { _id: false });
 
 const variantSchema = new Schema<ProductVariant>({
   size: { type: String, required: true },
@@ -35,9 +46,10 @@ const productSchema = new Schema<ProductDocument>(
     price: { type: Number, required: true, min: 0 },
     description: { type: String, required: true, trim: true },
     stock: { type: Number, required: true, min: 0, default: 0 },
+    hasSizes: { type: Boolean, default: false },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true, index: true },
     subCategory: { type: String, trim: true },
-    sizes: { type: [String], default: [] },
+    sizes: { type: [sizeSchema], default: [] },
     images: { type: [String], default: [] },
     variants: [variantSchema],
     tags: { type: [String], index: true },

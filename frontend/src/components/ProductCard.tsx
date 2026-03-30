@@ -19,7 +19,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const isInWishlist = wishlist.some((item) => item._id === product._id);
 
-  const isOutOfStock = (product?.stock ?? 0) <= 0;
+  const isOutOfStock = product?.hasSizes
+    ? (product.sizes?.reduce((acc, s) => acc + s.stock, 0) ?? 0) <= 0
+    : (product?.stock ?? 0) <= 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();

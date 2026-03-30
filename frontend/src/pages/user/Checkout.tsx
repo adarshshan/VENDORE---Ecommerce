@@ -63,7 +63,11 @@ const Checkout = () => {
       setIsProcessing(true);
       setErrorMessage("");
       const data = await createRazorpayOrder(
-        cart.map((item) => ({ product: item._id, quantity: item.quantity })),
+        cart.map((item) => ({ 
+          product: item._id, 
+          quantity: item.quantity,
+          size: item.selectedSize 
+        })),
       );
       setOrderData(data);
       setStep(2);
