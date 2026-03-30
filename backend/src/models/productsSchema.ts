@@ -8,6 +8,7 @@ export interface ProductVariant {
 
 export interface ProductDocument extends Document {
   name: string;
+  brand?: string;
   price: number;
   description: string;
   stock: number; // Total stock (sum of variants or standalone)
@@ -29,6 +30,7 @@ const variantSchema = new Schema<ProductVariant>({
 const productSchema = new Schema<ProductDocument>(
   {
     name: { type: String, required: true, trim: true },
+    brand: { type: String, trim: true, index: true },
     price: { type: Number, required: true, min: 0 },
     description: { type: String, required: true, trim: true },
     stock: { type: Number, required: true, min: 0, default: 0 },

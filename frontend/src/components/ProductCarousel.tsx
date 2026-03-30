@@ -21,7 +21,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
 }) => {
   const settings = {
     dots: false,
-    infinite: products.length > 4,
+    infinite: products?.length > 4,
     speed: 500,
     slidesToShow: 6,
     slidesToScroll: 1,
@@ -60,10 +60,10 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   };
 
   if (loading) return <Loading />;
-  if (products.length === 0) return null;
+  if (products?.length === 0) return null;
 
   return (
-    <section className="sm:py-5 bg-background overflow-hidden">
+    <section className="sm:py-5 px-[1rem] sm:px-[5rem] bg-background overflow-hidden">
       <div className="container-custom mx-auto">
         <div className="flex justify-between items-end">
           <div>
@@ -77,7 +77,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
         <div className="mx-[-10px]">
           <Slider {...settings}>
             {products.map((product) => (
-              <div key={product._id} className="px-[10px] h-full">
+              <div key={product?._id} className="px-[10px] h-full">
                 <ProductCard product={product} />
               </div>
             ))}

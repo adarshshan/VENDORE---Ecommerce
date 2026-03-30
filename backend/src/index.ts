@@ -10,6 +10,7 @@ import { adminRoutes } from "./routes/AdminRoutes";
 import { categoryRoutes } from "./routes/CategoryRoutes";
 import { contactRoutes } from "./routes/ContactRoutes";
 import { wishlistRoutes } from "./routes/WishlistRoutes";
+import { searchRoutes } from "./routes/SearchRoutes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -45,6 +46,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/search", searchRoutes);
 
 // Start Server
 const startServer = async () => {

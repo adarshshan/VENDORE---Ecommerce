@@ -340,3 +340,13 @@ export const removeFromWishlist = async (
   );
   return response.data;
 };
+
+// Search API
+export const getSearchSuggestions = async (query: string): Promise<{
+  products: Product[];
+  categories: { name: string; slug: string }[];
+  brands: { name: string }[];
+}> => {
+  const response = await axios.get(`${VITE_API_URL}/search/suggestions?q=${query}`);
+  return response.data;
+};

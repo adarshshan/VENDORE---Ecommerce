@@ -227,7 +227,7 @@ const ProductDetails: React.FC = () => {
       </div>
 
       {/* Related Products Section */}
-      <div className="px-[1rem] sm:px-[20rem] mt-1">
+      <div className="sm:px-[15rem] mt-1">
         <ProductCarousel
           title="Related Products"
           subtitle="You might also like these similar items"

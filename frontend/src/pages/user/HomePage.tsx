@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductList from "./ProductList";
 import ProductCarousel from "../../components/ProductCarousel";
 import { getProducts } from "../../services/api";
-import type { Product } from "../../types/Product";
+import { type Product } from "../../types/Product";
 import SlickBanner from "../../components/SlickBanner";
 
 const HomePage: React.FC = () => {
