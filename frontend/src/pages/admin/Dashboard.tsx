@@ -79,9 +79,9 @@ const Dashboard = () => {
         Recent Orders
       </Typography>
       <div className="bg-white rounded shadow overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-border bg-surface-light">
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Order ID
               </th>
@@ -99,7 +99,7 @@ const Dashboard = () => {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className=" divide-y divide-border">
             {stats.recentOrders.map((order: any) => (
               <tr key={order._id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

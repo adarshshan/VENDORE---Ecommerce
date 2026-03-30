@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useStore } from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,6 +21,7 @@ const Checkout = () => {
   const cart = useStore((state) => state.cart);
   const clearCart = useStore((state) => state.clearCart);
   const user = useStore((state) => state.user);
+  const [scrollup, setScrollup] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,7 +39,7 @@ const Checkout = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [scrollup]);
 
   // Initialize name from user once available
   useEffect(() => {
@@ -57,11 +58,16 @@ const Checkout = () => {
 
   const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setScrollup(!scrollup);
     try {
       setIsProcessing(true);
       setErrorMessage("");
       const data = await createRazorpayOrder(
-        cart.map((item) => ({ product: item._id, quantity: item.quantity })),
+        cart.map((item) => ({ 
+          product: item._id, 
+          quantity: item.quantity,
+          size: item.selectedSize 
+        })),
       );
       setOrderData(data);
       setStep(2);

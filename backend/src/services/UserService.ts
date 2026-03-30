@@ -131,6 +131,24 @@ export class UserService {
     return this.userRepository.update(id, { status: "active" });
   }
 
+  async getWishlist(userId: string): Promise<UserDocument | null> {
+    return this.userRepository.getWishlist(userId);
+  }
+
+  async addToWishlist(
+    userId: string,
+    productId: string,
+  ): Promise<UserDocument | null> {
+    return this.userRepository.addToWishlist(userId, productId);
+  }
+
+  async removeFromWishlist(
+    userId: string,
+    productId: string,
+  ): Promise<UserDocument | null> {
+    return this.userRepository.removeFromWishlist(userId, productId);
+  }
+
   async validateUser(
     email: string,
     password: string,

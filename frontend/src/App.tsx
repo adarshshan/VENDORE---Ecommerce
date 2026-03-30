@@ -15,6 +15,7 @@ import Checkout from "./pages/user/Checkout";
 import MyOrders from "./pages/user/MyOrders";
 import OrderDetails from "./pages/user/OrderDetails";
 import ContactUs from "./pages/user/ContactUs";
+import Wishlist from "./pages/user/Wishlist";
 import ContactManagement from "./pages/admin/ContactManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         element: <Cart />,
+      },
+      {
+        path: "/wishlist",
+        element: <Wishlist />,
       },
       {
         path: "/contact",

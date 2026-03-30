@@ -12,7 +12,8 @@ export class ContactController {
       if (!name || !email || !subject || !message) {
         res.status(400).json({
           success: false,
-          message: "Please provide all required fields (name, email, subject, message).",
+          message:
+            "Please provide all required fields (name, email, subject, message).",
         });
         return;
       }
@@ -28,7 +29,8 @@ export class ContactController {
       res.status(201).json({
         success: true,
         data: newContact,
-        message: "Your message has been received. We will get back to you shortly.",
+        message:
+          "Your message has been received. We will get back to you shortly.",
       });
     } catch (error: any) {
       res.status(500).json({
@@ -77,7 +79,7 @@ export class ContactController {
       const updatedContact = await Contact.findByIdAndUpdate(
         id,
         { status },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true },
       );
 
       if (!updatedContact) {

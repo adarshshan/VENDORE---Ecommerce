@@ -8,11 +8,46 @@ export interface IUserRepository {
   create(user: Omit<UserDocument, "_id">): Promise<UserDocument>;
   update(id: string, user: Partial<UserDocument>): Promise<UserDocument | null>;
   delete(id: string): Promise<boolean>;
+  getWishlist(userId: string): Promise<UserDocument | null>;
+  addToWishlist(userId: string, productId: string): Promise<UserDocument | null>;
+  removeFromWishlist(userId: string, productId: string): Promise<UserDocument | null>;
 }
 
 export class UserRepository implements IUserRepository {
   constructor() {
     connectToDatabase();
+  }
+
+  async getWishlist(userId: string): Promise<UserDocument | null> {
+    return (await UserModel.findById(userId)
+      .populate("wishlist")
+      .exec()) as UserDocument | null;
+  }
+
+  async addToWishlist(
+    userId: string,
+    productId: string,
+  ): Promise<UserDocument | null> {
+    return (await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { wishlist: productId } },
+      { new: true },
+    )
+      .populate("wishlist")
+      .exec()) as UserDocument | null;
+  }
+
+  async removeFromWishlist(
+    userId: string,
+    productId: string,
+  ): Promise<UserDocument | null> {
+    return (await UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { wishlist: productId } },
+      { new: true },
+    )
+      .populate("wishlist")
+      .exec()) as UserDocument | null;
   }
 
   async findAll(): Promise<UserDocument[]> {

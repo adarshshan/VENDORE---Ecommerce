@@ -19,6 +19,39 @@ export class OrderController {
     try {
       const { items } = req.body;
 
+      // Validate stock before creating Razorpay order
+      for (const item of items) {
+        const product = await ProductModel.findById(item.product);
+        if (!product) {
+          res.status(404).json({ message: `Product not found: ${item.name}` });
+          return;
+        }
+
+        if (product?.hasSizes) {
+          if (!item.size) {
+            res.status(400).json({
+              message: `Size is required for product: ${product.name}`,
+            });
+            return;
+          }
+
+          const sizeObj = product.sizes.find((s) => s.size === item.size);
+          if (!sizeObj || sizeObj.stock < item.quantity) {
+            res.status(400).json({
+              message: `Insufficient stock for ${product.name} (Size: ${item.size}). Available: ${sizeObj ? sizeObj.stock : 0}`,
+            });
+            return;
+          }
+        } else {
+          if (product.stock < item.quantity) {
+            res.status(400).json({
+              message: `Insufficient stock for ${product.name}. Available: ${product.stock}`,
+            });
+            return;
+          }
+        }
+      }
+
       // Calculate total price server-side to prevent tampering
       let totalAmount = 0;
       for (const item of items) {
@@ -115,11 +148,34 @@ export class OrderController {
 
       const createdOrder = await order.save();
 
-      // Update stock
+      // Update stock atomically and validate again
       for (const item of orderItems) {
-        await ProductModel.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity },
-        });
+        let updatedProduct;
+        const product = await ProductModel.findById(item.product);
+
+        if (product?.hasSizes) {
+          updatedProduct = await ProductModel.findOneAndUpdate(
+            {
+              _id: item.product,
+              "sizes.size": item.size,
+              "sizes.stock": { $gte: item.quantity },
+            },
+            { $inc: { "sizes.$.stock": -item.quantity } },
+            { new: true },
+          );
+        } else {
+          updatedProduct = await ProductModel.findOneAndUpdate(
+            { _id: item.product, stock: { $gte: item.quantity } },
+            { $inc: { stock: -item.quantity } },
+            { new: true },
+          );
+        }
+
+        if (!updatedProduct) {
+          console.error(
+            `Stock race condition for product ${item.product} (Size: ${item.size})`,
+          );
+        }
       }
 
       res.status(201).json(createdOrder);
@@ -190,6 +246,18 @@ export class OrderController {
         return;
       }
 
+      // Check 24-hour window
+      const orderDate = new Date(order?.createdAt);
+      const diffTime = Math.abs(Date.now() - orderDate.getTime());
+      const diffHours = diffTime / (1000 * 60 * 60);
+
+      if (diffHours > 24) {
+        res
+          .status(400)
+          .json({ message: "Cancellation period expired (24 hours)" });
+        return;
+      }
+
       order.status = "Cancelled";
       order.cancelReason = reason || "User cancelled";
       order.cancelDate = new Date();
@@ -203,9 +271,24 @@ export class OrderController {
 
       // Restore stock
       for (const item of order.items) {
-        await ProductModel.findByIdAndUpdate(item.product, {
-          $inc: { stock: item.quantity },
-        });
+        if (item.size) {
+          // Check if product still has sizes (schema might have changed, but usually we follow order record)
+          const product = await ProductModel.findById(item.product);
+          if (product?.hasSizes) {
+            await ProductModel.findOneAndUpdate(
+              { _id: item.product, "sizes.size": item.size },
+              { $inc: { "sizes.$.stock": item.quantity } },
+            );
+          } else {
+            await ProductModel.findByIdAndUpdate(item.product, {
+              $inc: { stock: item.quantity },
+            });
+          }
+        } else {
+          await ProductModel.findByIdAndUpdate(item.product, {
+            $inc: { stock: item.quantity },
+          });
+        }
       }
 
       res.json(updatedOrder);

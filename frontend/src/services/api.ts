@@ -12,6 +12,7 @@ export interface ProductFilters {
   maxPrice?: number;
   search?: string;
   sort?: string;
+  limit?: number;
 }
 
 export const getProducts = async (
@@ -26,6 +27,7 @@ export const getProducts = async (
       params.append("maxPrice", filters.maxPrice.toString());
     if (filters.search) params.append("search", filters?.search);
     if (filters.sort) params.append("sort", filters?.sort);
+    if (filters.limit) params.append("limit", filters?.limit.toString());
   }
 
   const response = await axios.get(
@@ -36,6 +38,15 @@ export const getProducts = async (
 
 export const getProductsById = async (id: string): Promise<Product> => {
   const response = await axios.get(`${VITE_API_URL}/products/${id}`);
+  return response.data;
+};
+
+export const getRelatedProducts = async (
+  productId: string,
+): Promise<Product[]> => {
+  const response = await axios.get(
+    `${VITE_API_URL}/products/related/${productId}`,
+  );
   return response.data;
 };
 
@@ -222,17 +233,9 @@ export const getOrderById = async (id: string) => {
 };
 
 export const cancelOrder = async (id: string, reason: string) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-  const response = await axios.post(
-    `${VITE_API_URL}/orders/${id}/cancel`,
-    { reason },
-    config,
-  );
+  const response = await axios.post(`${VITE_API_URL}/orders/${id}/cancel`, {
+    reason,
+  });
   return response.data;
 };
 
@@ -311,5 +314,39 @@ export const updateContactStatus = async (id: string, status: string) => {
   const response = await axios.patch(`${VITE_API_URL}/contact/${id}`, {
     status,
   });
+  return response.data;
+};
+
+// Wishlist API
+export const getWishlist = async (): Promise<{ wishlist: Product[] }> => {
+  const response = await axios.get(`${VITE_API_URL}/wishlist`);
+  return response.data;
+};
+
+export const addToWishlist = async (
+  productId: string,
+): Promise<{ wishlist: Product[] }> => {
+  const response = await axios.post(`${VITE_API_URL}/wishlist/add`, {
+    productId,
+  });
+  return response.data;
+};
+
+export const removeFromWishlist = async (
+  productId: string,
+): Promise<{ wishlist: Product[] }> => {
+  const response = await axios.delete(
+    `${VITE_API_URL}/wishlist/remove/${productId}`,
+  );
+  return response.data;
+};
+
+// Search API
+export const getSearchSuggestions = async (query: string): Promise<{
+  products: Product[];
+  categories: { name: string; slug: string }[];
+  brands: { name: string }[];
+}> => {
+  const response = await axios.get(`${VITE_API_URL}/search/suggestions?q=${query}`);
   return response.data;
 };

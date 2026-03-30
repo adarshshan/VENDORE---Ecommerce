@@ -50,7 +50,7 @@ const MyOrders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-[1rem] sm:px-[5rem]">
+    <div className="min-h-screen bg-background py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
       <div className="container-custom ">
         <div className="mb-10">
           <h1 className="text-3xl md:text-4xl font-serif font-black text-white mb-2">

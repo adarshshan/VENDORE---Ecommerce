@@ -141,6 +141,67 @@ export class UserController {
       res.status(500).json({ message: "Error unblocking user" });
     }
   }
+
+  async getWishlist(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({ message: "User not authenticated" });
+        return;
+      }
+      const user = await this.userService.getWishlist(userId);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+      res.json({ success: true, wishlist: user.wishlist });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching wishlist" });
+    }
+  }
+
+  async addToWishlist(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.userId;
+      const { productId } = req.body;
+      if (!userId) {
+        res.status(401).json({ message: "User not authenticated" });
+        return;
+      }
+      if (!productId) {
+        res.status(400).json({ message: "Product ID is required" });
+        return;
+      }
+      const user = await this.userService.addToWishlist(userId, productId);
+      res.json({
+        success: true,
+        message: "Added to wishlist",
+        wishlist: user?.wishlist,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error adding to wishlist" });
+    }
+  }
+
+  async removeFromWishlist(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.userId;
+      const { productId } = req.params;
+      if (!userId) {
+        res.status(401).json({ message: "User not authenticated" });
+        return;
+      }
+      const user = await this.userService.removeFromWishlist(userId, productId);
+      res.json({
+        success: true,
+        message: "Removed from wishlist",
+        wishlist: user?.wishlist,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error removing from wishlist" });
+    }
+  }
+
   async googleSignIn(req: Request, res: Response) {
     const { credential, client_id } = req.body;
     try {

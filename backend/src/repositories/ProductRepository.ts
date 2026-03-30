@@ -7,11 +7,13 @@ export interface ProductFilters {
   maxPrice?: number;
   search?: string;
   sort?: string;
+  limit?: number;
 }
 
 export interface IProductRepository {
   findAll(filters?: ProductFilters): Promise<ProductDocument[]>;
   findById(id: string): Promise<ProductDocument | null>;
+  findRelatedProducts(productId: string, limit?: number): Promise<ProductDocument[]>;
   create(product: Omit<ProductDocument, "_id">): Promise<ProductDocument>;
   update(
     id: string,
@@ -24,6 +26,20 @@ export class ProductRepository implements IProductRepository {
   constructor() {
     // Ensure database connection
     connectToDatabase();
+  }
+
+  async findRelatedProducts(productId: string, limit: number = 10): Promise<ProductDocument[]> {
+    const product = await ProductModel.findById(productId);
+    if (!product) return [];
+
+    return (await ProductModel.find({
+      category: product.category,
+      _id: { $ne: productId },
+      isActive: true,
+    })
+      .limit(limit)
+      .populate("category")
+      .exec()) as ProductDocument[];
   }
 
   async findAll(filters: ProductFilters = {}): Promise<ProductDocument[]> {
@@ -58,10 +74,15 @@ export class ProductRepository implements IProductRepository {
       }
     }
 
-    return await ProductModel.find(query)
+    const findQuery = ProductModel.find(query)
       .populate("category")
-      .sort(sortOption)
-      .exec() as ProductDocument[];
+      .sort(sortOption);
+
+    if (filters.limit) {
+      findQuery.limit(filters.limit);
+    }
+
+    return (await findQuery.exec()) as ProductDocument[];
   }
 
   async findById(id: string): Promise<ProductDocument | null> {

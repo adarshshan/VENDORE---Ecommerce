@@ -84,6 +84,21 @@ const OrderDetails: React.FC = () => {
     return diffDays <= 7;
   };
 
+  const isCancelEligible = (order: Order) => {
+    if (
+      order.status === "Shipped" ||
+      order.status === "Delivered" ||
+      order.status === "Cancelled" ||
+      order.status === "Returned"
+    ) {
+      return false;
+    }
+    const orderDate = new Date(order.createdAt);
+    const diffTime = Math.abs(Date.now() - orderDate.getTime());
+    const diffHours = diffTime / (1000 * 60 * 60);
+    return diffHours <= 24;
+  };
+
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Delivered":
@@ -345,17 +360,25 @@ const OrderDetails: React.FC = () => {
 
               {/* Order Actions */}
               <div className="space-y-3">
-                {order.status !== "Shipped" &&
+                {isCancelEligible(order) ? (
+                  <CustomButton
+                    onclick={() => setIsCancelOpen(true)}
+                    className="btn-outline text-error border-error/30 hover:bg-error/10 hover:border-error"
+                  >
+                    Cancel Order
+                  </CustomButton>
+                ) : (
+                  order.status !== "Shipped" &&
                   order.status !== "Delivered" &&
                   order.status !== "Cancelled" &&
                   order.status !== "Returned" && (
-                    <CustomButton
-                      onclick={() => setIsCancelOpen(true)}
-                      className="btn-outline text-error border-error/30 hover:bg-error/10 hover:border-error"
-                    >
-                      Cancel Order
-                    </CustomButton>
-                  )}
+                    <div className="bg-surface-light/50 border border-border p-4 rounded-xl text-center">
+                      <p className="text-text-muted text-sm font-medium">
+                        Cancellation window closed (24h)
+                      </p>
+                    </div>
+                  )
+                )}
 
                 {isReturnEligible(order) && (
                   <button

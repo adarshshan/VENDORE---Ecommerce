@@ -14,7 +14,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: "auto",
   minWidth: 400,
-  bgcolor: "background.paper",
+  bgcolor: "var(--color-surface-hover)",
   borderRadius: "16px",
   boxShadow: 24,
   p: 4,

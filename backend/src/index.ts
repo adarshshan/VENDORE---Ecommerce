@@ -9,6 +9,8 @@ import { orderRoutes } from "./routes/OrderRoutes";
 import { adminRoutes } from "./routes/AdminRoutes";
 import { categoryRoutes } from "./routes/CategoryRoutes";
 import { contactRoutes } from "./routes/ContactRoutes";
+import { wishlistRoutes } from "./routes/WishlistRoutes";
+import { searchRoutes } from "./routes/SearchRoutes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -18,13 +20,23 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
+      // "http://127.0.0.1:5173",
       "http://172.26.58.12:5173",
     ],
     credentials: true,
+    // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    // allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
+
+// Allow Google Auth popups
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  next();
+});
 
 // Set up REST Routes
 app.use("/api/products", productRoutes);
@@ -33,10 +45,12 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/search", searchRoutes);
 
 // Start Server
 const startServer = async () => {
-  app.listen(PORT, () => {
+  app.listen(3000, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`REST API endpoints available at http://localhost:${PORT}/api`);
   });

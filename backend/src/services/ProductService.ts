@@ -12,6 +12,10 @@ export class ProductService {
     return this.productRepository.findById(id);
   }
 
+  async getRelatedProducts(productId: string, limit?: number): Promise<ProductDocument[]> {
+    return this.productRepository.findRelatedProducts(productId, limit);
+  }
+
   async createProduct(
     productData: Omit<ProductDocument, "_id">
   ): Promise<ProductDocument> {

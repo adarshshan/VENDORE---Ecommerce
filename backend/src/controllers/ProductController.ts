@@ -12,6 +12,7 @@ export class ProductController {
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
         search: req.query.search as string,
         sort: req.query.sort as string,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
       };
       
       const products = await this.productService.getAllProducts(filters);
@@ -34,19 +35,29 @@ export class ProductController {
     }
   }
 
+  async getRelatedProducts(req: Request, res: Response): Promise<void> {
+    try {
+      const { productId } = req.params;
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      const products = await this.productService.getRelatedProducts(productId, limit);
+      res.json(products);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching related products" });
+    }
+  }
+
   async createProduct(req: Request, res: Response): Promise<void> {
     try {
       const productData = { ...req.body };
-      console.log("...productData...");
-      console.log(productData);
-
+      
       const product = await this.productService.createProduct({
         ...productData,
+        hasSizes: productData.hasSizes === "true",
         images: JSON.parse(productData.images),
+        sizes: productData.sizes ? JSON.parse(productData.sizes) : [],
       });
       res.status(201).json(product);
     } catch (error) {
-      console.log("this is the error getting...");
       console.log(error);
       res.status(500).json({ message: "Error creating product" });
     }
@@ -58,7 +69,9 @@ export class ProductController {
 
       const product = await this.productService.updateProduct(req.params.id, {
         ...productData,
+        hasSizes: productData.hasSizes === "true",
         images: JSON.parse(productData.images),
+        sizes: productData.sizes ? JSON.parse(productData.sizes) : [],
       });
 
       if (!product) {

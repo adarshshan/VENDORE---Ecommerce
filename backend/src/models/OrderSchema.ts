@@ -39,8 +39,15 @@ export interface OrderDocument extends Document {
   isPaid: boolean;
   paidAt?: Date;
   isDelivered: boolean;
+  createdAt: string;
   deliveredAt?: Date;
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled" | "Returned";
+  status:
+    | "Pending"
+    | "Processing"
+    | "Shipped"
+    | "Delivered"
+    | "Cancelled"
+    | "Returned";
   cancelReason?: string;
   cancelDate?: Date;
   returnReason?: string;
@@ -52,26 +59,32 @@ export interface OrderDocument extends Document {
   refundDate?: Date;
 }
 
-const orderItemSchema = new Schema<OrderItem>({
-  product: { type: Schema.Types.ObjectId, required: true, ref: "Product" },
-  name: { type: String, required: true },
-  image: { type: String, required: true },
-  price: { type: Number, required: true },
-  quantity: { type: Number, required: true },
-  size: { type: String },
-  color: { type: String },
-}, { _id: false });
+const orderItemSchema = new Schema<OrderItem>(
+  {
+    product: { type: Schema.Types.ObjectId, required: true, ref: "Product" },
+    name: { type: String, required: true },
+    image: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+    size: { type: String },
+    color: { type: String },
+  },
+  { _id: false },
+);
 
-const shippingAddressSchema = new Schema<ShippingAddress>({
-  fullName: { type: String, required: true },
-  addressLine1: { type: String, required: true },
-  addressLine2: { type: String },
-  city: { type: String, required: true },
-  state: { type: String, required: true },
-  postalCode: { type: String, required: true },
-  country: { type: String, required: true },
-  phone: { type: String, required: true },
-}, { _id: false });
+const shippingAddressSchema = new Schema<ShippingAddress>(
+  {
+    fullName: { type: String, required: true },
+    addressLine1: { type: String, required: true },
+    addressLine2: { type: String },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    country: { type: String, required: true },
+    phone: { type: String, required: true },
+  },
+  { _id: false },
+);
 
 const orderSchema = new Schema<OrderDocument>(
   {
@@ -96,7 +109,14 @@ const orderSchema = new Schema<OrderDocument>(
     status: {
       type: String,
       required: true,
-      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"],
+      enum: [
+        "Pending",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancelled",
+        "Returned",
+      ],
       default: "Pending",
     },
     cancelReason: { type: String },
@@ -114,7 +134,7 @@ const orderSchema = new Schema<OrderDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const OrderModel = model<OrderDocument>("Order", orderSchema);

@@ -6,6 +6,7 @@ import { UserModel } from "../models/UserSchema";
 import jwt from "jsonwebtoken";
 import Encrypt from "../utils/comparePassword";
 import { CreateJWT } from "../utils/generateToken";
+import { protect } from "../middleware/auth";
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client();
 
