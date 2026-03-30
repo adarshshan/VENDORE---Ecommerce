@@ -41,6 +41,15 @@ export const getProductsById = async (id: string): Promise<Product> => {
   return response.data;
 };
 
+export const getRelatedProducts = async (
+  productId: string,
+): Promise<Product[]> => {
+  const response = await axios.get(
+    `${VITE_API_URL}/products/related/${productId}`,
+  );
+  return response.data;
+};
+
 export const createProduct = async (
   productData: FormData,
 ): Promise<Product> => {

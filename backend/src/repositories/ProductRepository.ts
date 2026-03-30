@@ -13,6 +13,7 @@ export interface ProductFilters {
 export interface IProductRepository {
   findAll(filters?: ProductFilters): Promise<ProductDocument[]>;
   findById(id: string): Promise<ProductDocument | null>;
+  findRelatedProducts(productId: string, limit?: number): Promise<ProductDocument[]>;
   create(product: Omit<ProductDocument, "_id">): Promise<ProductDocument>;
   update(
     id: string,
@@ -25,6 +26,20 @@ export class ProductRepository implements IProductRepository {
   constructor() {
     // Ensure database connection
     connectToDatabase();
+  }
+
+  async findRelatedProducts(productId: string, limit: number = 10): Promise<ProductDocument[]> {
+    const product = await ProductModel.findById(productId);
+    if (!product) return [];
+
+    return (await ProductModel.find({
+      category: product.category,
+      _id: { $ne: productId },
+      isActive: true,
+    })
+      .limit(limit)
+      .populate("category")
+      .exec()) as ProductDocument[];
   }
 
   async findAll(filters: ProductFilters = {}): Promise<ProductDocument[]> {

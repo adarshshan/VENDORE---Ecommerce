@@ -4,7 +4,7 @@ import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "../../types/Product";
-import { getProductsById } from "../../services/api";
+import { getProductsById, getRelatedProducts } from "../../services/api";
 import { useStore } from "../../store/useStore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -14,6 +14,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Slider from "react-slick";
 import Loading from "../../components/Loading";
+import ProductCarousel from "../../components/ProductCarousel";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,14 @@ const ProductDetails: React.FC = () => {
   } = useQuery<Product>({
     queryKey: ["product", id],
     queryFn: () => getProductsById(id ?? ""),
+    enabled: !!id,
+  });
+
+  const { data: relatedProducts = [], isLoading: isRelatedLoading } = useQuery<
+    Product[]
+  >({
+    queryKey: ["relatedProducts", id],
+    queryFn: () => getRelatedProducts(id ?? ""),
     enabled: !!id,
   });
 
@@ -76,143 +85,155 @@ const ProductDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-1 sm:pb-20 px-[1rem] sm:px-[20rem]">
-      <div className="container-custom py-3 sm:py-8">
-        {/* Breadcrumbs / Back button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors mb-3 sm:mb-8 group"
-        >
-          <ArrowBackIcon
-            fontSize="small"
-            className="group-hover:-translate-x-1 transition-transform"
-          />
-          <span className="text-sm font-bold uppercase tracking-widest">
-            Back to Collection
-          </span>
-        </button>
+    <div className="min-h-screen bg-background pb-1 sm:pb-20">
+      <div className="px-[1rem] sm:px-[20rem]">
+        <div className="container-custom py-3 sm:py-8">
+          {/* Breadcrumbs / Back button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors mb-3 sm:mb-8 group"
+          >
+            <ArrowBackIcon
+              fontSize="small"
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="text-sm font-bold uppercase tracking-widest">
+              Back to Collection
+            </span>
+          </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-12 items-start">
-          {/* Image Gallery Section */}
-          <div className="space-y-4">
-            <div className=" card bg-surface overflow-hidden border-border-light shadow-2xl">
-              <div className="hidden sm:block">
-                <Zoom>
-                  <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-12 items-start">
+            {/* Image Gallery Section */}
+            <div className="space-y-4">
+              <div className=" card bg-surface overflow-hidden border-border-light shadow-2xl">
+                <div className="hidden sm:block">
+                  <Zoom>
+                    <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
+                      <img
+                        src={selectedImage}
+                        alt={product?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </Zoom>
+                </div>
+
+                <div className="block sm:hidden">
+                  <ImageSlider images={product.images}></ImageSlider>
+                </div>
+              </div>
+
+              {/* Thumbnails */}
+              <div className="hidden sm:flex  gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                {product?.images?.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(image)}
+                    className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                      selectedImage === image
+                        ? "border-accent scale-95 shadow-[0_0_15px_rgba(56,189,248,0.4)]"
+                        : "border-border hover:border-border-light"
+                    }`}
+                  >
                     <img
-                      src={selectedImage}
-                      alt={product?.name}
+                      src={image}
+                      alt={`${product?.name} thumb ${index}`}
                       className="w-full h-full object-cover"
                     />
-                  </div>
-                </Zoom>
-              </div>
-
-              <div className="block sm:hidden">
-                <ImageSlider images={product.images}></ImageSlider>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Thumbnails */}
-            <div className="hidden sm:flex  gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {product?.images?.map((image, index) => (
+            {/* Product Info Section */}
+            <div className="flex flex-col space-y-1 sm:space-y-8">
+              <div>
+                <div className="flex items-center text-[var(--color-text-light)] gap-2 mb-1 sm:mb-4">
+                  <span className="badge badge-accent">New Arrival</span>
+                  <span className="text-text-muted text-xs font-bold uppercase tracking-tighter">
+                    In Stock
+                  </span>
+                </div>
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-[var(--color-text-light)] mb-4 leading-tight capitalize">
+                  {product?.name}
+                </h1>
+                <div className="flex items-baseline gap-4">
+                  <p className="text-2xl sm:text-3xl font-bold text-[var(--color-text-light)]">
+                    ₹{product?.price.toFixed(2)}
+                  </p>
+                  <p className="text-text-muted line-through text-lg">
+                    ₹{(product?.price * 1.2).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-surface-light/50 p-3 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)] mb-3">
+                  Product Description
+                </h3>
+                <p className="text-text-secondary leading-relaxed">
+                  {product?.description ||
+                    "No description available for this premium piece."}
+                </p>
+              </div>
+
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <button
-                  key={index}
-                  onClick={() => setSelectedImage(image)}
-                  className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-                    selectedImage === image
-                      ? "border-accent scale-95 shadow-[0_0_15px_rgba(56,189,248,0.4)]"
-                      : "border-border hover:border-border-light"
-                  }`}
+                  onClick={() => addToCart(product)}
+                  className="bg-white btn-accent btn-lg flex-grow flex items-center justify-center gap-3 py-2 rounded-md cursor-pointer"
                 >
-                  <img
-                    src={image}
-                    alt={`${product?.name} thumb ${index}`}
-                    className="w-full h-full object-cover"
-                  />
+                  <ShoppingCartIcon />
+                  Add to Cart
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Product Info Section */}
-          <div className="flex flex-col space-y-1 sm:space-y-8">
-            <div>
-              <div className="flex items-center text-[var(--color-text-light)] gap-2 mb-1 sm:mb-4">
-                <span className="badge badge-accent">New Arrival</span>
-                <span className="text-text-muted text-xs font-bold uppercase tracking-tighter">
-                  In Stock
-                </span>
+                <button
+                  onClick={toggleWishlist}
+                  className={`${isInWishlist ? "bg-red-500 text-white" : "bg-red-400"} btn-outline btn-lg flex-grow py-2 rounded-md cursor-pointer flex items-center justify-center gap-3 transition-colors`}
+                >
+                  <FavoriteIcon />
+                  {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
+                </button>
               </div>
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-[var(--color-text-light)] mb-4 leading-tight capitalize">
-                {product?.name}
-              </h1>
-              <div className="flex items-baseline gap-4">
-                <p className="text-2xl sm:text-3xl font-bold text-[var(--color-text-light)]">
-                  ₹{product?.price.toFixed(2)}
+
+              {/* Features/Trust Badges */}
+              <div className="grid grid-cols-3 gap-4 border-y border-border py-8">
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <VerifiedIcon className="text-accent" />
+                  <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                    Premium Quality
+                  </span>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <LocalShippingIcon className="text-accent" />
+                  <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                    Free Shipping
+                  </span>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <HistoryIcon className="text-accent" />
+                  <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                    14-Day Returns
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <p className="text-xs text-text-muted text-center italic">
+                  Secure payment options available. Fast worldwide shipping.
                 </p>
-                <p className="text-text-muted line-through text-lg">
-                  ₹{(product?.price * 1.2).toFixed(2)}
-                </p>
               </div>
-            </div>
-
-            <div className="bg-surface-light/50 p-3 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)] mb-3">
-                Product Description
-              </h3>
-              <p className="text-text-secondary leading-relaxed">
-                {product?.description ||
-                  "No description available for this premium piece."}
-              </p>
-            </div>
-
-            <div className="pt-4 flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => addToCart(product)}
-                className="bg-white btn-accent btn-lg flex-grow flex items-center justify-center gap-3 py-2 rounded-md cursor-pointer"
-              >
-                <ShoppingCartIcon />
-                Add to Cart
-              </button>
-              <button
-                onClick={toggleWishlist}
-                className={`${isInWishlist ? "bg-red-500 text-white" : "bg-red-400"} btn-outline btn-lg flex-grow py-2 rounded-md cursor-pointer flex items-center justify-center gap-3 transition-colors`}
-              >
-                <FavoriteIcon />
-                {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
-              </button>
-            </div>
-
-            {/* Features/Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 border-y border-border py-8">
-              <div className="flex flex-col items-center text-center space-y-2">
-                <VerifiedIcon className="text-accent" />
-                <span className="text-xs font-bold text-white uppercase tracking-tighter">
-                  Premium Quality
-                </span>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-2">
-                <LocalShippingIcon className="text-accent" />
-                <span className="text-xs font-bold text-white uppercase tracking-tighter">
-                  Free Shipping
-                </span>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-2">
-                <HistoryIcon className="text-accent" />
-                <span className="text-xs font-bold text-white uppercase tracking-tighter">
-                  14-Day Returns
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <p className="text-xs text-text-muted text-center italic">
-                Secure payment options available. Fast worldwide shipping.
-              </p>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Related Products Section */}
+      <div className="px-[1rem] sm:px-[20rem] mt-1">
+        <ProductCarousel
+          title="Related Products"
+          subtitle="You might also like these similar items"
+          products={relatedProducts}
+          loading={isRelatedLoading}
+        />
       </div>
     </div>
   );

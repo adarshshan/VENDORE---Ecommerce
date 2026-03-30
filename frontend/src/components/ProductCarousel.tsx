@@ -1,31 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Slider from "react-slick";
-import { getProducts } from "../services/api";
 import { type Product } from "../types/Product";
 import ProductCard from "./ProductCard";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Loading from "./Loading";
 
-const NewArrivalsCarousel: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+interface ProductCarouselProps {
+  title: string;
+  subtitle?: string;
+  products: Product[];
+  loading?: boolean;
+}
 
-  useEffect(() => {
-    const fetchNewArrivals = async () => {
-      try {
-        const data = await getProducts({ sort: "newest", limit: 15 });
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching new arrivals:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNewArrivals();
-  }, []);
-
+const ProductCarousel: React.FC<ProductCarouselProps> = ({
+  title,
+  subtitle,
+  products,
+  loading,
+}) => {
   const settings = {
     dots: false,
     infinite: products.length > 4,
@@ -70,16 +63,14 @@ const NewArrivalsCarousel: React.FC = () => {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-12 px-4 sm:px-8 bg-background overflow-hidden">
+    <section className="sm:py-5 bg-background overflow-hidden">
       <div className="container-custom mx-auto">
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex justify-between items-end">
           <div>
             <h2 className="text-3xl md:text-4xl font-serif font-black text-white mb-2">
-              New Arrivals
+              {title}
             </h2>
-            <p className="text-text-secondary">
-              Check out our latest collection of premium kids wear
-            </p>
+            {subtitle && <p className="text-text-secondary">{subtitle}</p>}
           </div>
         </div>
 
@@ -97,4 +88,4 @@ const NewArrivalsCarousel: React.FC = () => {
   );
 };
 
-export default NewArrivalsCarousel;
+export default ProductCarousel;
