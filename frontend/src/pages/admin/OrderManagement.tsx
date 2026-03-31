@@ -223,7 +223,7 @@ const OrderManagement: React.FC = () => {
 
       {/* Order Details Modal */}
       <CustomModal open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)}>
-        <div className="bg-surface p-8 max-w-2xl w-full border border-border rounded-3xl overflow-hidden shadow-2xl">
+        <div className="w-full border border-border rounded-3xl overflow-hidden">
           {selectedOrder && (
             <div className="max-h-[85vh] overflow-y-auto pr-2 custom-scrollbar">
               <div className="flex justify-between items-center mb-6">
