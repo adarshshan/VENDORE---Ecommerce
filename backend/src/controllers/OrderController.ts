@@ -297,51 +297,89 @@ export class OrderController {
     }
   }
 
-  // Request Return
+  // Request Return (Item-level)
   async requestReturn(req: Request, res: Response): Promise<void> {
     try {
-      const { reason } = req.body;
+      const { orderId, productId, reason, customReason } = req.body;
       const userId = req.userId;
-      const order = await OrderModel.findById(req.params.id);
+
+      if (!orderId || !productId || !reason) {
+        res
+          .status(400)
+          .json({ message: "Order ID, Product ID, and Reason are required" });
+        return;
+      }
+
+      if (reason === "Other" && !customReason) {
+        res
+          .status(400)
+          .json({ message: "Custom reason is required for 'Other' option" });
+        return;
+      }
+
+      const order = await OrderModel.findById(orderId);
 
       if (!order) {
         res.status(404).json({ message: "Order not found" });
         return;
       }
 
+      // Check ownership
       if (order.user.toString() !== userId) {
         res.status(401).json({ message: "Not authorized" });
         return;
       }
 
+      // Check order status
       if (order.status !== "Delivered") {
-        res.status(400).json({ message: "Can only return delivered orders" });
+        res
+          .status(400)
+          .json({ message: "Returns are only allowed for delivered orders" });
         return;
       }
 
-      if (order.returnStatus) {
-        res.status(400).json({ message: "Return already requested" });
+      // Find the specific item
+      const item = order.items.find((i) => i.product.toString() === productId);
+
+      if (!item) {
+        res.status(404).json({ message: "Product not found in this order" });
         return;
       }
 
-      // Check 7-day window
+      // Check if already returned/requested
+      if (item.returnStatus && item.returnStatus !== "None") {
+        res
+          .status(400)
+          .json({
+            message: `Return already ${item.returnStatus.toLowerCase()}`,
+          });
+        return;
+      }
+
+      // Check 5-day window (CRITICAL)
       const deliveryDate = order.deliveredAt
         ? new Date(order.deliveredAt)
         : new Date();
-      const diffTime = Math.abs(Date.now() - deliveryDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffTime = Date.now() - deliveryDate.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-      if (diffDays > 7) {
-        res.status(400).json({ message: "Return period expired (7 days)" });
+      if (diffDays > 5) {
+        res
+          .status(400)
+          .json({ message: "Return period expired (5 days limit)" });
         return;
       }
 
-      order.returnStatus = "Requested";
-      order.returnReason = reason;
-      order.returnDate = new Date();
+      // Update item return status
+      item.returnStatus = "Requested";
+      item.returnReason = reason;
+      item.customReturnReason = customReason;
 
       const updatedOrder = await order.save();
-      res.json(updatedOrder);
+      res.json({
+        message: "Return request submitted successfully",
+        order: updatedOrder,
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -396,7 +434,7 @@ export class OrderController {
   // Handle Return Request (Admin)
   async handleReturnRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { status } = req.body; // "Approved" or "Rejected"
+      const { status, productId } = req.body; // "Approved" or "Rejected"
       const order = await OrderModel.findById(req.params.id);
 
       if (!order) {
@@ -404,19 +442,55 @@ export class OrderController {
         return;
       }
 
-      if (order.returnStatus !== "Requested") {
-        res.status(400).json({ message: "No pending return request" });
-        return;
-      }
+      if (productId) {
+        // Item-level return
+        const item = order.items.find(
+          (i) => i.product.toString() === productId,
+        );
+        if (!item) {
+          res.status(404).json({ message: "Product not found in this order" });
+          return;
+        }
 
-      order.returnStatus = status;
+        if (item.returnStatus !== "Requested") {
+          res
+            .status(400)
+            .json({ message: "No pending return request for this item" });
+          return;
+        }
 
-      if (status === "Approved") {
-        order.status = "Returned";
-        // Initiate refund
-        await this.processRefund(order);
+        item.returnStatus = status;
 
-        // Restore stock logic could go here depending on business rule (damaged vs unwanted)
+        if (status === "Approved") {
+          // You might want to update order level status too if all items are returned
+          const allItemsReturned = order.items.every(
+            (i) =>
+              i.returnStatus === "Approved" || i.returnStatus === "Refunded",
+          );
+          if (allItemsReturned) {
+            order.status = "Returned";
+          }
+          // Note: In real production, you might want to partial refund or check payment ID validity
+        }
+      } else {
+        // Legacy/Whole order return
+        if (order.returnStatus !== "Requested") {
+          res.status(400).json({ message: "No pending return request" });
+          return;
+        }
+
+        order.returnStatus = status;
+
+        if (status === "Approved") {
+          order.status = "Returned";
+          // Update all items status to Approved
+          order.items.forEach((item) => {
+            if (item.returnStatus === "Requested") {
+              item.returnStatus = "Approved";
+            }
+          });
+          await this.processRefund(order);
+        }
       }
 
       const updatedOrder = await order.save();

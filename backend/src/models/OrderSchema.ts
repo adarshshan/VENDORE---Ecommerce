@@ -8,6 +8,9 @@ export interface OrderItem {
   quantity: number;
   size?: string;
   color?: string;
+  returnStatus?: "None" | "Requested" | "Approved" | "Rejected" | "Refunded";
+  returnReason?: string;
+  customReturnReason?: string;
 }
 
 export interface ShippingAddress {
@@ -68,6 +71,13 @@ const orderItemSchema = new Schema<OrderItem>(
     quantity: { type: Number, required: true },
     size: { type: String },
     color: { type: String },
+    returnStatus: {
+      type: String,
+      enum: ["None", "Requested", "Approved", "Rejected", "Refunded"],
+      default: "None",
+    },
+    returnReason: { type: String },
+    customReturnReason: { type: String },
   },
   { _id: false },
 );

@@ -91,7 +91,7 @@ export const getUsers = async (): Promise<User[]> => {
 
 export const updateUser = async (userData: Partial<User>): Promise<User> => {
   const response = await axios.put(
-    `${VITE_API_URL}/users/${userData._id}`,
+    `${VITE_API_URL}/users/${userData?._id}`,
     userData,
   );
   return response.data;
@@ -139,86 +139,42 @@ export const getCategories = async (status?: string) => {
 };
 
 export const createCategory = async (categoryData: any) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: { Authorization: `Bearer ${user.token}` },
-  };
-  const response = await axios.post(
-    `${VITE_API_URL}/categories`,
-    categoryData,
-    config,
-  );
+  const response = await axios.post(`${VITE_API_URL}/categories`, categoryData);
   return response.data;
 };
 
 export const updateCategory = async (id: string, categoryData: any) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: { Authorization: `Bearer ${user.token}` },
-  };
   const response = await axios.put(
     `${VITE_API_URL}/categories/${id}`,
     categoryData,
-    config,
   );
   return response.data;
 };
 
 export const deleteCategory = async (id: string) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: { Authorization: `Bearer ${user.token}` },
-  };
-  const response = await axios.delete(
-    `${VITE_API_URL}/categories/${id}`,
-    config,
-  );
+  const response = await axios.delete(`${VITE_API_URL}/categories/${id}`);
   return response.data;
 };
 
 // Order & Payment
 export const createRazorpayOrder = async (items: any[]) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
   const response = await axios.post(
     `${VITE_API_URL}/orders/create-razorpay-order`,
     { items },
-    config,
   );
   return response.data;
 };
 
 export const verifyPayment = async (paymentData: any) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
   const response = await axios.post(
     `${VITE_API_URL}/orders/verify-payment`,
     paymentData,
-    config,
   );
   return response.data;
 };
 
 export const createOrder = async (orderData: any) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-  const response = await axios.post(
-    `${VITE_API_URL}/orders`,
-    orderData,
-    config,
-  );
+  const response = await axios.post(`${VITE_API_URL}/orders`, orderData);
   return response.data;
 };
 
@@ -239,63 +195,41 @@ export const cancelOrder = async (id: string, reason: string) => {
   return response.data;
 };
 
-export const requestReturn = async (id: string, reason: string) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
+export const requestReturn = async (returnParams: {
+  orderId: string;
+  productId: string;
+  reason: string;
+  customReason?: string;
+}) => {
   const response = await axios.post(
-    `${VITE_API_URL}/orders/${id}/return`,
-    { reason },
-    config,
+    `${VITE_API_URL}/orders/return-request`,
+    returnParams,
   );
   return response.data;
 };
 
 // Admin Order API
 export const getAllOrders = async (page: number = 1) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-  const response = await axios.get(
-    `${VITE_API_URL}/orders?pageNumber=${page}`,
-    config,
-  );
+  const response = await axios.get(`${VITE_API_URL}/orders?pageNumber=${page}`);
   return response.data;
 };
 
 export const updateOrderStatus = async (id: string, status: string) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-  const response = await axios.put(
-    `${VITE_API_URL}/orders/${id}/status`,
-    { status },
-    config,
-  );
+  const response = await axios.put(`${VITE_API_URL}/orders/${id}/status`, {
+    status,
+  });
   return response.data;
 };
 
-export const handleReturnRequest = async (id: string, status: string) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-  const response = await axios.put(
-    `${VITE_API_URL}/orders/${id}/return`,
-    { status },
-    config,
-  );
+export const handleReturnRequest = async (
+  id: string,
+  status: string,
+  productId: string,
+) => {
+  const response = await axios.put(`${VITE_API_URL}/orders/${id}/return`, {
+    status,
+    productId,
+  });
   return response.data;
 };
 
@@ -342,11 +276,15 @@ export const removeFromWishlist = async (
 };
 
 // Search API
-export const getSearchSuggestions = async (query: string): Promise<{
+export const getSearchSuggestions = async (
+  query: string,
+): Promise<{
   products: Product[];
   categories: { name: string; slug: string }[];
   brands: { name: string }[];
 }> => {
-  const response = await axios.get(`${VITE_API_URL}/search/suggestions?q=${query}`);
+  const response = await axios.get(
+    `${VITE_API_URL}/search/suggestions?q=${query}`,
+  );
   return response.data;
 };
