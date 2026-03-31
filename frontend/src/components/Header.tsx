@@ -51,7 +51,7 @@ const Header: React.FC = () => {
 
         <nav className="flex items-center gap-8">
           <div className="hidden md:flex gap-8">
-            {navItems?.map((item) => (
+            {navItems?.slice(0, 2).map((item) => (
               <Link
                 key={item?.label}
                 to={item?.path}

@@ -142,12 +142,24 @@ const DropdownMenu = () => {
               <p className="text-xs text-text-muted truncate">{user?.email}</p>
             </div>
           </div>
-
-          <MenuItem onClick={() => handleItemClick("myorders")}>
+          <MenuItem onClick={() => handleItemClick("orders")}>
             <ListItemIcon>
               <LocalMall fontSize="small" />
             </ListItemIcon>
             My Orders
+          </MenuItem>
+          <MenuItem onClick={() => handleItemClick("contact")}>
+            <ListItemIcon>
+              <LocalMall fontSize="small" />
+            </ListItemIcon>
+            Contact
+          </MenuItem>
+
+          <MenuItem onClick={() => handleItemClick("return&exchange")}>
+            <ListItemIcon>
+              <LocalMall fontSize="small" />
+            </ListItemIcon>
+            Return and Exchange
           </MenuItem>
           <div className="my-1 border-t border-border"></div>
           <MenuItem
