@@ -11,6 +11,8 @@ import {
   Dashboard,
   Login,
   Person,
+  DarkMode,
+  LightMode,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -44,10 +46,7 @@ const HeaderDrawer: React.FC<HeaderDrawerInterface> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useStore((state) => state.user);
-  const logout = useStore((state) => state.logout);
-  const cart = useStore((state) => state.cart);
-  const wishlist = useStore((state) => state.wishlist);
+  const { user, logout, cart, wishlist, theme, toggleTheme } = useStore();
 
   const handleNavigation = (path: string) => {
     handleDrawerToggle();
@@ -101,23 +100,31 @@ const HeaderDrawer: React.FC<HeaderDrawerInterface> = ({
             fontFamily: "var(--font-serif)",
             fontWeight: 900,
             letterSpacing: "0.1em",
-            color: "white",
+            color: "var(--color-text-primary)",
           }}
         >
           VENDORA
         </Typography>
-        <IconButton
-          onClick={handleDrawerToggle}
-          sx={{ color: "var(--color-text-secondary)" }}
-        >
-          <Close />
-        </IconButton>
+        <Box sx={{ display: "flex", gap: 0.5 }}>
+          <IconButton
+            onClick={toggleTheme}
+            sx={{ color: "var(--color-text-secondary)" }}
+          >
+            {theme === "dark" ? <LightMode /> : <DarkMode />}
+          </IconButton>
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{ color: "var(--color-text-secondary)" }}
+          >
+            <Close />
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Navigation List */}
       <Box sx={{ flex: 1, overflowY: "auto", py: 2 }}>
         <List sx={{ px: 1 }} className="!bg-transparent">
-          {navItems.map((item) => (
+          {navItems.map((item: any) => (
             <ListItem key={item.label} disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton
                 onClick={() => handleNavigation(item.path)}

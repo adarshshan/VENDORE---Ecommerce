@@ -7,6 +7,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CustomButton from "../../components/CustomButton";
 
 const Cart: React.FC = () => {
   const cart = useStore((state) => state.cart);
@@ -42,7 +43,7 @@ const Cart: React.FC = () => {
                 sx={{ fontSize: 40, color: "var(--color-text-muted)" }}
               />
             </div>
-            <h2 className="text-3xl font-serif font-bold text-white mb-4">
+            <h2 className="text-3xl font-serif font-bold text-text-primary mb-4">
               Your cart is empty
             </h2>
             <p className="text-text-secondary mb-8 text-lg">
@@ -50,7 +51,7 @@ const Cart: React.FC = () => {
             </p>
             <Link
               to="/products"
-              className="border border-[var(--color-border)] btn-primary inline-flex gap-2 items-center text-[var(--color-text-light)] p-2 px-3 rounded-md"
+              className="border border-border btn-primary inline-flex gap-2 items-center text-text-primary p-2 px-3 rounded-md"
             >
               Start Shopping
             </Link>
@@ -63,7 +64,7 @@ const Cart: React.FC = () => {
   return (
     <div className="min-h-screen bg-background py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
       <div className="container-custom">
-        <h1 className="text-3xl md:text-4xl font-serif font-black text-white mb-8">
+        <h1 className="text-3xl md:text-4xl font-serif font-black text-text-primary mb-8">
           Shopping Cart
         </h1>
 
@@ -95,7 +96,7 @@ const Cart: React.FC = () => {
                   {/* Product Details */}
                   <div className="w-full flex-grow min-w-0">
                     <div className="w-full flex justify-between items-start mb-0 sm:mb-2">
-                      <h3 className="text-lg font-bold text-white truncate pr-4">
+                      <h3 className="text-lg font-bold text-text-primary truncate pr-4">
                         <Link
                           to={`/product/${item?._id}`}
                           className="hover:text-accent transition-colors"
@@ -122,7 +123,7 @@ const Cart: React.FC = () => {
                       {item?.selectedSize && (
                         <span className="bg-surface-light px-2 py-1 rounded border border-border">
                           Size:{" "}
-                          <span className="text-white font-medium">
+                          <span className="text-text-primary font-medium">
                             {item?.selectedSize}
                           </span>
                         </span>
@@ -131,7 +132,7 @@ const Cart: React.FC = () => {
                         <span className="bg-surface-light px-2 py-1 rounded border border-border flex items-center gap-2">
                           Color:{" "}
                           <span
-                            className="w-3 h-3 rounded-full border border-white/20"
+                            className="w-3 h-3 rounded-full border border-border"
                             style={{ backgroundColor: item?.selectedColor }}
                           ></span>
                         </span>
@@ -142,7 +143,7 @@ const Cart: React.FC = () => {
                       {/* Quantity Controls */}
                       <div className="flex items-center bg-surface-light rounded-lg border border-border">
                         <button
-                          className="p-2 text-text-secondary hover:text-white hover:bg-surface-hover rounded-l-lg transition-colors"
+                          className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-l-lg transition-colors"
                           onClick={() =>
                             updateQuantity(
                               item?._id,
@@ -155,11 +156,11 @@ const Cart: React.FC = () => {
                         >
                           <RemoveIcon fontSize="small" />
                         </button>
-                        <span className="w-10 text-center font-bold text-white">
+                        <span className="w-10 text-center font-bold text-text-primary">
                           {item?.quantity}
                         </span>
                         <button
-                          className="p-2 text-text-secondary hover:text-white hover:bg-surface-hover rounded-r-lg transition-colors"
+                          className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-r-lg transition-colors"
                           onClick={() =>
                             updateQuantity(
                               item?._id,
@@ -183,7 +184,7 @@ const Cart: React.FC = () => {
 
             <button
               onClick={() => navigate("/products")}
-              className="hidden sm:inline-flex items-center gap-2 text-text-secondary hover:text-white transition-colors mt-4"
+              className="hidden sm:inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mt-4"
             >
               <ArrowBackIcon fontSize="small" />
               Continue Shopping
@@ -193,14 +194,14 @@ const Cart: React.FC = () => {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="card bg-surface p-6 sticky top-24">
-              <h3 className="text-xl font-bold text-white mb-6 pb-4 border-b border-border">
+              <h3 className="text-xl font-bold text-text-primary mb-6 pb-4 border-b border-border">
                 Order Summary
               </h3>
 
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-text-secondary">
                   <span>Subtotal</span>
-                  <span className="text-white font-medium">
+                  <span className="text-text-primary font-medium">
                     ₹{total?.toFixed(2)}
                   </span>
                 </div>
@@ -210,38 +211,40 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-text-secondary">
                   <span>Tax</span>
-                  <span className="text-white font-medium">₹0.00</span>
+                  <span className="text-text-primary font-medium">₹0.00</span>
                 </div>
               </div>
 
               <div className="border-t border-border pt-4 mb-8">
                 <div className="flex justify-between items-end">
-                  <span className="text-lg font-bold text-white">Total</span>
+                  <span className="text-lg font-bold text-text-primary">
+                    Total
+                  </span>
                   <span className="text-3xl font-black text-accent">
                     ₹{total?.toFixed(2)}
                   </span>
                 </div>
               </div>
 
-              <button
-                onClick={handleCheckout}
-                className="btn-primary border border-[var(--color-border)] opacity-70 hover:opacity-95 font-semibold w-full py-4 text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all text-[var(--color-text-light)]"
+              <CustomButton
+                onclick={handleCheckout}
+                className="btn-primary border border-border opacity-70 hover:opacity-95 font-semibold w-full py-4 text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all text-text-primary"
               >
                 Proceed to Checkout
-              </button>
+              </CustomButton>
 
               <p className="text-center text-xs text-text-muted mt-4">
                 Secure Checkout - 100% Satisfaction Guaranteed
               </p>
             </div>
 
-            <button
-              onClick={() => navigate("/products")}
+            <CustomButton
+              onclick={() => navigate("/products")}
               className="sm:hidden w-full mt-6 btn-outline flex items-center justify-center gap-2"
             >
               <ArrowBackIcon fontSize="small" />
               Continue Shopping
-            </button>
+            </CustomButton>
           </div>
         </div>
       </div>

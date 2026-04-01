@@ -24,9 +24,9 @@ const Dashboard = () => {
   }, []);
 
   if (loading)
-    return <div className="p-4 text-white">Loading dashboard...</div>;
+    return <div className="p-4 text-text-primary">Loading dashboard...</div>;
   if (!stats)
-    return <div className="p-4 text-white">Error loading dashboard data.</div>;
+    return <div className="p-4 text-text-primary">Error loading dashboard data.</div>;
 
   return (
     <div>
@@ -40,11 +40,11 @@ const Dashboard = () => {
           >
             <Typography
               variant="subtitle2"
-              className="!text-gray-400 uppercase tracking-wider font-bold mb-1"
+              className="!text-text-secondary uppercase tracking-wider font-bold mb-1"
             >
               Total Users
             </Typography>
-            <Typography variant="h4" className="!text-white !font-bold">
+            <Typography variant="h4" className="!text-text-primary !font-bold">
               {stats?.totalUsers}
             </Typography>
           </Paper>
@@ -56,12 +56,12 @@ const Dashboard = () => {
           >
             <Typography
               variant="subtitle2"
-              className="!text-gray-400 uppercase tracking-wider font-bold mb-1"
+              className="!text-text-secondary uppercase tracking-wider font-bold mb-1"
             >
               Total Products
             </Typography>
-            <Typography variant="h4" className="!text-white !font-bold">
-              {stats.totalProducts}
+            <Typography variant="h4" className="!text-text-primary !font-bold">
+              {stats?.totalProducts}
             </Typography>
           </Paper>
         </Grid>
@@ -72,12 +72,12 @@ const Dashboard = () => {
           >
             <Typography
               variant="subtitle2"
-              className="!text-gray-400 uppercase tracking-wider font-bold mb-1"
+              className="!text-text-secondary uppercase tracking-wider font-bold mb-1"
             >
               Total Orders
             </Typography>
-            <Typography variant="h4" className="!text-white !font-bold">
-              {stats.totalOrders}
+            <Typography variant="h4" className="!text-text-primary !font-bold">
+              {stats?.totalOrders}
             </Typography>
           </Paper>
         </Grid>
@@ -88,11 +88,11 @@ const Dashboard = () => {
           >
             <Typography
               variant="subtitle2"
-              className="!text-gray-400 uppercase tracking-wider font-bold mb-1"
+              className="!text-text-secondary uppercase tracking-wider font-bold mb-1"
             >
               Total Revenue
             </Typography>
-            <Typography variant="h4" className="!text-white !font-bold">
+            <Typography variant="h4" className="!text-text-primary !font-bold">
               ₹{stats?.totalRevenue?.toLocaleString("en-IN")}
             </Typography>
           </Paper>
@@ -104,19 +104,19 @@ const Dashboard = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-border bg-surface-light">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Order ID
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 User
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Total
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Status
               </th>
             </tr>
@@ -125,31 +125,31 @@ const Dashboard = () => {
             {stats?.recentOrders?.map((order: any) => (
               <tr
                 key={order?._id}
-                className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
+                className="bg-surface hover:bg-surface-light transition-colors group"
               >
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-400 font-mono">
+                  <div className="text-sm text-text-muted font-mono">
                     {order?._id}
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="font-medium text-white">
+                  <div className="font-medium text-text-primary">
                     {order?.user?.name || "Unknown"}
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-white">
+                  <div className="text-sm text-text-primary">
                     {new Date(order?.createdAt).toLocaleDateString()}
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="font-medium text-white">
+                  <div className="font-medium text-text-primary">
                     ₹{order?.totalPrice?.toLocaleString("en-IN")}
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <span
-                    className={`px-2 py-1 rounded text-xs text-white ${order?.isPaid ? "bg-green-500" : "bg-red-500"}`}
+                    className={`px-2 py-1 rounded text-xs text-white ${order?.isPaid ? "bg-success" : "bg-error"}`}
                   >
                     {order?.isPaid ? "Paid" : "Unpaid"}
                   </span>

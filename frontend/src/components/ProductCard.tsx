@@ -53,11 +53,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Status Badge */}
         {isOutOfStock ? (
-          <span className="absolute top-3 left-3 badge bg-red-500 text-white border-none shadow-lg px-2 rounded-2xl z-10">
+          <span className="absolute top-3 left-3 badge bg-error text-white border-none shadow-lg px-2 rounded-2xl z-10">
             Out of Stock
           </span>
         ) : product?.category ? (
-          <span className="absolute top-3 left-3 badge badge-primary shadow-lg backdrop-blur-sm bg-white/90 px-2 rounded-2xl z-10">
+          <span className="absolute top-3 left-3 badge bg-accent text-text-inverse border-none shadow-lg px-2 rounded-2xl z-10">
             {typeof product?.category === "object"
               ? product?.category?.name
               : "Category"}
@@ -67,10 +67,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Wishlist Toggle Button */}
         <button
           onClick={toggleWishlist}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-red-500 transition-all duration-300 z-10"
+          className="absolute top-3 right-3 p-2 rounded-full bg-surface/20 backdrop-blur-md border border-border/20 text-text-primary hover:bg-surface hover:text-error transition-all duration-300 z-10"
         >
           {isInWishlist ? (
-            <FavoriteIcon fontSize="small" className="text-red-500" />
+            <FavoriteIcon fontSize="small" className="text-error" />
           ) : (
             <FavoriteBorderIcon fontSize="small" />
           )}
@@ -81,7 +81,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div className="absolute bottom-4 right-4 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
             <button
               onClick={handleAddToCart}
-              className="bg-white text-black p-3 rounded-full shadow-lg hover:bg-accent hover:text-white transition-colors"
+              className="bg-accent text-text-inverse p-3 rounded-full shadow-lg hover:bg-accent-hover transition-colors"
             >
               <AddShoppingCartIcon fontSize="small" />
             </button>
@@ -90,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       <div className="flex-1 flex flex-col p-2 sm:px-5">
-        <h3 className="text-lg font-bold truncate mb-1 text-white group-hover:text-accent transition-colors capitalize">
+        <h3 className="text-lg font-bold truncate mb-1 text-text-primary group-hover:text-accent transition-colors capitalize">
           {product?.name}
         </h3>
         <p className="text-sm text-text-secondary line-clamp-2 mb-4 leading-relaxed flex-grow capitalize">
@@ -98,7 +98,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </p>
 
         <div className="mt-auto flex justify-between items-center pt-2 sm:pt-4 border-t border-border">
-          <p className="text-xl font-bold text-white">
+          <p className="text-xl font-bold text-text-primary">
             ₹{product?.price.toFixed(2)}
           </p>
         </div>

@@ -1,15 +1,17 @@
 import React, { type ReactNode } from "react";
+import { cn } from "../utils/cn";
 
 interface CustomButtonInterface {
   disabled?: boolean;
-  type?: "submit" | "reset" | "button" | undefined;
+  type?: "submit" | "reset" | "button";
   onclick?: () => void;
   children: ReactNode;
   className?: string;
 }
+
 const CustomButton: React.FC<CustomButtonInterface> = ({
   disabled,
-  type = undefined,
+  type = "button",
   onclick,
   children,
   className,
@@ -18,8 +20,14 @@ const CustomButton: React.FC<CustomButtonInterface> = ({
     <button
       type={type}
       disabled={disabled}
-      className={`btn-accent w-full py-4 text-lg font-bold shadow-xl border border-[var(--color-border)] hover:border-[var(--color-border-light)] opacity-80 hover:opacity-95  text-[var(--color-text-light)] rounded-md ${className}`}
       onClick={onclick}
+      className={cn(
+        "btn-accent w-full py-4 text-lg font-bold shadow-xl border rounded-md cursor-pointer",
+        "border-[var(--color-border)] text-[var(--color-text-light)]",
+        "opacity-80 hover:opacity-95 hover:border-[var(--color-border-light)]",
+        disabled && "opacity-50 cursor-not-allowed",
+        className,
+      )}
     >
       {children}
     </button>

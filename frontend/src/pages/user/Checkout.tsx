@@ -9,7 +9,7 @@ import {
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import CustomButton from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
 
 declare global {
   interface Window {
@@ -187,7 +187,7 @@ const Checkout = () => {
       <div className="container-custom py-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-serif font-black text-white mb-4">
+            <h1 className="text-4xl font-serif font-black text-text-primary mb-4">
               Checkout
             </h1>
             <div className="flex items-center justify-center gap-4 sm:gap-8">
@@ -231,14 +231,14 @@ const Checkout = () => {
                 <div className="card bg-surface p-6 sm:p-8">
                   <div className="flex items-center gap-3 mb-8">
                     <LocalShippingIcon className="text-accent" />
-                    <h3 className="text-xl font-bold text-[var(--color-text-light)]">
+                    <h3 className="text-xl font-bold text-text-primary">
                       Shipping Information
                     </h3>
                   </div>
 
                   <form
                     onSubmit={handleAddressSubmit}
-                    className="space-y-6 text-[var(--color-text-light)]"
+                    className="space-y-6 text-text-primary"
                   >
                     <div className="space-y-4">
                       <div className="flex flex-col gap-2">
@@ -390,7 +390,7 @@ const Checkout = () => {
                 <div className="card bg-surface p-6 sm:p-8">
                   <div className="flex items-center gap-3 mb-8">
                     <PaymentIcon className="text-accent" />
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="text-xl font-bold text-text-primary">
                       Payment Selection
                     </h3>
                   </div>
@@ -401,7 +401,7 @@ const Checkout = () => {
                         <AssignmentIcon className="text-accent" />
                       </div>
                       <div>
-                        <p className="text-white font-bold">
+                        <p className="text-text-primary font-bold">
                           Razorpay Secure Payment
                         </p>
                         <p className="text-xs text-text-secondary">
@@ -434,7 +434,7 @@ const Checkout = () => {
             {/* Sidebar Summary */}
             <div className="lg:col-span-5">
               <div className="card bg-surface p-6 sticky top-24">
-                <h3 className="text-lg font-bold text-white mb-6 border-b border-border pb-4">
+                <h3 className="text-lg font-bold text-text-primary mb-6 border-b border-border pb-4">
                   Order Summary
                 </h3>
 
@@ -452,14 +452,14 @@ const Checkout = () => {
                         />
                       </div>
                       <div className="flex-grow min-w-0">
-                        <p className="text-sm font-bold text-white truncate">
+                        <p className="text-sm font-bold text-text-primary truncate">
                           {item.name}
                         </p>
                         <p className="text-xs text-text-muted">
                           Qty: {item.quantity} • {item.selectedSize}
                         </p>
                       </div>
-                      <p className="text-sm font-bold text-white">
+                      <p className="text-sm font-bold text-text-primary">
                         ₹{(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
@@ -469,7 +469,7 @@ const Checkout = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm text-text-secondary">
                     <span>Items Price</span>
-                    <span className="text-white font-mono">
+                    <span className="text-text-primary font-mono">
                       ₹
                       {cart
                         .reduce(
@@ -491,7 +491,7 @@ const Checkout = () => {
 
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between items-end">
-                    <span className="text-white font-bold">Total Payable</span>
+                    <span className="text-text-primary font-bold">Total Payable</span>
                     <span className="text-2xl font-black text-accent font-mono">
                       ₹
                       {(
@@ -510,6 +510,7 @@ const Checkout = () => {
         </div>
       </div>
     </div>
+
   );
 };
 

@@ -8,7 +8,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payments";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import Loading from "../../components/Loading";
-import CustomButton from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
 
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -92,7 +92,7 @@ const OrderDetails: React.FC = () => {
   if (error || !order)
     return (
       <div className="min-h-screen bg-background py-20 text-center container-custom px-[1rem] sm:px-[5rem]">
-        <h2 className="text-3xl font-serif font-bold text-white mb-4">
+        <h2 className="text-3xl font-serif font-bold text-text-primary mb-4">
           Oops! {error || "Order not found"}
         </h2>
         <button
@@ -109,7 +109,7 @@ const OrderDetails: React.FC = () => {
       <div className="container-custom py-8">
         <button
           onClick={() => navigate("/orders")}
-          className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors mb-8 group"
+          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-8 group"
         >
           <ArrowBackIcon
             fontSize="small"
@@ -123,7 +123,7 @@ const OrderDetails: React.FC = () => {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-serif font-black text-white">
+              <h1 className="text-3xl font-serif font-black text-text-primary">
                 Order #{order._id.slice(-8).toUpperCase()}
               </h1>
               <p className="text-text-secondary">
@@ -146,7 +146,7 @@ const OrderDetails: React.FC = () => {
               <div className="card bg-surface p-3 sm:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <ShoppingBagIcon className="text-accent" />
-                  <h3 className="text-xl font-bold text-white">Order Items</h3>
+                  <h3 className="text-xl font-bold text-text-primary">Order Items</h3>
                 </div>
                 <div className="space-y-6">
                   {order.items.map((item, index) => (
@@ -162,20 +162,20 @@ const OrderDetails: React.FC = () => {
                         />
                       </div>
                       <div className="flex-grow min-w-0">
-                        <h4 className="text-lg font-bold text-white mb-1 truncate">
+                        <h4 className="text-lg font-bold text-text-primary mb-1 truncate">
                           {item.name}
                         </h4>
                         <div className="flex flex-wrap gap-3 text-sm text-text-muted">
                           <span>
                             Qty:{" "}
-                            <span className="text-white font-medium">
+                            <span className="text-text-primary font-medium">
                               {item.quantity}
                             </span>
                           </span>
                           {item.size && (
                             <span>
                               Size:{" "}
-                              <span className="text-white font-medium">
+                              <span className="text-text-primary font-medium">
                                 {item.size}
                               </span>
                             </span>
@@ -183,7 +183,7 @@ const OrderDetails: React.FC = () => {
                           {item.color && (
                             <span>
                               Color:{" "}
-                              <span className="text-white font-medium">
+                              <span className="text-text-primary font-medium">
                                 {item.color}
                               </span>
                             </span>
@@ -245,12 +245,12 @@ const OrderDetails: React.FC = () => {
                         fontSize="small"
                         className="text-accent"
                       />
-                      <h4 className="text-sm font-bold uppercase tracking-widest text-white">
+                      <h4 className="text-sm font-bold uppercase tracking-widest text-text-primary">
                         Shipping Address
                       </h4>
                     </div>
                     <div className="text-sm text-text-secondary space-y-1">
-                      <p className="font-bold text-white text-base">
+                      <p className="font-bold text-text-primary text-base">
                         {order.shippingAddress.fullName}
                       </p>
                       <p>{order.shippingAddress.addressLine1}</p>
@@ -272,14 +272,14 @@ const OrderDetails: React.FC = () => {
                   <section className="border-t border-border pt-6">
                     <div className="flex items-center gap-2 mb-4">
                       <PaymentIcon fontSize="small" className="text-accent" />
-                      <h4 className="text-sm font-bold uppercase tracking-widest text-white">
+                      <h4 className="text-sm font-bold uppercase tracking-widest text-text-primary">
                         Payment Information
                       </h4>
                     </div>
                     <div className="text-sm text-text-secondary space-y-2">
                       <div className="flex justify-between">
                         <span>Method:</span>
-                        <span className="text-white font-medium">
+                        <span className="text-text-primary font-medium">
                           {order.paymentMethod}
                         </span>
                       </div>
@@ -298,13 +298,13 @@ const OrderDetails: React.FC = () => {
 
               {/* Price Summary */}
               <div className="card bg-surface-light p-6">
-                <h4 className="text-sm font-bold uppercase tracking-widest text-white mb-6">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-text-primary mb-6">
                   Price Summary
                 </h4>
                 <div className="space-y-4 text-sm">
                   <div className="flex justify-between text-text-secondary">
                     <span>Subtotal</span>
-                    <span className="text-white font-medium">
+                    <span className="text-text-primary font-medium">
                       ${order.itemsPrice.toFixed(2)}
                     </span>
                   </div>
@@ -316,13 +316,13 @@ const OrderDetails: React.FC = () => {
                   </div>
                   <div className="flex justify-between text-text-secondary">
                     <span>Tax</span>
-                    <span className="text-white font-medium">
+                    <span className="text-text-primary font-medium">
                       ${order.taxPrice.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t border-border pt-4 mt-4">
                     <div className="flex justify-between items-end">
-                      <span className="text-white font-bold">Total Amount</span>
+                      <span className="text-text-primary font-bold">Total Amount</span>
                       <span className="text-2xl font-black text-accent">
                         ${order.totalPrice.toFixed(2)}
                       </span>
@@ -360,7 +360,7 @@ const OrderDetails: React.FC = () => {
                         state: { orderId: order?._id },
                       })
                     }
-                    className="btn-primary w-full py-3 !bg-warning !text-black"
+                    className="btn-primary w-full py-3 !bg-warning !text-text-inverse"
                   >
                     Manage Returns
                   </button>
@@ -374,7 +374,7 @@ const OrderDetails: React.FC = () => {
       {/* Cancel Modal */}
       <CustomModal open={isCancelOpen} onClose={() => setIsCancelOpen(false)}>
         <div className="bg-surface p-8 max-w-md w-full border border-border rounded-3xl">
-          <h2 className="text-2xl font-serif font-bold text-white mb-4">
+          <h2 className="text-2xl font-serif font-bold text-text-primary mb-4">
             Cancel Order
           </h2>
           <p className="text-text-secondary mb-6">
@@ -398,7 +398,7 @@ const OrderDetails: React.FC = () => {
             <button
               onClick={handleCancelOrder}
               disabled={!reason || actionLoading}
-              className="btn-primary !bg-error !text-white flex-1 disabled:opacity-50"
+              className="btn-primary !bg-error !text-text-primary flex-1 disabled:opacity-50"
             >
               {actionLoading ? "Processing..." : "Confirm Cancel"}
             </button>
@@ -406,6 +406,7 @@ const OrderDetails: React.FC = () => {
         </div>
       </CustomModal>
     </div>
+
   );
 };
 

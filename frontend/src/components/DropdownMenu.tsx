@@ -105,7 +105,8 @@ const DropdownMenu = () => {
               elevation: 0,
               sx: {
                 overflow: "visible",
-                filter: "drop-shadow(0px 8px 32px rgba(0,0,0,0.8))",
+                filter:
+                  "drop-shadow(0px 8px 32px rg--color-borderba(0,0,0,0.8))",
                 mt: 1.5,
                 minWidth: 240,
                 bgcolor: "var(--color-surface-light)",
@@ -157,8 +158,8 @@ const DropdownMenu = () => {
         >
           <Box
             sx={{
-              px: 2.5,
-              py: 2,
+              px: 0.5,
+              py: 0.1,
               mb: 1,
               display: "flex",
               alignItems: "center",
@@ -182,7 +183,7 @@ const DropdownMenu = () => {
               <Typography
                 variant="subtitle2"
                 noWrap
-                sx={{ fontWeight: 700, color: "white" }}
+                sx={{ fontWeight: 700, color: "var(--color-text-primary)" }}
               >
                 {user.name}
               </Typography>
@@ -200,7 +201,11 @@ const DropdownMenu = () => {
           </Box>
 
           <Divider
-            sx={{ my: 1, borderColor: "var(--color-border)", opacity: 0.6 }}
+            sx={{
+              my: 1,
+              borderColor: "var(--color-border-light)",
+              opacity: 0.6,
+            }}
           />
 
           {user.role === "admin" && (

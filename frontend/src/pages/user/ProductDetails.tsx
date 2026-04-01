@@ -15,6 +15,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Slider from "react-slick";
 import Loading from "../../components/Loading";
 import ProductCarousel from "../../components/ProductCarousel";
+import CustomButton from "../../components/CustomButton";
 
 const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "3XL"];
 
@@ -85,7 +86,7 @@ const ProductDetails: React.FC = () => {
   if (isError || !product) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-4">
-        <h2 className="text-3xl font-serif font-bold text-white mb-4">
+        <h2 className="text-3xl font-serif font-bold text-text-primary mb-4">
           Product Not Found
         </h2>
         <p className="text-text-secondary mb-8">
@@ -105,7 +106,7 @@ const ProductDetails: React.FC = () => {
           {/* Breadcrumbs / Back button */}
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors mb-3 sm:mb-8 group"
+            className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-3 sm:mb-8 group"
           >
             <ArrowBackIcon
               fontSize="small"
@@ -162,15 +163,17 @@ const ProductDetails: React.FC = () => {
             {/* Product Info Section */}
             <div className="flex flex-col space-y-1 sm:space-y-8">
               <div>
-                <div className="flex items-center text-[var(--color-text-light)] gap-2 mb-1 sm:mb-4">
+                <div className="flex items-center text-text-primary gap-2 mb-1 sm:mb-4">
                   <span className="badge badge-accent">New Arrival</span>
                   {product?.hasSizes ? (
                     selectedSize ? (
                       (() => {
-                        const sizeStock = product.sizes?.find(s => s.size === selectedSize)?.stock ?? 0;
+                        const sizeStock =
+                          product.sizes?.find((s) => s.size === selectedSize)
+                            ?.stock ?? 0;
                         return sizeStock > 0 ? (
                           sizeStock < 5 ? (
-                            <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
+                            <span className="badge bg-orange-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter">
                               Only {sizeStock} left
                             </span>
                           ) : (
@@ -179,7 +182,7 @@ const ProductDetails: React.FC = () => {
                             </span>
                           )
                         ) : (
-                          <span className="badge bg-red-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
+                          <span className="badge bg-red-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter">
                             Out of Stock
                           </span>
                         );
@@ -189,30 +192,28 @@ const ProductDetails: React.FC = () => {
                         Please Select a Size
                       </span>
                     )
-                  ) : (
-                    product?.stock && product.stock > 0 ? (
-                      product.stock < 5 ? (
-                        <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
-                          Only {product.stock} left
-                        </span>
-                      ) : (
-                        <span className="text-success text-xs font-bold uppercase tracking-tighter">
-                          In Stock
-                        </span>
-                      )
+                  ) : product?.stock && product.stock > 0 ? (
+                    product.stock < 5 ? (
+                      <span className="badge bg-orange-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter">
+                        Only {product.stock} left
+                      </span>
                     ) : (
-                      <span className="badge bg-red-500 text-white border-none text-xs font-bold uppercase tracking-tighter">
-                        Out of Stock
+                      <span className="text-success text-xs font-bold uppercase tracking-tighter">
+                        In Stock
                       </span>
                     )
+                  ) : (
+                    <span className="badge bg-red-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter">
+                      Out of Stock
+                    </span>
                   )}
                 </div>
 
-                <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-[var(--color-text-light)] mb-4 leading-tight capitalize">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-text-primary mb-4 leading-tight capitalize">
                   {product?.name}
                 </h1>
                 <div className="flex items-baseline gap-4">
-                  <p className="text-2xl sm:text-3xl font-bold text-[var(--color-text-light)]">
+                  <p className="text-2xl sm:text-3xl font-bold text-text-primary">
                     ₹{product?.price.toFixed(2)}
                   </p>
                   <p className="text-text-muted line-through text-lg">
@@ -224,7 +225,7 @@ const ProductDetails: React.FC = () => {
               {product?.hasSizes && (
                 <div className="bg-surface-light/50 px-3 py-2 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
                   <div className="flex justify-between items-center mb-1">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)]">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-text-primary">
                       Select Size
                     </h3>
                     {sizeError && (
@@ -235,7 +236,9 @@ const ProductDetails: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap gap-3">
                     {AVAILABLE_SIZES.map((size) => {
-                      const sizeData = product.sizes?.find((s) => s.size === size);
+                      const sizeData = product.sizes?.find(
+                        (s) => s.size === size,
+                      );
                       const isAvailable = sizeData && sizeData.stock > 0;
                       const isSelected = selectedSize === size;
 
@@ -254,7 +257,7 @@ const ProductDetails: React.FC = () => {
                                 ? "border-border text-text-muted opacity-30 cursor-not-allowed line-through"
                                 : isSelected
                                   ? "border-accent bg-accent/10 text-accent shadow-[0_0_15px_rgba(56,189,248,0.2)]"
-                                  : "border-border text-white hover:border-border-light hover:bg-surface-hover"
+                                  : "border-border text-text-primary hover:border-border-light hover:bg-surface-hover"
                             }
                           `}
                         >
@@ -267,7 +270,7 @@ const ProductDetails: React.FC = () => {
               )}
 
               <div className="bg-surface-light/50 p-3 sm:p-6 rounded-2xl border border-border backdrop-blur-sm">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--color-text-light)] mb-3">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-text-primary mb-3">
                   Product Description
                 </h3>
                 <p className="text-text-secondary leading-relaxed">
@@ -277,39 +280,39 @@ const ProductDetails: React.FC = () => {
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={handleAddToCart}
-                  className="bg-white btn-accent btn-lg flex-grow flex items-center justify-center gap-3 py-2 rounded-md cursor-pointer"
+                <CustomButton
+                  onclick={handleAddToCart}
+                  className="bg-surface btn-accent btn-lg flex-grow flex items-center justify-center gap-3 py-2 rounded-md cursor-pointer"
                 >
                   <ShoppingCartIcon />
                   Add to Cart
-                </button>
-                <button
-                  onClick={toggleWishlist}
-                  className={`${isInWishlist ? "bg-red-500 text-white" : "bg-red-400"} btn-outline btn-lg flex-grow py-2 rounded-md cursor-pointer flex items-center justify-center gap-3 transition-colors`}
+                </CustomButton>
+                <CustomButton
+                  onclick={toggleWishlist}
+                  className={`${isInWishlist ? "bg-red-500 text-text-primary" : "bg-red-400"} btn-outline btn-lg flex-grow py-2 rounded-md cursor-pointer flex items-center justify-center gap-3 transition-colors`}
                 >
                   <FavoriteIcon />
                   {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
-                </button>
+                </CustomButton>
               </div>
 
               {/* Features/Trust Badges */}
               <div className="grid grid-cols-3 gap-4 border-y border-border py-8">
                 <div className="flex flex-col items-center text-center space-y-2">
                   <VerifiedIcon className="text-accent" />
-                  <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                  <span className="text-xs font-bold text-text-primary uppercase tracking-tighter">
                     Premium Quality
                   </span>
                 </div>
                 <div className="flex flex-col items-center text-center space-y-2">
                   <LocalShippingIcon className="text-accent" />
-                  <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                  <span className="text-xs font-bold text-text-primary uppercase tracking-tighter">
                     Free Shipping
                   </span>
                 </div>
                 <div className="flex flex-col items-center text-center space-y-2">
                   <HistoryIcon className="text-accent" />
-                  <span className="text-xs font-bold text-white uppercase tracking-tighter">
+                  <span className="text-xs font-bold text-text-primary uppercase tracking-tighter">
                     14-Day Returns
                   </span>
                 </div>

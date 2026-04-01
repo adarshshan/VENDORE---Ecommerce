@@ -7,6 +7,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DropdownMenu from "./DropdownMenu";
 import HeaderDrawer from "./HeaderDrawer";
+import ThemeToggle from "./ThemeToggle";
 
 const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -36,14 +37,14 @@ const Header: React.FC = () => {
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              className="!text-white"
+              className="!text-text-primary"
             >
               <MenuIcon />
             </IconButton>
           </div>
           <Link
             to="/"
-            className="text-2xl md:text-3xl font-serif font-black tracking-tighter text-white hover:text-accent transition-colors"
+            className="text-2xl md:text-3xl font-serif font-black text-[var(--color-text-Header)] tracking-tighter  hover:text-accent transition-colors"
           >
             VENDORA
           </Link>
@@ -71,9 +72,9 @@ const Header: React.FC = () => {
               onClick={() => navigate("/wishlist")}
               className="text-text-secondary hover:text-accent transition-colors relative"
             >
-              <FavoriteIcon />
+              <FavoriteIcon className="text-text-primary" />
               {wishlist?.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-text-primary text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
                   {wishlist?.length}
                 </span>
               )}
@@ -82,13 +83,14 @@ const Header: React.FC = () => {
               onClick={() => navigate("/cart")}
               className="text-text-secondary hover:text-accent transition-colors relative"
             >
-              <ShoppingCartIcon />
+              <ShoppingCartIcon className="text-text-primary" />
               {cart?.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-accent text-black text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-accent text-text-inverse text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
                   {cart?.length}
                 </span>
               )}
             </IconButton>
+            <ThemeToggle />
             <div className="w-px h-6 bg-border hidden md:block"></div>
             <div className="hidden md:block">
               <DropdownMenu />

@@ -5,11 +5,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../../services/api";
-import {
-  TextField,
-  Typography,
-  MenuItem,
-} from "@mui/material";
+import { TextField, Typography, MenuItem } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomModal from "../../components/Modal";
@@ -20,7 +16,7 @@ const CategoryManagement: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -97,7 +93,7 @@ const CategoryManagement: React.FC = () => {
         <h1 className="text-2xl font-bold">Category Management</h1>
         <button
           onClick={() => handleOpen()}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-accent text-text-inverse px-4 py-2 rounded font-bold hover:bg-accent-hover transition-colors"
         >
           Add Category
         </button>
@@ -107,16 +103,16 @@ const CategoryManagement: React.FC = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-border bg-surface-light">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Description
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -144,29 +140,35 @@ const CategoryManagement: React.FC = () => {
               categories.map((cat) => (
                 <tr
                   key={cat._id}
-                  className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
+                  className="bg-surface hover:bg-surface-light transition-colors group"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{cat.name}</div>
+                    <div className="font-medium text-text-primary">
+                      {cat.name}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{cat.description}</div>
+                    <div className="font-medium text-text-primary">
+                      {cat.description}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-xs text-white ${cat.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs text-white ${cat.status === "Active" ? "bg-success" : "bg-error"}`}
+                    >
                       {cat.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <button
                       onClick={() => handleOpen(cat)}
-                      className="text-green-500 px-2 py-1 rounded mr-2"
+                      className="text-success px-2 py-1 rounded mr-2"
                     >
                       <EditIcon />
                     </button>
                     <button
                       onClick={() => handleDelete(cat._id)}
-                      className="text-red-500 px-2 py-1 rounded"
+                      className="text-error px-2 py-1 rounded"
                     >
                       <DeleteIcon />
                     </button>
@@ -179,7 +181,7 @@ const CategoryManagement: React.FC = () => {
       </div>
 
       <CustomModal open={open} onClose={handleClose}>
-        <div className="w-full max-w-md bg-transparent !text-[var(--color-text-light)]">
+        <div className="w-full max-w-md bg-transparent text-text-primary">
           <Typography variant="h5" className="font-bold mb-6 text-center">
             {editMode ? "Edit Category" : "Add Category"}
           </Typography>
@@ -189,9 +191,11 @@ const CategoryManagement: React.FC = () => {
               fullWidth
               required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               InputProps={{
-                className: "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+                className: "text-text-primary border border-border",
               }}
             />
             <TextField
@@ -200,9 +204,11 @@ const CategoryManagement: React.FC = () => {
               multiline
               rows={3}
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               InputProps={{
-                className: "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+                className: "text-text-primary border border-border",
               }}
             />
             <TextField
@@ -210,9 +216,11 @@ const CategoryManagement: React.FC = () => {
               label="Status"
               fullWidth
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, status: e.target.value })
+              }
               InputProps={{
-                className: "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+                className: "text-text-primary border border-border",
               }}
             >
               <MenuItem value="Active">Active</MenuItem>
@@ -222,13 +230,13 @@ const CategoryManagement: React.FC = () => {
               <button
                 type="button"
                 onClick={handleClose}
-                className="!border-gray-500 !text-[var(--color-text-light)] hover:!text-[#000000] hover:!bg-gray-100 font-bold py-2 px-4 rounded-md border transition-colors"
+                className="border-text-secondary text-text-secondary hover:text-text-primary hover:bg-surface-hover font-bold py-2 px-4 rounded-md border transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
+                className="bg-accent hover:bg-accent-hover text-text-inverse font-bold py-2 px-4 rounded-md transition-colors"
               >
                 {editMode ? "Update" : "Create"}
               </button>

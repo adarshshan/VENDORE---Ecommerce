@@ -6,7 +6,6 @@ import {
   blockUser,
   unblockUser,
 } from "../../services/api";
-import type { User } from "../../types/User";
 import Pagination from "../../components/Pagination";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BlockIcon from "@mui/icons-material/Block";
@@ -16,11 +15,7 @@ const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["users", page],
     queryFn: () => getUsers(page, 10),
   });
@@ -126,17 +121,17 @@ const UserManagement: React.FC = () => {
                   className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{user?.name}</div>
+                    <div className="font-medium">{user?.name}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{user?.email}</div>
+                    <div className="font-medium">{user?.email}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{user?.role}</div>
+                    <div className="font-medium">{user?.role}</div>
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{user?.status}</div>
+                    <div className="font-medium">{user?.status}</div>
                   </td>
 
                   <td className="px-6 py-4">

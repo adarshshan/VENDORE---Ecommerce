@@ -59,7 +59,7 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "white",
+  color: "var(--text-primary)",
   width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
@@ -152,11 +152,7 @@ const ProductList: React.FC = () => {
     }
   };
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["products", filters],
     queryFn: () => getProducts(filters),
   });
@@ -218,7 +214,7 @@ const ProductList: React.FC = () => {
 
   const FilterContent = () => (
     <div className="p-6 h-full flex flex-col">
-      <h3 className="text-xl font-bold mb-6 text-white border-b border-border pb-4">
+      <h3 className="text-xl font-bold mb-6 text-text-primary border-b border-border pb-4">
         Filters
       </h3>
 
@@ -231,8 +227,8 @@ const ProductList: React.FC = () => {
             onClick={() => handleCategoryChange("All")}
             className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
               !filters?.category
-                ? "bg-accent text-black font-bold"
-                : "text-text-secondary hover:bg-surface-light hover:text-white"
+                ? "bg-accent text-text-inverse font-bold"
+                : "text-text-secondary hover:bg-surface-light hover:text-text-primary"
             }`}
           >
             All Categories
@@ -245,8 +241,8 @@ const ProductList: React.FC = () => {
                 onClick={() => handleCategoryChange(cat?._id)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                   filters?.category === cat?._id
-                    ? "bg-accent text-black font-bold"
-                    : "text-text-secondary hover:bg-surface-light hover:text-white"
+                    ? "bg-accent text-text-inverse font-bold"
+                    : "text-text-secondary hover:bg-surface-light hover:text-text-primary"
                 }`}
               >
                 {cat?.name}
@@ -256,7 +252,7 @@ const ProductList: React.FC = () => {
       </div>
 
       <div className="mb-8">
-        <label className="label uppercase tracking-wider text-xs font-bold mb-3 block text-[var(--color-text-light)]">
+        <label className="label uppercase tracking-wider text-xs font-bold mb-3 block text-text-primary">
           Price Range
         </label>
         <div className="px-2">
@@ -269,7 +265,7 @@ const ProductList: React.FC = () => {
             sx={{
               color: "var(--color-accent)",
               "& .MuiSlider-thumb": {
-                bgcolor: "white",
+                bgcolor: "var(--text-primary)",
               },
               "& .MuiSlider-rail": {
                 bgcolor: "var(--color-border-light)",
@@ -285,7 +281,7 @@ const ProductList: React.FC = () => {
 
       <button
         onClick={applyFilters}
-        className="border border-[var(--color-border)] hover:border-[var(--color-border-light)] opacity-80 hover:opacity-95 btn-primary w-full mt-auto text-[var(--color-text-light)] py-2"
+        className="border border-border hover:border-border-light opacity-80 hover:opacity-95 btn-primary w-full mt-auto text-text-primary py-2"
       >
         Apply Filters
       </button>
@@ -293,12 +289,12 @@ const ProductList: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
+    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem] transition-colors">
       <div className="container-custom py-2 sm:py-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif font-black text-white mb-2">
+            <h1 className="text-3xl md:text-4xl font-serif font-black mb-2 text-text-primary">
               Our Collection
             </h1>
             <p className="text-text-secondary max-w-lg">
@@ -346,7 +342,7 @@ const ProductList: React.FC = () => {
                       transform: "translateY(-50%)",
                       color: "var(--color-text-secondary)",
                       "&:hover": {
-                        color: "white",
+                        color: "var(--text-primary)",
                       },
                     }}
                   >
@@ -387,7 +383,7 @@ const ProductList: React.FC = () => {
                                 className="w-8 h-8 object-cover rounded-md"
                               />
                               <div className="flex-grow overflow-hidden">
-                                <p className="text-sm font-medium text-white truncate">
+                                <p className="text-sm font-medium text-text-primary truncate">
                                   {highlightMatch(product.name, searchQuery)}
                                 </p>
                                 <p className="text-xs text-text-secondary">
@@ -420,7 +416,7 @@ const ProductList: React.FC = () => {
                                 setSearchQuery("");
                                 setShowDropdown(false);
                               }}
-                              className="p-2 hover:bg-surface-hover rounded-lg cursor-pointer text-sm text-white"
+                              className="p-2 hover:bg-surface-hover rounded-lg cursor-pointer text-sm text-text-primary"
                             >
                               {highlightMatch(cat.name, searchQuery)}
                             </div>
@@ -444,7 +440,7 @@ const ProductList: React.FC = () => {
                                 setSearchQuery("");
                                 setShowDropdown(false);
                               }}
-                              className="p-2 hover:bg-surface-hover rounded-lg cursor-pointer text-sm text-white"
+                              className="p-2 hover:bg-surface-hover rounded-lg cursor-pointer text-sm text-text-primary"
                             >
                               {highlightMatch(brand.name, searchQuery)}
                             </div>
@@ -461,7 +457,7 @@ const ProductList: React.FC = () => {
               {/* Mobile Filter Toggle */}
               <button
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden btn-secondary px-4 py-2.5 flex items-center justify-center gap-2 border border-[var(--color-border)] rounded-md text-[var(--color-text-light)] opacity-80 hover:opacity-95"
+                className="md:hidden btn-secondary px-4 py-2.5 flex items-center justify-center gap-2 border border-border rounded-md text-text-primary opacity-80 hover:opacity-95"
               >
                 <FilterListIcon fontSize="small" />
                 Filters
@@ -475,10 +471,10 @@ const ProductList: React.FC = () => {
                     IconComponent={ExpandMoreIcon}
                     sx={{
                       bgcolor: "var(--color-surface)",
-                      color: "white",
+                      color: "var(--text-primary)",
                       borderRadius: "0.5rem",
                       border: "1px solid var(--color-border)",
-                      "& .MuiSelect-icon": { color: "white" },
+                      "& .MuiSelect-icon": { color: "var(--text-primary)" },
                       "& fieldset": { border: "none" },
                     }}
                   >

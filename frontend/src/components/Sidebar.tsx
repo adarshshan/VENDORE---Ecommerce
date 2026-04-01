@@ -1,5 +1,5 @@
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -15,9 +15,14 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-surface border-r border-border text-white w-64 h-screen sticky top-0 flex flex-col">
-      <div className="p-6 border-b border-border">
-         <h2 className="text-2xl font-serif font-bold tracking-widest text-white">ADMIN</h2>
+    <div className="bg-surface border-r border-border text-text-primary w-64 h-screen sticky top-0 flex flex-col">
+      <div className="flex justify-between items-center p-6 border-b border-border">
+        <div>
+          <h2 className="text-3xl font-serif font-bold ">VENDORA</h2>
+        </div>
+        <div className="pb-5 ps-6">
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="flex flex-col py-4 gap-1">
@@ -27,8 +32,8 @@ const Sidebar: React.FC = () => {
             onClick={() => navigate(item.path)}
             className={`py-3 px-6 cursor-pointer text-sm font-medium transition-all duration-200 border-l-4 ${
               location.pathname === item.path
-                ? "bg-surface-light border-accent text-white"
-                : "border-transparent text-text-secondary hover:bg-surface-light hover:text-white"
+                ? "bg-surface-light border-accent"
+                : "border-transparent text-text-secondary hover:bg-surface-light hover:text-text-secondary"
             }`}
           >
             {item.label}

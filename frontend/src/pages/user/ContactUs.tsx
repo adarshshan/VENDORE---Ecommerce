@@ -9,7 +9,7 @@ import {
   AccessTime as TimeIcon,
 } from "@mui/icons-material";
 import { submitContact } from "../../services/api";
-import CustomButton from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -67,7 +67,7 @@ const ContactUs: React.FC = () => {
     <div className="min-h-screen bg-background py-5 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-5 sm:mb-16">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-black text-text-primary mb-4">
             Contact Us
           </h1>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">
@@ -79,17 +79,17 @@ const ContactUs: React.FC = () => {
           {/* Contact Details Section */}
           <div className="space-y-8">
             <div className="card p-8 bg-surface-light border-border">
-              <h3 className="text-2xl font-bold text-white mb-8">
+              <h3 className="text-2xl font-bold text-text-primary mb-8">
                 Get in Touch
               </h3>
 
               <div className="space-y-1">
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <PhoneIcon className="text-[var(--color-text-light)]" />
+                    <PhoneIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-white font-semibold">Phone & Helpline</p>
+                    <p className="text-text-primary font-semibold">Phone & Helpline</p>
                     <p className="text-text-secondary">+91 7356683993</p>
                     <p className="text-text-secondary">
                       1-800-KIDS-OWN (Toll Free)
@@ -99,10 +99,10 @@ const ContactUs: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <EmailIcon className="text-[var(--color-text-light)]" />
+                    <EmailIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-white font-semibold">Email Address</p>
+                    <p className="text-text-primary font-semibold">Email Address</p>
                     <p className="text-text-secondary">
                       vendorashop555@gmail.com
                     </p>
@@ -114,10 +114,10 @@ const ContactUs: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <LocationIcon className="text-[var(--color-text-light)]" />
+                    <LocationIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-white font-semibold">Physical Address</p>
+                    <p className="text-text-primary font-semibold">Physical Address</p>
                     <p className="text-text-secondary">
                       Kootilangadi, Malappuram
                     </p>
@@ -127,10 +127,10 @@ const ContactUs: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/20 p-3 rounded-full">
-                    <TimeIcon className="text-[var(--color-text-light)]" />
+                    <TimeIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-white font-semibold">Working Hours</p>
+                    <p className="text-text-primary font-semibold">Working Hours</p>
                     <p className="text-text-secondary">
                       Mon - Fri: 9:00 AM - 6:00 PM
                     </p>
@@ -145,13 +145,13 @@ const ContactUs: React.FC = () => {
 
           {/* Contact Form Section */}
           <div className="card p-8 bg-surface border-border">
-            <h3 className="text-2xl font-bold text-white mb-8">
+            <h3 className="text-2xl font-bold text-text-primary mb-8">
               Send us a Message
             </h3>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="space-y-6 text-[var(--color-text-light)]"
+              className="space-y-6 text-text-primary"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -160,7 +160,7 @@ const ContactUs: React.FC = () => {
                   </label>
                   <input
                     {...register("name")}
-                    className={`input w-full ${errors.name ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
+                    className={`input w-full ${errors.name ? "border-error" : "border border-border"}  hover:border-border-light px-3 py-1 rounded-md`}
                     placeholder="Your Name"
                   />
                   {errors.name && (
@@ -175,7 +175,7 @@ const ContactUs: React.FC = () => {
                   </label>
                   <input
                     {...register("email")}
-                    className={`input w-full ${errors.email ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
+                    className={`input w-full ${errors.email ? "border-error" : "border border-border"}  hover:border-border-light px-3 py-1 rounded-md`}
                     placeholder="Your Email"
                   />
                   {errors.email && (
@@ -193,7 +193,7 @@ const ContactUs: React.FC = () => {
                   </label>
                   <input
                     {...register("phone")}
-                    className={`input w-full border border-[var(--color-border)]  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
+                    className={`input w-full border border-border  hover:border-border-light px-3 py-1 rounded-md`}
                     placeholder="Your Phone"
                   />
                 </div>
@@ -203,7 +203,7 @@ const ContactUs: React.FC = () => {
                   </label>
                   <input
                     {...register("subject")}
-                    className={`input w-full ${errors.subject ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
+                    className={`input w-full ${errors.subject ? "border-error" : "border border-border"}  hover:border-border-light px-3 py-1 rounded-md`}
                     placeholder="Subject"
                   />
                   {errors.subject && (
@@ -221,7 +221,7 @@ const ContactUs: React.FC = () => {
                 <textarea
                   {...register("message")}
                   rows={4}
-                  className={`input w-full min-h-[120px] ${errors.message ? "border-error" : "border border-[var(--color-border)]"}  hover:border-[var(--color-border-light)] px-3 py-1 rounded-md`}
+                  className={`input w-full min-h-[120px] ${errors.message ? "border-error" : "border border-border"}  hover:border-border-light px-3 py-1 rounded-md`}
                   placeholder="How can we help you?"
                 />
                 {errors.message && (

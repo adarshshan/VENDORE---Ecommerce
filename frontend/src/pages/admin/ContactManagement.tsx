@@ -69,7 +69,7 @@ const ContactManagement: React.FC = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-black text-white">Contact Management</h1>
+          <h1 className="text-3xl font-black">Contact Management</h1>
           <p className="text-text-secondary">
             View and respond to customer inquiries
           </p>
@@ -111,7 +111,7 @@ const ContactManagement: React.FC = () => {
                         Loading contacts...
                       </td>
                     </tr>
-                  ) : contacts.length === 0 ? (
+                  ) : contacts?.length === 0 ? (
                     <tr>
                       <td
                         colSpan={5}
@@ -121,33 +121,29 @@ const ContactManagement: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    contacts.map((contact) => (
+                    contacts?.map((contact) => (
                       <tr
-                        key={contact._id}
+                        key={contact?._id}
                         className="hover:bg-surface-light transition-colors group"
                       >
                         <td className="px-6 py-4">
-                          <div className="font-medium text-white">
-                            {contact.name}
-                          </div>
+                          <div className="font-medium ">{contact?.name}</div>
                           <div className="text-xs text-text-secondary">
-                            {contact.email}
+                            {contact?.email}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-white line-clamp-1">
-                            {contact.subject}
-                          </div>
+                          <div className="line-clamp-1">{contact?.subject}</div>
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(contact.status)}`}
+                            className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(contact?.status)}`}
                           >
-                            {contact.status}
+                            {contact?.status}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-text-secondary">
-                          {new Date(contact.createdAt).toLocaleDateString()}
+                          {new Date(contact?.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4">
                           <button
@@ -171,9 +167,7 @@ const ContactManagement: React.FC = () => {
           {selectedContact ? (
             <div className="card bg-surface p-6 sticky top-6">
               <div className="flex justify-between items-start mb-6">
-                <h3 className="text-xl font-bold text-white">
-                  Message Details
-                </h3>
+                <h3 className="text-xl font-bold">Message Details</h3>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(selectedContact.status)}`}
                 >
@@ -187,14 +181,14 @@ const ContactManagement: React.FC = () => {
                     From
                   </label>
                   <div className="text-white font-medium">
-                    {selectedContact.name}
+                    {selectedContact?.name}
                   </div>
                   <div className="text-sm text-text-secondary">
-                    {selectedContact.email}
+                    {selectedContact?.email}
                   </div>
-                  {selectedContact.phone && (
+                  {selectedContact?.phone && (
                     <div className="text-sm text-text-secondary">
-                      {selectedContact.phone}
+                      {selectedContact?.phone}
                     </div>
                   )}
                 </div>
@@ -203,8 +197,8 @@ const ContactManagement: React.FC = () => {
                   <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">
                     Subject
                   </label>
-                  <div className="text-white font-medium">
-                    {selectedContact.subject}
+                  <div className="font-medium text-text-secondary">
+                    {selectedContact?.subject}
                   </div>
                 </div>
 

@@ -7,27 +7,28 @@
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
 
   /* Brand Colors */
-  --color-primary: #0f172a; /* Slate-900 (Dark Blue/Blackish) */
-  --color-primary-light: #334155; /* Slate-700 */
-  --color-accent: #38bdf8; /* Sky-400 */
-  --color-accent-hover: #0ea5e9; /* Sky-500 */
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
 
   /* Backgrounds */
-  --color-background: #000000; /* Pure Black */
-  --color-surface: #0a0a0a; /* Almost Black */
-  --color-surface-light: #171717; /* Neutral-900 */
-  --color-surface-hover: #262626; /* Neutral-800 */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+  --color-surface-hover: var(--surface-hover);
 
   /* Text */
-  --color-text-light: #ffffff; /* Slate-50 */
-  --color-text-primary: #f8fafc; /* Slate-50 */
-  --color-text-secondary: #94a3b8; /* Slate-400 */
-  --color-text-muted: #64748b; /* Slate-500 */
-  --color-text-inverse: #000000;
+  --color-text-light: var(--text-light);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-Header: var(--text-header);
 
   /* Borders */
-  --color-border: #262626; /* Neutral-800 */
-  --color-border-light: #404040; /* Neutral-700 */
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
 
   /* Status */
   --color-success: #10b981; /* Emerald-500 */
@@ -36,9 +37,49 @@
   --color-info: #3b82f6; /* Blue-500 */
 }
 
+:root {
+  /* DARK THEME (default) */
+  --primary: #0f172a;
+  --primary-light: #334155;
+  --accent: #38bdf8;
+  --accent-hover: #0ea5e9;
+  --background: #000000;
+  --surface: #0a0a0a;
+  --surface-light: #171717;
+  --surface-hover: #262626;
+  --text-light: #ffffff;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #000000;
+  --text-header: #ffffff;
+  --border: #262626;
+  --border-light: #404040;
+}
+
+:root[data-theme="light"] {
+  /* LIGHT THEME */
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-light: #f1f5f9;
+  --surface-hover: #e2e8f0;
+  --text-light: #0f172a;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+  --text-header: #000000;
+  --border: #e2e8f0;
+  --border-light: #cbd5e1;
+}
+
 @layer base {
   body {
-    @apply bg-background text-text-primary font-sans antialiased;
+    @apply bg-background text-text-primary font-sans antialiased transition-colors duration-300;
   }
 
   h1,
@@ -47,7 +88,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold tracking-tight text-white;
+    @apply font-bold tracking-tight text-text-primary transition-colors duration-300;
   }
 
   h1 {
@@ -78,7 +119,7 @@
 
 .slick-prev:before,
 .slick-next:before {
-  color: var(--color-accent, #ffffff) !important;
+  color: var(--accent) !important;
   font-size: 24px !important;
 }
 
@@ -86,7 +127,7 @@
   content: "" !important;
   width: 8px !important;
   height: 8px !important;
-  background: var(--color-accent, #ffffff) !important;
+  background: var(--accent) !important;
   border-radius: 50% !important;
   display: block !important;
   opacity: 0.4 !important;
@@ -96,16 +137,16 @@
 .slick-dots li.slick-active button:before {
   opacity: 1 !important;
   transform: scale(1.2) !important;
-  background: var(--color-accent, #ffffff) !important;
+  background: var(--accent) !important;
 }
 
 .Mui-selected,
 .MuiList-root {
-  background-color: var(--color-surface-hover) !important;
-  color: var(--color-text-light) !important;
+  background-color: var(--surface-hover) !important;
+  color: var(--text-primary) !important;
 }
 
 .menu-drawer .MuiList-root {
-  background-color: "#ffffff" !important;
-  color: var(--color-text-light) !important;
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
 }

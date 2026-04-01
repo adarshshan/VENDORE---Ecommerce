@@ -12,11 +12,13 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  width: '90%',
+  maxWidth: 400,
+  bgcolor: 'var(--color-surface)',
+  border: '1px solid var(--color-border)',
+  borderRadius: '16px',
   boxShadow: 24,
-  p: 4,
+  p: 2,
 };
 
 const AlertModal: React.FC<AlertModalProps> = ({ open, onClose, message }) => {

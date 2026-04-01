@@ -31,7 +31,7 @@ const Wishlist: React.FC = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-4">
         <FavoriteIcon className="text-red-500 text-6xl mb-4 opacity-20" />
-        <h2 className="text-3xl font-serif font-bold text-white mb-4">
+        <h2 className="text-3xl font-serif font-bold text-text-primary mb-4">
           Your Wishlist is Empty
         </h2>
         <p className="text-text-secondary mb-8">
@@ -51,7 +51,7 @@ const Wishlist: React.FC = () => {
           <div>
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors mb-4 group"
+              className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-4 group"
             >
               <ArrowBackIcon
                 fontSize="small"
@@ -61,7 +61,7 @@ const Wishlist: React.FC = () => {
                 Back
               </span>
             </button>
-            <h1 className="text-4xl font-serif font-black text-white">
+            <h1 className="text-4xl font-serif font-black text-text-primary">
               My Wishlist
               <span className="ml-4 text-lg font-sans font-normal text-text-muted">
                 ({wishlist.length} Items)
@@ -72,8 +72,8 @@ const Wishlist: React.FC = () => {
 
         {wishlist.length === 0 ? (
           <div className="bg-surface border border-border rounded-3xl p-12 text-center">
-            <FavoriteIcon className="text-red-500 text-6xl mb-4 opacity-20" />
-            <h3 className="text-xl text-white mb-2">No items found</h3>
+            <FavoriteIcon className="text-error text-6xl mb-4 opacity-20" />
+            <h3 className="text-xl text-text-primary mb-2">No items found</h3>
             <p className="text-text-secondary mb-6">
               Start adding your favorite pieces to your wishlist.
             </p>
@@ -103,7 +103,7 @@ const Wishlist: React.FC = () => {
                 </div>
                 <div className="flex-grow flex flex-col justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-white capitalize">
+                    <h3 className="text-lg font-bold text-text-primary capitalize">
                       {product.name}
                     </h3>
                     <p className="text-accent font-bold">
@@ -113,14 +113,14 @@ const Wishlist: React.FC = () => {
                   <div className="flex gap-2 mt-4">
                     <button
                       onClick={() => handleMoveToCart(product)}
-                      className="flex-grow bg-accent text-black text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-white transition-colors uppercase tracking-wider"
+                      className="flex-grow bg-accent text-text-inverse text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-accent-hover transition-colors uppercase tracking-wider"
                     >
                       <ShoppingCartIcon fontSize="small" />
                       Move to Cart
                     </button>
                     <button
                       onClick={() => removeFromWishlist(product._id as string)}
-                      className="p-2 border border-border text-text-secondary hover:text-red-500 hover:border-red-500 transition-all rounded-lg"
+                      className="p-2 border border-border text-text-secondary hover:text-error hover:border-error transition-all rounded-lg"
                     >
                       <DeleteOutlineIcon fontSize="small" />
                     </button>

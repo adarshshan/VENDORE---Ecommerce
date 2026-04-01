@@ -20,11 +20,7 @@ const ProductManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const { isModalOpen, openModal, closeModal } = useStore();
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["products", page],
     queryFn: () => getProducts({ page, limit: 10 }),
   });
@@ -149,17 +145,15 @@ const ProductManagement: React.FC = () => {
                   className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      {product?.name}
-                    </div>
+                    <div className="font-medium">{product?.name}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
+                    <div className="font-medium">
                       ₹{product?.price.toLocaleString("en-IN")}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
+                    <div className="font-medium">
                       {typeof product?.category === "object"
                         ? product?.category?.name
                         : "Uncategorized"}
@@ -167,9 +161,7 @@ const ProductManagement: React.FC = () => {
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      {product?.stock}
-                    </div>
+                    <div className="font-medium">{product?.stock}</div>
                   </td>
 
                   <td className="px-6 py-4">

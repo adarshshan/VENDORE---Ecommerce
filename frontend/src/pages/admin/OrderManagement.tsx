@@ -80,9 +80,7 @@ const OrderManagement: React.FC = () => {
 
   return (
     <div className="p-6 bg-background min-h-screen text-text-primary">
-      <h1 className="text-3xl font-serif font-bold mb-8 text-white">
-        Order Management
-      </h1>
+      <h1 className="text-3xl font-serif font-bold mb-8">Order Management</h1>
 
       <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-xl">
         <table className="min-w-full text-left border-collapse">
@@ -147,7 +145,7 @@ const OrderManagement: React.FC = () => {
                   </Tooltip>
 
                   <td className="px-6 py-4">
-                    <div className="font-bold text-white">
+                    <div className="font-bold">
                       {(order?.user as any)?.name || "Guest"}
                     </div>
                     <div className="text-xs text-text-muted">
@@ -195,7 +193,7 @@ const OrderManagement: React.FC = () => {
                   <td className="px-6 py-4">
                     <button
                       onClick={() => openDetails(order)}
-                      className="bg-surface-light hover:bg-surface-hover text-white px-4 py-1.5 rounded-lg text-xs font-bold border border-border transition-all active:scale-95"
+                      className="bg-surface-light hover:bg-surface-hover px-4 py-1.5 rounded-lg text-xs font-bold border border-border transition-all active:scale-95"
                     >
                       View Details
                     </button>
@@ -215,16 +213,16 @@ const OrderManagement: React.FC = () => {
 
       {/* Order Details Modal */}
       <CustomModal open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)}>
-        <div className="w-full border border-border rounded-3xl overflow-hidden">
+        <div className="w-full overflow-hidden">
           {selectedOrder && (
             <div className="max-h-[85vh] overflow-y-auto pr-2 custom-scrollbar">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-serif font-black text-white">
+                <h2 className="text-2xl font-serif font-black">
                   Order Details
                 </h2>
                 <button
                   onClick={() => setIsDetailsOpen(false)}
-                  className="text-text-secondary hover:text-white transition-colors"
+                  className="text-text-secondary hover:text-text-secondary transition-colors"
                 >
                   ✕
                 </button>
@@ -241,7 +239,7 @@ const OrderManagement: React.FC = () => {
                   <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mt-3">
                     Customer
                   </p>
-                  <p className="text-sm text-white font-bold">
+                  <p className="text-sm font-bold">
                     {(selectedOrder?.user as any)?.name}
                   </p>
                   <p className="text-xs text-text-secondary">
@@ -259,7 +257,7 @@ const OrderManagement: React.FC = () => {
                     {selectedOrder?.shippingAddress?.state},{" "}
                     {selectedOrder?.shippingAddress?.postalCode}
                     <br />
-                    <span className="font-bold text-white">
+                    <span className="font-bold">
                       Phone: {selectedOrder?.shippingAddress?.phone}
                     </span>
                   </p>
@@ -267,7 +265,7 @@ const OrderManagement: React.FC = () => {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-4 border-b border-border pb-2">
+                <h3 className="text-xs font-black uppercase tracking-widest mb-4 border-b border-border pb-2">
                   Order Items
                 </h3>
                 <div className="space-y-4">
@@ -278,7 +276,7 @@ const OrderManagement: React.FC = () => {
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <p className="font-bold text-white">{item?.name}</p>
+                          <p className="font-bold">{item?.name}</p>
                           <p className="text-xs text-text-secondary">
                             Qty: {item?.quantity} | Size: {item?.size || "N/A"}{" "}
                             | Price: ₹{item?.price}
@@ -295,7 +293,7 @@ const OrderManagement: React.FC = () => {
                           <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">
                             Return Requested
                           </p>
-                          <p className="text-xs text-white mb-3">
+                          <p className="text-xs mb-3">
                             Reason:{" "}
                             <span className="font-bold">
                               {item?.returnReason}
@@ -350,7 +348,7 @@ const OrderManagement: React.FC = () => {
 
               {/* General Status Management */}
               <div className="border-t border-border pt-6">
-                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-4">
+                <h3 className="text-xs font-black uppercase tracking-widest mb-4">
                   Update Order Status
                 </h3>
                 <div className="flex flex-wrap gap-2">

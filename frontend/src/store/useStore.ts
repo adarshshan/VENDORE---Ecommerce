@@ -24,6 +24,10 @@ interface StoreState {
   removeFromWishlist: (productId: string | number) => Promise<void>;
   fetchWishlist: () => Promise<void>;
   
+  theme: "dark" | "light";
+  setTheme: (theme: "dark" | "light") => void;
+  toggleTheme: () => void;
+
   _hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
 }
@@ -146,18 +150,41 @@ export const useStore = create<StoreState>()(
         }
       },
 
+      theme: "dark",
+      setTheme: (theme) => {
+        set({ theme });
+        if (theme === "light") {
+          document.documentElement.setAttribute("data-theme", "light");
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+        }
+      },
+      toggleTheme: () => {
+        const newTheme = get().theme === "dark" ? "light" : "dark";
+        get().setTheme(newTheme);
+      },
+
       _hasHydrated: false,
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
       name: "kids-own-storage",
       onRehydrateStorage: (state) => {
-        return () => state?.setHasHydrated(true);
+        return () => {
+          state?.setHasHydrated(true);
+          // Apply theme after hydration
+          if (state?.theme === "light") {
+            document.documentElement.setAttribute("data-theme", "light");
+          } else {
+            document.documentElement.removeAttribute("data-theme");
+          }
+        };
       },
       partialize: (state) => ({ 
         user: state.user, 
         cart: state.cart, 
-        wishlist: state.wishlist 
+        wishlist: state.wishlist,
+        theme: state.theme
       }),
     }
   )

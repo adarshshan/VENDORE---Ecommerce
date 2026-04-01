@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getMyOrders, requestReturn } from "../../services/api";
-import CustomButton from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
 import Loading from "../../components/Loading";
 import { format } from "date-fns";
 import { type Order } from "../../types/Order";
@@ -107,7 +107,7 @@ const ReturnAndExchange = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-background py-10 text-[var(--color-text-light)] px-[1rem] lg:px-[8rem] xl:px-[20rem]">
+    <div className="min-h-screen bg-background py-10 text-text-primary px-[1rem] lg:px-[8rem] xl:px-[20rem]">
       <h2 className="text-3xl font-serif font-bold mb-8 text-center">
         Return & Exchange
       </h2>
@@ -122,7 +122,7 @@ const ReturnAndExchange = () => {
                 <span className="text-accent">✓</span>
                 <p>
                   Returns are allowed within{" "}
-                  <span className="text-white font-bold">5 days</span> after
+                  <span className="text-text-primary font-bold">5 days</span> after
                   delivery.
                 </p>
               </li>
@@ -153,7 +153,7 @@ const ReturnAndExchange = () => {
 
         {/* Form Section */}
         <div className="bg-surface p-8 rounded-2xl border border-border shadow-2xl">
-          <h4 className="text-xl font-bold mb-6 text-white">Submit Request</h4>
+          <h4 className="text-xl font-bold mb-6 text-text-primary">Submit Request</h4>
 
           <form onSubmit={handleReturnRequest} className="space-y-5">
             {/* Select Order */}
@@ -162,7 +162,7 @@ const ReturnAndExchange = () => {
                 Select Order
               </label>
               <select
-                className="w-full bg-background border border-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
+                className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors"
                 value={selectedOrder}
                 onChange={(e) => {
                   setSelectedOrder(e.target.value);
@@ -187,7 +187,7 @@ const ReturnAndExchange = () => {
                   Select Product
                 </label>
                 <select
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
+                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors"
                   value={selectedProduct}
                   onChange={(e) => setSelectedProduct(e.target.value)}
                   required
@@ -235,7 +235,7 @@ const ReturnAndExchange = () => {
                 Reason for Return
               </label>
               <select
-                className="w-full bg-background border border-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
+                className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 required
@@ -259,7 +259,7 @@ const ReturnAndExchange = () => {
                   Custom Reason
                 </label>
                 <textarea
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors min-h-[100px]"
+                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors min-h-[100px]"
                   placeholder="Please describe the issue..."
                   value={customReason}
                   onChange={(e) => setCustomReason(e.target.value)}

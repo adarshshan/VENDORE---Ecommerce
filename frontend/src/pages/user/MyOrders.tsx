@@ -62,7 +62,7 @@ const MyOrders = () => {
     <div className="min-h-screen bg-background py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
       <div className="container-custom ">
         <div className="mb-10">
-          <h1 className="text-3xl md:text-4xl font-serif font-black text-white mb-2">
+          <h1 className="text-3xl md:text-4xl font-serif font-black mb-2">
             Order History
           </h1>
           <p className="text-text-secondary">
@@ -77,7 +77,7 @@ const MyOrders = () => {
                 sx={{ fontSize: 40, color: "var(--color-text-muted)" }}
               />
             </div>
-            <h2 className="text-2xl font-serif font-bold text-white mb-4">
+            <h2 className="text-2xl font-serif font-bold text-text-primary mb-4">
               No orders found
             </h2>
             <p className="text-text-secondary mb-8">
@@ -99,7 +99,7 @@ const MyOrders = () => {
                 <div className="flex flex-col md:flex-row justify-between gap-6">
                   <div className="space-y-1 sm:space-y-3 flex-grow">
                     <div className="flex flex-wrap items-center gap-3">
-                      <span className="text-lg font-bold text-white uppercase tracking-tighter">
+                      <span className="text-lg font-bold text-text-primary uppercase tracking-tighter">
                         Order #
                         {order?._id
                           .substring(order?._id?.length - 8)
@@ -124,7 +124,7 @@ const MyOrders = () => {
                       </div>
                       <div className="flex items-center gap-2 text-text-secondary">
                         <PaymentsIcon sx={{ fontSize: 16 }} />
-                        <span className="font-bold text-white">
+                        <span className="font-bold text-text-primary">
                           ₹{order?.totalPrice.toFixed(2)}
                         </span>
                       </div>
