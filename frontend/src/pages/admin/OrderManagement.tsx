@@ -9,6 +9,8 @@ import CustomModal from "../../components/Modal";
 import { format } from "date-fns";
 import { Tooltip } from "@mui/material";
 
+import Pagination from "../../components/Pagination";
+
 const OrderManagement: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -26,10 +28,9 @@ const OrderManagement: React.FC = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const data = await getAllOrders(page);
+      const data = await getAllOrders(page, 10);
       setOrders(data?.orders);
-      setPage(data?.page);
-      setTotalPages(data?.pages);
+      setTotalPages(data?.totalPages);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
@@ -206,27 +207,11 @@ const OrderManagement: React.FC = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="mt-8 flex justify-center items-center gap-4">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="px-4 py-2 bg-surface border border-border rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-light transition-colors font-bold text-sm"
-        >
-          Previous
-        </button>
-        <span className="text-sm font-medium text-text-secondary">
-          Page <span className="text-white font-bold">{page}</span> of{" "}
-          {totalPages}
-        </span>
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-          className="px-4 py-2 bg-surface border border-border rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-light transition-colors font-bold text-sm"
-        >
-          Next
-        </button>
-      </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       {/* Order Details Modal */}
       <CustomModal open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)}>

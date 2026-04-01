@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getUsers,
@@ -7,18 +7,26 @@ import {
   unblockUser,
 } from "../../services/api";
 import type { User } from "../../types/User";
+import Pagination from "../../components/Pagination";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
 
   const {
-    data: users,
+    data,
     isLoading,
     isError,
-  } = useQuery<User[]>({ queryKey: ["users"], queryFn: getUsers });
+  } = useQuery({
+    queryKey: ["users", page],
+    queryFn: () => getUsers(page, 10),
+  });
+
+  const users = data?.users || [];
+  const totalPages = data?.totalPages || 0;
 
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
@@ -40,6 +48,10 @@ const UserManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleDeleteUser = (id: string) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
@@ -158,6 +170,11 @@ const UserManagement: React.FC = () => {
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

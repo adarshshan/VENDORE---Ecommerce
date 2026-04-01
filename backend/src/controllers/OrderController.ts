@@ -54,8 +54,20 @@ export class OrderController {
   async getMyOrders(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).userId;
-      const orders = await this.orderService.getMyOrders(userId);
-      res.json(orders);
+      const page = req.query.page ? Number(req.query.page) : 1;
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      
+      const { orders, totalItems } = await this.orderService.getMyOrders(
+        userId,
+        page,
+        limit,
+      );
+      res.json({
+        orders,
+        totalItems,
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -119,8 +131,9 @@ export class OrderController {
   // Get All Orders (Admin)
   async getAllOrders(req: Request, res: Response): Promise<void> {
     try {
-      const pageNumber = Number(req.query.pageNumber) || 1;
-      const result = await this.orderService.getAllOrders(pageNumber);
+      const page = req.query.page ? Number(req.query.page) : 1;
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      const result = await this.orderService.getAllOrders(page, limit);
       res.json(result);
     } catch (error: any) {
       res.status(500).json({ message: error.message });

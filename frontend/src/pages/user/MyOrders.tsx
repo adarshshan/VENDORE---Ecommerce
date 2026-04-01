@@ -7,23 +7,28 @@ import LocalMallIcon from "@mui/icons-material/LocalMall";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import Loading from "../../components/Loading";
+import Pagination from "../../components/Pagination";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const { user } = useStore();
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     const fetchOrders = async () => {
       if (!user) return;
       try {
-        const data = await getMyOrders();
-        setOrders(data);
+        setLoading(true);
+        const data = await getMyOrders(page);
+        setOrders(data.orders);
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -32,7 +37,7 @@ const MyOrders = () => {
     };
 
     fetchOrders();
-  }, [user]);
+  }, [user, page]);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -156,6 +161,13 @@ const MyOrders = () => {
                 </div>
               </div>
             ))}
+            <div className="mt-8">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
+            </div>
           </div>
         )}
       </div>

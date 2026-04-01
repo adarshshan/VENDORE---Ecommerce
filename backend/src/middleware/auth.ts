@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { UserDocument, UserModel } from "../models/UserSchema";
+import { UserDocument } from "../models/UserSchema";
 import { CreateJWT } from "../utils/generateToken";
 import { UserRepository } from "../repositories/UserRepository";
 

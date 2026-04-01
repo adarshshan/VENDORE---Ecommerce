@@ -13,11 +13,17 @@ export interface ProductFilters {
   search?: string;
   sort?: string;
   limit?: number;
+  page?: number;
 }
 
 export const getProducts = async (
   filters?: ProductFilters,
-): Promise<Product[]> => {
+): Promise<{
+  products: Product[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+}> => {
   const params = new URLSearchParams();
   if (filters) {
     if (filters.category) params.append("category", filters.category);
@@ -28,6 +34,7 @@ export const getProducts = async (
     if (filters.search) params.append("search", filters?.search);
     if (filters.sort) params.append("sort", filters?.sort);
     if (filters.limit) params.append("limit", filters?.limit.toString());
+    if (filters.page) params.append("page", filters?.page.toString());
   }
 
   const response = await axios.get(
@@ -81,8 +88,18 @@ export const deleteProduct = async (id: string): Promise<void> => {
   await axios.delete(`${VITE_API_URL}/products/${id}`);
 };
 
-export const getUsers = async (): Promise<User[]> => {
-  const response = await axios.get(`${VITE_API_URL}/users`);
+export const getUsers = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<{
+  users: User[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+}> => {
+  const response = await axios.get(
+    `${VITE_API_URL}/users?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };
 
@@ -178,8 +195,18 @@ export const createOrder = async (orderData: any) => {
   return response.data;
 };
 
-export const getMyOrders = async () => {
-  const response = await axios.get(`${VITE_API_URL}/orders/myorders`);
+export const getMyOrders = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<{
+  orders: any[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+}> => {
+  const response = await axios.get(
+    `${VITE_API_URL}/orders/myorders?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };
 
@@ -209,8 +236,18 @@ export const requestReturn = async (returnParams: {
 };
 
 // Admin Order API
-export const getAllOrders = async (page: number = 1) => {
-  const response = await axios.get(`${VITE_API_URL}/orders?pageNumber=${page}`);
+export const getAllOrders = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<{
+  orders: any[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+}> => {
+  const response = await axios.get(
+    `${VITE_API_URL}/orders?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };
 

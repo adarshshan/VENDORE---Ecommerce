@@ -14,7 +14,12 @@ export interface IOrderRepository {
   findAllWithPagination(
     page: number,
     pageSize: number,
-  ): Promise<OrderDocument[]>;
+  ): Promise<{ orders: OrderDocument[]; totalItems: number }>;
+  findByUserWithPagination(
+    userId: string,
+    page: number,
+    pageSize: number,
+  ): Promise<{ orders: OrderDocument[]; totalItems: number }>;
   update(
     id: string,
     updateData: Partial<OrderDocument>,
@@ -78,16 +83,32 @@ export class OrderRepository implements IOrderRepository {
     return await OrderModel.countDocuments({});
   }
 
+  async findByUserWithPagination(
+    userId: string,
+    page: number,
+    pageSize: number,
+  ): Promise<{ orders: OrderDocument[]; totalItems: number }> {
+    const totalItems = await OrderModel.countDocuments({ user: userId });
+    const orders = await OrderModel.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .limit(pageSize)
+      .skip(pageSize * (page - 1))
+      .exec();
+    return { orders, totalItems };
+  }
+
   async findAllWithPagination(
     page: number,
     pageSize: number,
-  ): Promise<OrderDocument[]> {
-    return await OrderModel.find({})
+  ): Promise<{ orders: OrderDocument[]; totalItems: number }> {
+    const totalItems = await OrderModel.countDocuments({});
+    const orders = await OrderModel.find({})
       .populate("user", "id name")
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1))
       .exec();
+    return { orders, totalItems };
   }
 
   async update(

@@ -163,8 +163,10 @@ export class OrderService {
     return createdOrder;
   }
 
-  async getMyOrders(userId: string) {
-    return await this.orderRepository.findByUser(userId);
+  async getMyOrders(userId: string, pageNumber: number = 1, limit: number = 10) {
+    const page = pageNumber || 1;
+    const pageSize = limit || 10;
+    return await this.orderRepository.findByUserWithPagination(userId, page, pageSize);
   }
 
   async getOrderById(orderId: string) {
@@ -305,17 +307,16 @@ export class OrderService {
     return await this.orderRepository.save(order);
   }
 
-  async getAllOrders(pageNumber: number) {
-    const pageSize = 10;
+  async getAllOrders(pageNumber: number, limit: number = 10) {
+    const pageSize = limit || 10;
     const page = pageNumber || 1;
 
-    const count = await this.orderRepository.countAll();
-    const orders = await this.orderRepository.findAllWithPagination(
+    const { orders, totalItems } = await this.orderRepository.findAllWithPagination(
       page,
       pageSize,
     );
 
-    return { orders, page, pages: Math.ceil(count / pageSize) };
+    return { orders, page, totalItems, totalPages: Math.ceil(totalItems / pageSize) };
   }
 
   async updateOrderStatus(orderId: string, status: any) {

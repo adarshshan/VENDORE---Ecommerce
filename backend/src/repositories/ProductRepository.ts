@@ -8,10 +8,11 @@ export interface ProductFilters {
   search?: string;
   sort?: string;
   limit?: number;
+  page?: number;
 }
 
 export interface IProductRepository {
-  findAll(filters?: ProductFilters): Promise<ProductDocument[]>;
+  findAll(filters?: ProductFilters): Promise<{ products: ProductDocument[]; totalItems: number }>;
   findById(id: string): Promise<ProductDocument | null>;
   findRelatedProducts(productId: string, limit?: number): Promise<ProductDocument[]>;
   create(product: Omit<ProductDocument, "_id">): Promise<ProductDocument>;
@@ -20,6 +21,7 @@ export interface IProductRepository {
     product: Partial<ProductDocument>
   ): Promise<ProductDocument | null>;
   delete(id: string): Promise<boolean>;
+  countAll(filters?: ProductFilters): Promise<number>;
 }
 
 export class ProductRepository implements IProductRepository {
@@ -42,7 +44,27 @@ export class ProductRepository implements IProductRepository {
       .exec()) as ProductDocument[];
   }
 
-  async findAll(filters: ProductFilters = {}): Promise<ProductDocument[]> {
+  async countAll(filters: ProductFilters = {}): Promise<number> {
+    const query: any = {};
+
+    if (filters.category) {
+      query.category = filters.category;
+    }
+
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      query.price = {};
+      if (filters.minPrice !== undefined) query.price.$gte = filters.minPrice;
+      if (filters.maxPrice !== undefined) query.price.$lte = filters.maxPrice;
+    }
+
+    if (filters.search) {
+      query.$text = { $search: filters.search };
+    }
+
+    return await ProductModel.countDocuments(query);
+  }
+
+  async findAll(filters: ProductFilters = {}): Promise<{ products: ProductDocument[]; totalItems: number }> {
     const query: any = {};
 
     if (filters.category) {
@@ -74,15 +96,20 @@ export class ProductRepository implements IProductRepository {
       }
     }
 
+    const totalItems = await ProductModel.countDocuments(query);
+    
     const findQuery = ProductModel.find(query)
       .populate("category")
       .sort(sortOption);
 
     if (filters.limit) {
-      findQuery.limit(filters.limit);
+      const page = filters.page || 1;
+      const skip = (page - 1) * filters.limit;
+      findQuery.skip(skip).limit(filters.limit);
     }
 
-    return (await findQuery.exec()) as ProductDocument[];
+    const products = (await findQuery.exec()) as ProductDocument[];
+    return { products, totalItems };
   }
 
   async findById(id: string): Promise<ProductDocument | null> {

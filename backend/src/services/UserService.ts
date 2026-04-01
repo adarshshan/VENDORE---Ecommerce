@@ -95,8 +95,8 @@ export class UserService {
     }
   }
 
-  async getAllUsers(): Promise<UserDocument[]> {
-    return this.userRepository.findAll();
+  async getAllUsers(page?: number, limit?: number): Promise<{ users: UserDocument[]; totalItems: number }> {
+    return this.userRepository.findAll(page, limit);
   }
 
   async getUserById(id: string): Promise<UserDocument | null> {
