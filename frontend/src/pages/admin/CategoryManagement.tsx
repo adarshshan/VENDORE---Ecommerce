@@ -6,31 +6,20 @@ import {
   deleteCategory,
 } from "../../services/api";
 import {
-  Button,
   TextField,
-  Paper,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   MenuItem,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CustomModal from "../../components/Modal";
 
 const CategoryManagement: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -39,11 +28,14 @@ const CategoryManagement: React.FC = () => {
   });
 
   const fetchCategories = async () => {
+    setIsLoading(true);
     try {
       const data = await getCategories();
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,58 +92,107 @@ const CategoryManagement: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold">Category Management</Typography>
-        <Button variant="contained" color="primary" onClick={() => handleOpen()}>
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Category Management</h1>
+        <button
+          onClick={() => handleOpen()}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
           Add Category
-        </Button>
+        </button>
       </div>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead className="bg-gray-100">
-            <TableRow>
-              <TableCell className="font-bold">Name</TableCell>
-              <TableCell className="font-bold">Description</TableCell>
-              <TableCell className="font-bold">Status</TableCell>
-              <TableCell className="font-bold">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {categories.map((cat) => (
-              <TableRow key={cat._id}>
-                <TableCell>{cat.name}</TableCell>
-                <TableCell>{cat.description}</TableCell>
-                <TableCell>
-                  <span className={`px-2 py-1 rounded text-xs text-white ${cat.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`}>
-                    {cat.status}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(cat)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(cat._id)} color="secondary">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-border bg-surface-light">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {isLoading ? (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-6 py-12 text-center text-text-secondary"
+                >
+                  Loading Categories...
+                </td>
+              </tr>
+            ) : categories.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-6 py-12 text-center text-text-secondary"
+                >
+                  No Categories found.
+                </td>
+              </tr>
+            ) : (
+              categories.map((cat) => (
+                <tr
+                  key={cat._id}
+                  className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">{cat.name}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-white">{cat.description}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded text-xs text-white ${cat.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`}>
+                      {cat.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleOpen(cat)}
+                      className="text-green-500 px-2 py-1 rounded mr-2"
+                    >
+                      <EditIcon />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cat._id)}
+                      className="text-red-500 px-2 py-1 rounded"
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>{editMode ? "Edit Category" : "Add Category"}</DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent className="space-y-4">
+      <CustomModal open={open} onClose={handleClose}>
+        <div className="w-full max-w-md bg-transparent !text-[var(--color-text-light)]">
+          <Typography variant="h5" className="font-bold mb-6 text-center">
+            {editMode ? "Edit Category" : "Add Category"}
+          </Typography>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <TextField
               label="Name"
               fullWidth
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              InputProps={{
+                className: "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+              }}
             />
             <TextField
               label="Description"
@@ -160,6 +201,9 @@ const CategoryManagement: React.FC = () => {
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              InputProps={{
+                className: "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+              }}
             />
             <TextField
               select
@@ -167,19 +211,31 @@ const CategoryManagement: React.FC = () => {
               fullWidth
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              InputProps={{
+                className: "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+              }}
             >
               <MenuItem value="Active">Active</MenuItem>
               <MenuItem value="Inactive">Inactive</MenuItem>
             </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" variant="contained" color="primary">
-              {editMode ? "Update" : "Create"}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+            <div className="flex justify-end mt-6 gap-3">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="!border-gray-500 !text-[var(--color-text-light)] hover:!text-[#000000] hover:!bg-gray-100 font-bold py-2 px-4 rounded-md border transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
+              >
+                {editMode ? "Update" : "Create"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </CustomModal>
     </div>
   );
 };

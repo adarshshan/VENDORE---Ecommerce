@@ -6,16 +6,20 @@ import {
 } from "../../services/api";
 import type { Order } from "../../types/Order";
 import CustomModal from "../../components/Modal";
+import { format } from "date-fns";
+import { Tooltip } from "@mui/material";
+
+import Pagination from "../../components/Pagination";
 
 const OrderManagement: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Selected Order for Details Modal
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     fetchOrders();
@@ -24,10 +28,9 @@ const OrderManagement: React.FC = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const data = await getAllOrders(page);
-      setOrders(data.orders);
-      setPage(data.page);
-      setTotalPages(data.pages);
+      const data = await getAllOrders(page, 10);
+      setOrders(data?.orders);
+      setTotalPages(data?.totalPages);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
@@ -40,7 +43,7 @@ const OrderManagement: React.FC = () => {
     try {
       await updateOrderStatus(id, status);
       fetchOrders();
-      if (selectedOrder && selectedOrder._id === id) {
+      if (selectedOrder && selectedOrder?._id === id) {
         setIsDetailsOpen(false); // Close modal on update
       }
     } catch (error) {
@@ -48,17 +51,17 @@ const OrderManagement: React.FC = () => {
     }
   };
 
-  const handleReturnAction = async (
-    id: string,
+  const handleItemReturnAction = async (
+    orderId: string,
+    productId: string,
     status: "Approved" | "Rejected",
   ) => {
-    if (!window.confirm(`${status} return request?`)) return;
+    if (!window.confirm(`${status} return request for this item?`)) return;
     try {
-      await handleReturnRequest(id, status);
+      // Correctly passing productId for item-level return
+      await handleReturnRequest(orderId, status, productId);
       fetchOrders();
-      if (selectedOrder && selectedOrder._id === id) {
-        setIsDetailsOpen(false);
-      }
+      setIsDetailsOpen(false);
     } catch (error) {
       alert("Error handling return");
     }
@@ -69,35 +72,41 @@ const OrderManagement: React.FC = () => {
     setIsDetailsOpen(true);
   };
 
-  if (loading && orders.length === 0) return <div>Loading...</div>;
+  const hasPendingReturns = (order: Order) => {
+    return order?.items?.some((item) => item?.returnStatus === "Requested");
+  };
+
+  if (loading && orders?.length === 0) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Order Management</h1>
+    <div className="p-6 bg-background min-h-screen text-text-primary">
+      <h1 className="text-3xl font-serif font-bold mb-8 text-white">
+        Order Management
+      </h1>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-xl">
         <table className="min-w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-border bg-surface-light">
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+            <tr className="bg-surface-light/50 border-b border-border">
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
                 ID
               </th>
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
-                user
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                User
               </th>
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
                 Date
               </th>
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
                 Total
               </th>
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
-                Paid
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                Payment
               </th>
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
                 Status
               </th>
-              <th className="px-6 py-4 text-sm font-semibold text-text-secondary">
+              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
                 Actions
               </th>
             </tr>
@@ -107,98 +116,89 @@ const OrderManagement: React.FC = () => {
             {loading ? (
               <tr>
                 <td
-                  colSpan={5}
-                  className="px-6 py-12 text-center text-text-secondary"
+                  colSpan={7}
+                  className="px-6 py-12 text-center text-text-muted italic"
                 >
-                  Loading Order Details...
+                  Loading orders...
                 </td>
               </tr>
             ) : orders?.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
-                  className="px-6 py-12 text-center text-text-secondary"
+                  colSpan={7}
+                  className="px-6 py-12 text-center text-text-muted font-medium"
                 >
-                  No Orders found.
+                  No orders found.
                 </td>
               </tr>
             ) : (
               orders?.map((order) => (
                 <tr
                   key={order?._id}
-                  className="bg-[var(--color-surface)] hover:bg-surface-light transition-colors group"
+                  className="hover:bg-surface-hover/30 transition-colors group"
                 >
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      {order._id.substring(order._id.length - 6).toUpperCase()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      {(order.user as any)?.name || "N/A"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
+                  <Tooltip title={order?._id}>
+                    <td className="px-6 py-4 font-mono text-xs text-accent">
+                      #
+                      {order?._id
+                        ?.substring(order?._id.length - 8)
+                        .toUpperCase()}
+                    </td>
+                  </Tooltip>
 
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      ${order.totalPrice.toFixed(2)}
+                    <div className="font-bold text-white">
+                      {(order?.user as any)?.name || "Guest"}
+                    </div>
+                    <div className="text-xs text-text-muted">
+                      {(order?.user as any)?.email}
                     </div>
                   </td>
-
+                  <td className="px-6 py-4 text-sm">
+                    {format(new Date(order?.createdAt), "dd MMM yyyy")}
+                  </td>
+                  <td className="px-6 py-4 font-bold text-accent">
+                    ₹{order?.totalPrice.toLocaleString("en-IN")}
+                  </td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${order?.isPaid ? "bg-success/20 text-success border border-success/30" : "bg-error/20 text-error border border-error/30"}`}
+                    >
+                      {order?.isPaid ? "PAID" : "UNPAID"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
                       <span
-                        className={
-                          order.isPaid
-                            ? "text-green-600 font-bold"
-                            : "text-red-600"
-                        }
-                      >
-                        {order.isPaid ? "Yes" : "No"}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      <span
-                        className={`px-2 py-1 rounded text-xs text-white ${
-                          order.status === "Delivered"
-                            ? "bg-green-500"
-                            : order.status === "Cancelled"
-                              ? "bg-red-500"
-                              : order.status === "Returned"
-                                ? "bg-gray-500"
-                                : order.status === "Shipped"
-                                  ? "bg-indigo-500"
-                                  : "bg-blue-500"
+                        className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-tighter ${
+                          order?.status === "Delivered"
+                            ? "bg-success text-background"
+                            : order?.status === "Cancelled"
+                              ? "bg-error text-white"
+                              : order?.status === "Returned"
+                                ? "bg-gray-400 text-black"
+                                : order?.status === "Shipped"
+                                  ? "bg-indigo-500 text-white"
+                                  : "bg-accent text-background"
                         }`}
                       >
-                        {order.status}
+                        {order?.status}
                       </span>
+                      {hasPendingReturns(order) && (
+                        <span
+                          className="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"
+                          title="Pending Return Request"
+                        ></span>
+                      )}
                     </div>
-
-                    {order.returnStatus === "Requested" && (
-                      <span className="ml-2 px-2 py-1 rounded text-xs bg-orange-500 text-white animate-pulse">
-                        Return Req
-                      </span>
-                    )}
                   </td>
-
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">
-                      <button
-                        onClick={() => openDetails(order)}
-                        className="text-blue-600 hover:underline mr-2"
-                      >
-                        Details
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => openDetails(order)}
+                      className="bg-surface-light hover:bg-surface-hover text-white px-4 py-1.5 rounded-lg text-xs font-bold border border-border transition-all active:scale-95"
+                    >
+                      View Details
+                    </button>
                   </td>
                 </tr>
               ))
@@ -207,163 +207,183 @@ const OrderManagement: React.FC = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="mt-4 flex justify-center gap-2">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="px-3 py-1">
-          Page {page} of {totalPages}
-        </span>
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       {/* Order Details Modal */}
       <CustomModal open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)}>
-        <div className="p-4 w-[600px] max-h-[80vh] overflow-y-auto">
+        <div className="w-full border border-border rounded-3xl overflow-hidden">
           {selectedOrder && (
-            <>
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-bold">Order Details</h2>
+            <div className="max-h-[85vh] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-serif font-black text-white">
+                  Order Details
+                </h2>
                 <button
                   onClick={() => setIsDetailsOpen(false)}
-                  className="text-gray-500 hover:text-black"
+                  className="text-text-secondary hover:text-white transition-colors"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                <div>
-                  <p>
-                    <strong>ID:</strong> {selectedOrder._id}
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-text-muted uppercase tracking-widest">
+                    Order ID
                   </p>
-                  <p>
-                    <strong>Date:</strong>{" "}
-                    {new Date(selectedOrder.createdAt).toLocaleString()}
+                  <p className="text-sm font-mono text-accent">
+                    {selectedOrder._id}
                   </p>
-                  <p>
-                    <strong>User:</strong> {(selectedOrder.user as any)?.name} (
-                    {(selectedOrder.user as any)?.email})
+                  <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mt-3">
+                    Customer
+                  </p>
+                  <p className="text-sm text-white font-bold">
+                    {(selectedOrder?.user as any)?.name}
+                  </p>
+                  <p className="text-xs text-text-secondary">
+                    {(selectedOrder?.user as any)?.email}
                   </p>
                 </div>
-                <div>
-                  <p>
-                    <strong>Address:</strong>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-text-muted uppercase tracking-widest">
+                    Shipping Address
                   </p>
-                  <p>
-                    {selectedOrder.shippingAddress.addressLine1},{" "}
-                    {selectedOrder.shippingAddress.city}
-                  </p>
-                  <p>
-                    {selectedOrder.shippingAddress.state},{" "}
-                    {selectedOrder.shippingAddress.postalCode}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong>{" "}
-                    {selectedOrder.shippingAddress.phone}
+                  <p className="text-xs text-text-secondary">
+                    {selectedOrder?.shippingAddress?.addressLine1},{" "}
+                    {selectedOrder?.shippingAddress?.city}
+                    <br />
+                    {selectedOrder?.shippingAddress?.state},{" "}
+                    {selectedOrder?.shippingAddress?.postalCode}
+                    <br />
+                    <span className="font-bold text-white">
+                      Phone: {selectedOrder?.shippingAddress?.phone}
+                    </span>
                   </p>
                 </div>
               </div>
 
-              <div className="mb-4">
-                <h3 className="font-bold mb-2">Items</h3>
-                <div className="space-y-2">
-                  {selectedOrder.items.map((item, idx) => (
+              <div className="mb-8">
+                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-4 border-b border-border pb-2">
+                  Order Items
+                </h3>
+                <div className="space-y-4">
+                  {selectedOrder?.items?.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex justify-between border-b pb-1"
+                      className="bg-surface-light/30 p-4 rounded-xl border border-border/50"
                     >
-                      <span>
-                        {item.name} (x{item.quantity})
-                      </span>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="font-bold text-white">{item?.name}</p>
+                          <p className="text-xs text-text-secondary">
+                            Qty: {item?.quantity} | Size: {item?.size || "N/A"}{" "}
+                            | Price: ₹{item?.price}
+                          </p>
+                        </div>
+                        <p className="font-bold text-accent">
+                          ₹{(item?.price * item?.quantity).toFixed(2)}
+                        </p>
+                      </div>
+
+                      {/* Item Return Handling */}
+                      {item?.returnStatus === "Requested" && (
+                        <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                          <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">
+                            Return Requested
+                          </p>
+                          <p className="text-xs text-white mb-3">
+                            Reason:{" "}
+                            <span className="font-bold">
+                              {item?.returnReason}
+                            </span>
+                            {item?.customReturnReason && (
+                              <span className="block mt-1 italic text-text-muted">
+                                "{item?.customReturnReason}"
+                              </span>
+                            )}
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() =>
+                                handleItemReturnAction(
+                                  selectedOrder?._id,
+                                  item?.product?.toString(),
+                                  "Approved",
+                                )
+                              }
+                              className="bg-success hover:bg-success/80 text-background px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleItemReturnAction(
+                                  selectedOrder?._id,
+                                  item?.product?.toString(),
+                                  "Rejected",
+                                )
+                              }
+                              className="bg-error hover:bg-error/80 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      {item?.returnStatus &&
+                        item?.returnStatus !== "None" &&
+                        item?.returnStatus !== "Requested" && (
+                          <p
+                            className={`text-[10px] font-black uppercase mt-2 ${item?.returnStatus === "Approved" ? "text-success" : "text-error"}`}
+                          >
+                            Return {item?.returnStatus}
+                          </p>
+                        )}
                     </div>
                   ))}
                 </div>
-                <div className="text-right font-bold mt-2">
-                  Total: ${selectedOrder.totalPrice.toFixed(2)}
-                </div>
               </div>
 
-              {/* Status Management */}
-              <div className="border-t pt-4">
-                <h3 className="font-bold mb-2">Manage Status</h3>
-
-                {/* Standard Flow */}
-                <div className="flex gap-2 mb-4">
-                  {selectedOrder.status === "Processing" && (
+              {/* General Status Management */}
+              <div className="border-t border-border pt-6">
+                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-4">
+                  Update Order Status
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedOrder?.status === "Processing" && (
                     <button
                       onClick={() =>
-                        handleStatusUpdate(selectedOrder._id, "Shipped")
+                        handleStatusUpdate(selectedOrder?._id, "Shipped")
                       }
-                      className="bg-indigo-600 text-white px-3 py-1 rounded"
+                      className="bg-accent text-background px-6 py-2 rounded-xl text-xs font-black uppercase hover:opacity-90 transition-all"
                     >
                       Mark as Shipped
                     </button>
                   )}
-                  {selectedOrder.status === "Shipped" && (
+                  {selectedOrder?.status === "Shipped" && (
                     <button
                       onClick={() =>
-                        handleStatusUpdate(selectedOrder._id, "Delivered")
+                        handleStatusUpdate(selectedOrder?._id, "Delivered")
                       }
-                      className="bg-green-600 text-white px-3 py-1 rounded"
+                      className="bg-success text-background px-6 py-2 rounded-xl text-xs font-black uppercase hover:opacity-90 transition-all"
                     >
                       Mark as Delivered
                     </button>
                   )}
-                </div>
-
-                {/* Return Request Handling */}
-                {selectedOrder.returnStatus === "Requested" && (
-                  <div className="bg-orange-50 p-3 rounded border border-orange-200">
-                    <p className="font-bold text-orange-800 mb-1">
-                      Return Requested
-                    </p>
-                    <p className="text-sm mb-2">
-                      Reason: {selectedOrder.returnReason}
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          handleReturnAction(selectedOrder._id, "Approved")
-                        }
-                        className="bg-green-600 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Approve Return (Refund)
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleReturnAction(selectedOrder._id, "Rejected")
-                        }
-                        className="bg-red-600 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Reject
-                      </button>
+                  {selectedOrder?.status === "Cancelled" && (
+                    <div className="w-full p-4 bg-error/10 border border-error/20 rounded-xl">
+                      <p className="text-error text-xs font-bold italic">
+                        This order was cancelled by the user.
+                      </p>
                     </div>
-                  </div>
-                )}
-
-                {selectedOrder.status === "Cancelled" && (
-                  <p className="text-red-600">
-                    Order Cancelled. Reason: {selectedOrder.cancelReason}
-                  </p>
-                )}
-                {selectedOrder.status === "Returned" && (
-                  <p className="text-gray-600">Order Returned.</p>
-                )}
+                  )}
+                </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </CustomModal>

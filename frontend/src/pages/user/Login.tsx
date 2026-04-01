@@ -26,7 +26,15 @@ const Login: React.FC = () => {
         };
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
-        navigate("/");
+        
+        // Redirect back to original page or home
+        const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+        if (redirectPath) {
+          sessionStorage.removeItem("redirectAfterLogin");
+          navigate(redirectPath);
+        } else {
+          navigate("/");
+        }
       }
     } catch (error: any) {
       setErrorMessage(

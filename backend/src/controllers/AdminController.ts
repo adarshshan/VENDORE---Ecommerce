@@ -10,12 +10,20 @@ export class AdminController {
       const totalUsers = await UserModel.countDocuments();
       const totalProducts = await ProductModel.countDocuments();
       const totalOrders = await OrderModel.countDocuments();
-      const totalContactRequests = await Contact.countDocuments({ status: "New" });
+      const totalContactRequests = await Contact.countDocuments({
+        status: "New",
+      });
 
       const orders = await OrderModel.find({ isPaid: true });
-      const totalRevenue = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+      const totalRevenue = orders.reduce(
+        (acc, order) => acc + order.totalPrice,
+        0,
+      );
 
-      const recentOrders = await OrderModel.find().sort({ createdAt: -1 }).limit(5).populate("user", "name email");
+      const recentOrders = await OrderModel.find()
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate("user", "name email");
 
       res.json({
         totalUsers,

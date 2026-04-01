@@ -2,7 +2,7 @@ import { UserDocument, UserModel } from "../models/UserSchema";
 import { connectToDatabase } from "../config/database";
 
 export interface IUserRepository {
-  findAll(): Promise<UserDocument[]>;
+  findAll(page?: number, limit?: number): Promise<{ users: UserDocument[]; totalItems: number }>;
   findById(id: string): Promise<UserDocument | null>;
   findByEmail(email: string): Promise<UserDocument | null>;
   create(user: Omit<UserDocument, "_id">): Promise<UserDocument>;
@@ -11,6 +11,7 @@ export interface IUserRepository {
   getWishlist(userId: string): Promise<UserDocument | null>;
   addToWishlist(userId: string, productId: string): Promise<UserDocument | null>;
   removeFromWishlist(userId: string, productId: string): Promise<UserDocument | null>;
+  countAll(): Promise<number>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -50,8 +51,22 @@ export class UserRepository implements IUserRepository {
       .exec()) as UserDocument | null;
   }
 
-  async findAll(): Promise<UserDocument[]> {
-    return (await UserModel.find().exec()) as UserDocument[];
+  async countAll(): Promise<number> {
+    return await UserModel.countDocuments({});
+  }
+
+  async findAll(page?: number, limit?: number): Promise<{ users: UserDocument[]; totalItems: number }> {
+    const totalItems = await UserModel.countDocuments({});
+    const query = UserModel.find();
+
+    if (limit) {
+      const pageNum = page || 1;
+      const skip = (pageNum - 1) * limit;
+      query.skip(skip).limit(limit);
+    }
+
+    const users = (await query.exec()) as UserDocument[];
+    return { users, totalItems };
   }
 
   async findById(id: string): Promise<UserDocument | null> {

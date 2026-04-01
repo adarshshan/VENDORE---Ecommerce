@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
     const fetchNewArrivals = async () => {
       try {
         const data = await getProducts({ sort: "newest", limit: 15 });
-        setNewArrivals(data);
+        setNewArrivals(data.products);
       } catch (error) {
         console.error("Error fetching new arrivals:", error);
       } finally {

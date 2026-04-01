@@ -9,6 +9,7 @@ import {
 import type { Product } from "../../types/Product";
 import ProductForm from "../../components/ProductForm";
 import CustomModal from "../../components/Modal";
+import Pagination from "../../components/Pagination";
 import { useStore } from "../../store/useStore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -16,16 +17,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const ProductManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [page, setPage] = useState(1);
   const { isModalOpen, openModal, closeModal } = useStore();
 
   const {
-    data: products,
+    data,
     isLoading,
     isError,
-  } = useQuery<Product[]>({
-    queryKey: ["products"],
-    queryFn: () => getProducts(),
+  } = useQuery({
+    queryKey: ["products", page],
+    queryFn: () => getProducts({ page, limit: 10 }),
   });
+
+  const products = data?.products || [];
+  const totalPages = data?.totalPages || 0;
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,
@@ -50,6 +55,10 @@ const ProductManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleAddProduct = () => {
     setSelectedProduct(null);
@@ -146,7 +155,7 @@ const ProductManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-medium text-white">
-                      ${product?.price}
+                      ₹{product?.price.toLocaleString("en-IN")}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -183,6 +192,11 @@ const ProductManagement: React.FC = () => {
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <CustomModal open={isModalOpen} onClose={closeModal}>
         <ProductForm
           product={selectedProduct}

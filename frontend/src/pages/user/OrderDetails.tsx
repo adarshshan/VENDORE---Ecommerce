@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getOrderById, cancelOrder, requestReturn } from "../../services/api";
+import { getOrderById, cancelOrder } from "../../services/api";
 import type { Order } from "../../types/Order";
 import CustomModal from "../../components/Modal";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -18,7 +18,6 @@ const OrderDetails: React.FC = () => {
   const [error, setError] = useState("");
 
   const [isCancelOpen, setIsCancelOpen] = useState(false);
-  const [isReturnOpen, setIsReturnOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -56,32 +55,6 @@ const OrderDetails: React.FC = () => {
     } finally {
       setActionLoading(false);
     }
-  };
-
-  const handleReturnOrder = async () => {
-    if (!id || !reason) return;
-    try {
-      setActionLoading(true);
-      await requestReturn(id, reason);
-      setIsReturnOpen(false);
-      setReason("");
-      fetchOrder();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Error requesting return");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const isReturnEligible = (order: Order) => {
-    if (order.status !== "Delivered") return false;
-    if (order.returnStatus) return false;
-    const deliveryDate = order.deliveredAt
-      ? new Date(order.deliveredAt)
-      : new Date();
-    const diffTime = Math.abs(Date.now() - deliveryDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 7;
   };
 
   const isCancelEligible = (order: Order) => {
@@ -380,12 +353,16 @@ const OrderDetails: React.FC = () => {
                   )
                 )}
 
-                {isReturnEligible(order) && (
+                {order?.status === "Delivered" && (
                   <button
-                    onClick={() => setIsReturnOpen(true)}
+                    onClick={() =>
+                      navigate("/return&exchange", {
+                        state: { orderId: order?._id },
+                      })
+                    }
                     className="btn-primary w-full py-3 !bg-warning !text-black"
                   >
-                    Request Return
+                    Manage Returns
                   </button>
                 )}
               </div>
@@ -424,41 +401,6 @@ const OrderDetails: React.FC = () => {
               className="btn-primary !bg-error !text-white flex-1 disabled:opacity-50"
             >
               {actionLoading ? "Processing..." : "Confirm Cancel"}
-            </button>
-          </div>
-        </div>
-      </CustomModal>
-
-      {/* Return Modal */}
-      <CustomModal open={isReturnOpen} onClose={() => setIsReturnOpen(false)}>
-        <div className="bg-surface p-8 max-w-md w-full border border-border rounded-3xl">
-          <h2 className="text-2xl font-serif font-bold text-white mb-4">
-            Request Return
-          </h2>
-          <p className="text-text-secondary mb-6">
-            We're sorry the item didn't work out. Please provide a reason for
-            your return.
-          </p>
-          <label className="label">Reason for Return</label>
-          <textarea
-            className="input min-h-[100px] mb-6"
-            placeholder="Tell us more..."
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          />
-          <div className="flex gap-4">
-            <button
-              onClick={() => setIsReturnOpen(false)}
-              className="btn-secondary flex-1"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleReturnOrder}
-              disabled={!reason || actionLoading}
-              className="btn-primary !bg-warning !text-black flex-1 disabled:opacity-50"
-            >
-              {actionLoading ? "Processing..." : "Submit Request"}
             </button>
           </div>
         </div>

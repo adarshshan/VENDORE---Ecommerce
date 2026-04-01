@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
 import {
@@ -63,10 +63,10 @@ const Checkout = () => {
       setIsProcessing(true);
       setErrorMessage("");
       const data = await createRazorpayOrder(
-        cart.map((item) => ({ 
-          product: item._id, 
+        cart.map((item) => ({
+          product: item._id,
           quantity: item.quantity,
-          size: item.selectedSize 
+          size: item.selectedSize,
         })),
       );
       setOrderData(data);
@@ -82,8 +82,31 @@ const Checkout = () => {
     }
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!orderData) return;
+
+    // Check if Razorpay is already loaded, if not, wait for it
+    if (!window.Razorpay) {
+      const loadScript = (src: string) => {
+        return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
+          document.body.appendChild(script);
+        });
+      };
+
+      const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js",
+      );
+      if (!res) {
+        setErrorMessage(
+          "Razorpay SDK failed to load. Please check your internet connection and try again.",
+        );
+        return;
+      }
+    }
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -119,7 +142,7 @@ const Checkout = () => {
                 (acc, item) => acc + item.price * item.quantity,
                 0,
               ),
-              taxPrice: orderData.tax,
+              // taxPrice: orderData.tax,
               shippingPrice: orderData.shipping,
               totalPrice: orderData.amount,
               paymentResult: {
@@ -457,20 +480,12 @@ const Checkout = () => {
                     </span>
                   </div>
                   {orderData && (
-                    <>
-                      <div className="flex justify-between text-sm text-text-secondary">
-                        <span>Tax</span>
-                        <span className="text-white font-mono">
-                          ₹{orderData?.tax?.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm text-text-secondary">
-                        <span>Shipping</span>
-                        <span className="text-success font-mono font-bold">
-                          ₹{orderData.shipping.toFixed(2)}
-                        </span>
-                      </div>
-                    </>
+                    <div className="flex justify-between text-sm text-text-secondary">
+                      <span>Shipping</span>
+                      <span className="text-success font-mono font-bold">
+                        ₹{orderData?.shipping?.toFixed(2)}
+                      </span>
+                    </div>
                   )}
                 </div>
 

@@ -4,7 +4,7 @@ import { IProductRepository, ProductFilters } from "../repositories/ProductRepos
 export class ProductService {
   constructor(private productRepository: IProductRepository) {}
 
-  async getAllProducts(filters?: ProductFilters): Promise<ProductDocument[]> {
+  async getAllProducts(filters?: ProductFilters): Promise<{ products: ProductDocument[]; totalItems: number }> {
     return this.productRepository.findAll(filters);
   }
 

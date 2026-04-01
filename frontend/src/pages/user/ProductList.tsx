@@ -8,6 +8,7 @@ import {
 } from "../../services/api";
 import type { ProductFilters } from "../../services/api";
 import ProductCard from "../../components/ProductCard";
+import Pagination from "../../components/Pagination";
 import {
   Drawer,
   Slider,
@@ -152,13 +153,22 @@ const ProductList: React.FC = () => {
   };
 
   const {
-    data: products,
+    data,
     isLoading,
     isError,
-  } = useQuery<Product[]>({
+  } = useQuery({
     queryKey: ["products", filters],
     queryFn: () => getProducts(filters),
   });
+
+  const products = data?.products || [];
+  const totalPages = data?.totalPages || 0;
+  const currentPage = data?.currentPage || 1;
+
+  const handlePageChange = (newPage: number) => {
+    setFilters((prev) => ({ ...prev, page: newPage }));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handlePriceChange = (_event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
@@ -532,11 +542,18 @@ const ProductList: React.FC = () => {
                 </button>
               </div>
             ) : products && products?.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-4">
-                {products?.map((product) => (
-                  <ProductCard key={product?._id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-4">
+                  {products?.map((product) => (
+                    <ProductCard key={product?._id} product={product} />
+                  ))}
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </>
             ) : (
               <div className="text-center py-32 bg-surface rounded-xl border border-border border-dashed">
                 <p className="text-text-muted text-lg">

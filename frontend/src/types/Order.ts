@@ -9,6 +9,9 @@ export interface OrderItem {
   quantity: number;
   size?: string;
   color?: string;
+  returnStatus?: "None" | "Requested" | "Approved" | "Rejected" | "Refunded";
+  returnReason?: string;
+  customReturnReason?: string;
 }
 
 export interface ShippingAddress {

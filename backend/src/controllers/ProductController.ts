@@ -6,17 +6,27 @@ export class ProductController {
 
   async getAllProducts(req: Request, res: Response): Promise<void> {
     try {
+      const page = req.query.page ? Number(req.query.page) : 1;
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+
       const filters = {
         category: req.query.category as string,
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
         search: req.query.search as string,
         sort: req.query.sort as string,
-        limit: req.query.limit ? Number(req.query.limit) : undefined,
+        limit,
+        page,
       };
-      
-      const products = await this.productService.getAllProducts(filters);
-      res.json(products);
+
+      const { products, totalItems } =
+        await this.productService.getAllProducts(filters);
+      res.json({
+        products,
+        totalItems,
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+      });
     } catch (error) {
       res.status(500).json({ message: "Error fetching products" });
     }
@@ -39,7 +49,10 @@ export class ProductController {
     try {
       const { productId } = req.params;
       const limit = req.query.limit ? Number(req.query.limit) : 10;
-      const products = await this.productService.getRelatedProducts(productId, limit);
+      const products = await this.productService.getRelatedProducts(
+        productId,
+        limit,
+      );
       res.json(products);
     } catch (error) {
       res.status(500).json({ message: "Error fetching related products" });
@@ -49,7 +62,7 @@ export class ProductController {
   async createProduct(req: Request, res: Response): Promise<void> {
     try {
       const productData = { ...req.body };
-      
+
       const product = await this.productService.createProduct({
         ...productData,
         hasSizes: productData.hasSizes === "true",

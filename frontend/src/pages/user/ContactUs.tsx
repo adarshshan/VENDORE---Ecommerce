@@ -104,9 +104,11 @@ const ContactUs: React.FC = () => {
                   <div>
                     <p className="text-white font-semibold">Email Address</p>
                     <p className="text-text-secondary">
+                      vendorashop555@gmail.com
+                    </p>
+                    <p className="text-text-secondary">
                       officialsadarsh7@gmail.com
                     </p>
-                    <p className="text-text-secondary">info@kidsown.com</p>
                   </div>
                 </div>
 
