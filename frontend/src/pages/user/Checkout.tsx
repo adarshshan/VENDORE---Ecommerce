@@ -480,20 +480,12 @@ const Checkout = () => {
                     </span>
                   </div>
                   {orderData && (
-                    <>
-                      {/* <div className="flex justify-between text-sm text-text-secondary">
-                        <span>Tax</span>
-                        <span className="text-white font-mono">
-                          ₹{orderData?.tax?.toFixed(2)}
-                        </span>
-                      </div> */}
-                      <div className="flex justify-between text-sm text-text-secondary">
-                        <span>Shipping</span>
-                        <span className="text-success font-mono font-bold">
-                          ₹{orderData?.shipping?.toFixed(2)}
-                        </span>
-                      </div>
-                    </>
+                    <div className="flex justify-between text-sm text-text-secondary">
+                      <span>Shipping</span>
+                      <span className="text-success font-mono font-bold">
+                        ₹{orderData?.shipping?.toFixed(2)}
+                      </span>
+                    </div>
                   )}
                 </div>
 

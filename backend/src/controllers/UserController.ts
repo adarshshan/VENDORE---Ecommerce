@@ -240,10 +240,8 @@ export class UserController {
         user?._id as string,
       );
 
-      // const accessTokenMaxAge = 30 * 60 * 1000;
-      const accessTokenMaxAge = 1 * 60 * 1000;
-      // const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
-      const refreshTokenMaxAge = 5 * 60 * 1000;
+      const accessTokenMaxAge = 30 * 60 * 1000;
+      const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
       // Send the token as a cookie and response
       res
         .status(200)
