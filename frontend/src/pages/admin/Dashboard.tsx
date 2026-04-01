@@ -61,7 +61,7 @@ const Dashboard = () => {
               Total Products
             </Typography>
             <Typography variant="h4" className="!text-white !font-bold">
-              {stats.totalProducts}
+              {stats?.totalProducts}
             </Typography>
           </Paper>
         </Grid>
@@ -77,7 +77,7 @@ const Dashboard = () => {
               Total Orders
             </Typography>
             <Typography variant="h4" className="!text-white !font-bold">
-              {stats.totalOrders}
+              {stats?.totalOrders}
             </Typography>
           </Paper>
         </Grid>
