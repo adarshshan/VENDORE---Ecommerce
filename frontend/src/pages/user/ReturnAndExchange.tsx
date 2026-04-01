@@ -32,7 +32,7 @@ const ReturnAndExchange = () => {
     try {
       const data = await getMyOrders();
       // Filter for delivered orders only
-      const deliveredOrders = data.filter(
+      const deliveredOrders = data?.orders?.filter(
         (order: any) => order.status === "Delivered",
       );
       setOrders(deliveredOrders);
