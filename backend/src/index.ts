@@ -14,35 +14,14 @@ import { wishlistRoutes } from "./routes/WishlistRoutes";
 import { searchRoutes } from "./routes/SearchRoutes";
 
 const app: Express = express();
-const PORT = process.env.PORT || 3000;
-
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://172.26.58.12:5173",
-  "https://vendore-ecommerce-25oft3ddx-adarshshans-projects.vercel.app",
-  "https://vendore-ecommerce-3dl2ymo20-adarshshans-projects.vercel.app",
-];
+const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app") ||
-        /^http:\/\/localhost:\d+$/.test(origin)
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
   }),
 );
 
