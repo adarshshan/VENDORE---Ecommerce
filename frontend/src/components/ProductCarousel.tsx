@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Slider from "react-slick";
 import { type Product } from "../types/Product";
 import ProductCard from "./ProductCard";
@@ -19,47 +19,38 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   products,
   loading,
 }) => {
-  const [mounted, setMounted] = useState<boolean>(false);
-  const [width, setWidth] = useState<number | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    setWidth(window.innerWidth);
-
-    const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  if (!mounted || width === null) return null;
-
   const settings = {
     dots: false,
     infinite: products?.length > 4,
     speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 2,
+    slidesToShow: 2, // ✅ mobile first
+    slidesToScroll: 1,
+    initialSlide: 0,
+    adaptiveHeight: false,
     responsive: [
       {
-        breakpoint: 1280,
-        settings: { slidesToShow: 4, slidesToScroll: 4 },
+        breakpoint: 768,
+        settings: { slidesToShow: 2 },
       },
       {
         breakpoint: 1024,
         settings: { slidesToShow: 3 },
       },
       {
-        breakpoint: 768,
-        settings: { slidesToShow: 2 },
+        breakpoint: 1280,
+        settings: { slidesToShow: 4 },
       },
-
       {
-        breakpoint: 480,
-        settings: { slidesToShow: 1, slideToScroll: 1 }, // 👈 THIS is key
+        breakpoint: 1440,
+        settings: { slidesToShow: 6 },
+      },
+      {
+        breakpoint: 1536,
+        settings: { slidesToShow: 7 },
+      },
+      {
+        breakpoint: 2668,
+        settings: { slidesToShow: 8 },
       },
     ],
   };
@@ -80,7 +71,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
         </div>
 
         <div className="mx-[-10px]">
-          <Slider key={width} {...settings}>
+          <Slider {...settings}>
             {products.map((product) => (
               <div key={product?._id} className="px-[10px] h-full">
                 <ProductCard product={product} />
