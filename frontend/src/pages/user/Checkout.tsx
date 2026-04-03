@@ -10,6 +10,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CustomButton from "../../components/CustomButton";
+import OrderSuccessModal from "../../components/OrderSuccessModal";
 
 declare global {
   interface Window {
@@ -27,6 +28,8 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [step, setStep] = useState(1); // 1: Address, 2: Review & Pay
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [placedOrderId, setPlacedOrderId] = useState<string | undefined>();
   const [shippingAddress, setShippingAddress] = useState({
     fullName: "",
     addressLine1: "",
@@ -49,12 +52,6 @@ const Checkout = () => {
   }, [user]);
 
   const [orderData, setOrderData] = useState<any>(null);
-
-  useEffect(() => {
-    if (cart.length === 0) {
-      navigate("/cart");
-    }
-  }, [cart.length, navigate]);
 
   const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +122,7 @@ const Checkout = () => {
           });
 
           if (verificationResult?.success) {
-            await createOrder({
+            const newOrder = await createOrder({
               orderItems: cart?.map((item) => ({
                 product: item._id,
                 name: item.name,
@@ -153,8 +150,9 @@ const Checkout = () => {
               },
             });
 
+            setPlacedOrderId(newOrder?._id);
             clearCart();
-            navigate("/orders");
+            setShowSuccessModal(true);
           }
         } catch (error: any) {
           setErrorMessage(
@@ -184,6 +182,15 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
+      <OrderSuccessModal
+        open={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          navigate("/");
+        }}
+        orderId={placedOrderId}
+        totalAmount={orderData?.amount}
+      />
       <div className="container-custom py-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -491,7 +498,9 @@ const Checkout = () => {
 
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between items-end">
-                    <span className="text-text-primary font-bold">Total Payable</span>
+                    <span className="text-text-primary font-bold">
+                      Total Payable
+                    </span>
                     <span className="text-2xl font-black text-accent font-mono">
                       ₹
                       {(
@@ -510,7 +519,6 @@ const Checkout = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
