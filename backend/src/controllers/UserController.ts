@@ -246,16 +246,16 @@ export class UserController {
       res
         .status(200)
         .cookie("access_token", token, {
-          httpOnly: true,
-          secure: false,
+          httpOnly: false,
+          secure: true,
           maxAge: accessTokenMaxAge,
-          sameSite: "lax",
+          sameSite: "none",
         })
         .cookie("refresh_token", refreshToken, {
-          httpOnly: true,
-          secure: false,
+          httpOnly: false,
+          secure: true,
           maxAge: refreshTokenMaxAge,
-          sameSite: "lax",
+          sameSite: "none",
         })
         .json({
           success: true,

@@ -12,6 +12,8 @@ export class OrderService {
     private orderRepository: IOrderRepository,
     private productRepository: IProductRepository,
   ) {
+    console.log('razorpay..........')
+    console.log(process.env.RAZORPAY_KEY_ID)
     this.razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID as string,
       key_secret: process.env.RAZORPAY_KEY_SECRET as string,

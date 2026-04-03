@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -13,19 +14,14 @@ import { wishlistRoutes } from "./routes/WishlistRoutes";
 import { searchRoutes } from "./routes/SearchRoutes";
 
 const app: Express = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      // "http://127.0.0.1:5173",
-      "http://172.26.58.12:5173",
-    ],
+    origin: true,
     credentials: true,
-    // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    // allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
   }),
 );
 
@@ -36,6 +32,10 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   next();
+});
+
+app.get("/health-check", (req, res) => {
+  res.send(`The application is running on port ${PORT}`);
 });
 
 // Set up REST Routes
@@ -50,7 +50,7 @@ app.use("/api/search", searchRoutes);
 
 // Start Server
 const startServer = async () => {
-  app.listen(3000, () => {
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`REST API endpoints available at http://localhost:${PORT}/api`);
   });

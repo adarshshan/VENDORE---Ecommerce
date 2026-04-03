@@ -107,20 +107,19 @@ const OrderDetails: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-8">
-        <button
-          onClick={() => navigate("/orders")}
-          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-8 group"
-        >
-          <ArrowBackIcon
-            fontSize="small"
-            className="group-hover:-translate-x-1 transition-transform"
-          />
-          <span className="text-sm font-bold uppercase tracking-widest">
-            Back to Orders
-          </span>
-        </button>
-
         <div className="max-w-5xl mx-auto">
+          <button
+            onClick={() => navigate("/orders")}
+            className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-8 group"
+          >
+            <ArrowBackIcon
+              fontSize="small"
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="text-sm font-bold uppercase tracking-widest">
+              Back to Orders
+            </span>
+          </button>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
               <h1 className="text-3xl font-serif font-black text-text-primary">
@@ -146,7 +145,9 @@ const OrderDetails: React.FC = () => {
               <div className="card bg-surface p-3 sm:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <ShoppingBagIcon className="text-accent" />
-                  <h3 className="text-xl font-bold text-text-primary">Order Items</h3>
+                  <h3 className="text-xl font-bold text-text-primary">
+                    Order Items
+                  </h3>
                 </div>
                 <div className="space-y-6">
                   {order.items.map((item, index) => (
@@ -322,7 +323,9 @@ const OrderDetails: React.FC = () => {
                   </div>
                   <div className="border-t border-border pt-4 mt-4">
                     <div className="flex justify-between items-end">
-                      <span className="text-text-primary font-bold">Total Amount</span>
+                      <span className="text-text-primary font-bold">
+                        Total Amount
+                      </span>
                       <span className="text-2xl font-black text-accent">
                         ${order.totalPrice.toFixed(2)}
                       </span>
@@ -406,7 +409,6 @@ const OrderDetails: React.FC = () => {
         </div>
       </CustomModal>
     </div>
-
   );
 };
 
