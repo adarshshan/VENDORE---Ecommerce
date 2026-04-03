@@ -164,7 +164,7 @@ export const useStore = create<StoreState>()(
         }
       },
 
-      theme: "dark",
+      theme: "light",
       setTheme: (theme) => {
         set({ theme });
         if (theme === "light") {
@@ -187,7 +187,8 @@ export const useStore = create<StoreState>()(
         return () => {
           state?.setHasHydrated(true);
           // Apply theme after hydration
-          if (state?.theme === "light") {
+          const themeToApply = state?.theme || "light";
+          if (themeToApply === "light") {
             document.documentElement.setAttribute("data-theme", "light");
           } else {
             document.documentElement.removeAttribute("data-theme");
