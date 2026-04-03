@@ -96,6 +96,10 @@ const ProductList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const fetchCats = async () => {
       try {
         const data = await getCategories("Active");
