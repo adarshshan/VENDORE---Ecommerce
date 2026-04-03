@@ -27,6 +27,7 @@ export const protect = async (
   let refresh_token = req.cookies.refresh_token;
 
   if (!refresh_token) {
+    console.log("its hitting here !refresh_token");
     return res.status(401).json({
       success: false,
       message: "Not authorized, please login again.",
@@ -35,6 +36,7 @@ export const protect = async (
 
   try {
     if (!process.env.JWT_SECRET) {
+      console.log("its hitting here !process.env.JWT_SECRET");
       throw new Error("JWT_SECRET is not defined");
     }
 
@@ -88,6 +90,9 @@ export const protect = async (
         .json({ success: false, message: decoded?.message || "Invalid token" });
     }
   } catch (error) {
+    console.log(
+      "the issue is coming from inside the catch block protect middlware",
+    );
     console.error("Auth Error:", error);
     res.status(401).json({ message: "Not authorized, token failed" });
   }
