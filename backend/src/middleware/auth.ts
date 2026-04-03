@@ -40,16 +40,15 @@ export const protect = async (
 
     // Refresh access token if missing
     if (!token) {
-      console.log("Access token missing, attempting refresh...");
       const newAccessToken = await createJWT.refreshAccessToken(refresh_token);
       if (newAccessToken) {
         token = newAccessToken;
         const accessTokenMaxAge = 30 * 60 * 1000;
         res.cookie("access_token", token, {
           maxAge: accessTokenMaxAge,
-          sameSite: "lax",
-          secure: false,
-          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+          httpOnly: false,
         });
       } else {
         return res

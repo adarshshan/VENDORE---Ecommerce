@@ -173,16 +173,16 @@ const ProductDetails: React.FC = () => {
                             ?.stock ?? 0;
                         return sizeStock > 0 ? (
                           sizeStock < 5 ? (
-                            <span className="badge bg-orange-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter">
-                              Only {sizeStock} left
-                            </span>
-                          ) : (
                             <span className="text-success text-xs font-bold uppercase tracking-tighter">
                               In Stock
                             </span>
+                          ) : (
+                            <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter px-2 rounded-md">
+                              Only {sizeStock} left
+                            </span>
                           )
                         ) : (
-                          <span className="badge bg-red-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter">
+                          <span className="badge bg-red-500 text-text-primary border-none text-xs font-bold uppercase tracking-tighter px-2 rounded-md">
                             Out of Stock
                           </span>
                         );
