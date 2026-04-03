@@ -16,17 +16,33 @@ import { searchRoutes } from "./routes/SearchRoutes";
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://172.26.58.12:5173",
+  "https://vendore-ecommerce-25oft3ddx-adarshshans-projects.vercel.app",
+  "https://vendore-ecommerce-3dl2ymo20-adarshshans-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://172.26.58.12:5173",
-      "https://vendore-ecommerce-25oft3ddx-adarshshans-projects.vercel.app/",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        /^http:\/\/localhost:\d+$/.test(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    // allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
@@ -40,7 +56,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/health-check", (req, res) => {
-  res.send("The application is running on port 3000");
+  res.send(`The application is running on port ${PORT}`);
 });
 
 // Set up REST Routes
@@ -55,7 +71,7 @@ app.use("/api/search", searchRoutes);
 
 // Start Server
 const startServer = async () => {
-  app.listen(3000, () => {
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`REST API endpoints available at http://localhost:${PORT}/api`);
   });
