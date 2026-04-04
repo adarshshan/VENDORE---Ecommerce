@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useStore } from "../../store/useStore";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const Wishlist: React.FC = () => {
@@ -11,7 +10,6 @@ const Wishlist: React.FC = () => {
   const wishlist = useStore((state) => state.wishlist);
   const fetchWishlist = useStore((state) => state.fetchWishlist);
   const user = useStore((state) => state.user);
-  const addToCart = useStore((state) => state.addToCart);
   const removeFromWishlist = useStore((state) => state.removeFromWishlist);
 
   useEffect(() => {
@@ -22,12 +20,7 @@ const Wishlist: React.FC = () => {
     fetchWishlist();
   }, [fetchWishlist]);
 
-  const handleMoveToCart = async (product: any) => {
-    addToCart(product);
-    await removeFromWishlist(product._id);
-  };
-
-  if (!user && wishlist.length === 0) {
+  if (!user && wishlist?.length === 0) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-4">
         <FavoriteIcon className="text-red-500 text-6xl mb-4 opacity-20" />
@@ -64,13 +57,13 @@ const Wishlist: React.FC = () => {
             <h1 className="text-4xl font-serif font-black text-text-primary">
               My Wishlist
               <span className="ml-4 text-lg font-sans font-normal text-text-muted">
-                ({wishlist.length} Items)
+                ({wishlist?.length} Items)
               </span>
             </h1>
           </div>
         </div>
 
-        {wishlist.length === 0 ? (
+        {wishlist?.length === 0 ? (
           <div className="bg-surface border border-border rounded-3xl p-12 text-center">
             <FavoriteIcon className="text-error text-6xl mb-4 opacity-20" />
             <h3 className="text-xl text-text-primary mb-2">No items found</h3>
@@ -88,42 +81,38 @@ const Wishlist: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {wishlist.map((product) => (
               <div
-                key={product._id}
+                key={product?._id}
                 className="bg-surface border border-border rounded-2xl overflow-hidden flex flex-col sm:flex-row p-4 gap-4"
               >
                 <div
                   className="w-full sm:w-32 h-40 sm:h-32 rounded-xl overflow-hidden cursor-pointer flex-shrink-0"
-                  onClick={() => navigate(`/product/${product._id}`)}
+                  onClick={() => navigate(`/product/${product?._id}`)}
                 >
                   <img
-                    src={product.images?.[0]}
-                    alt={product.name}
+                    src={product?.images?.[0]}
+                    alt={product?.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex-grow flex flex-col justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-text-primary capitalize">
-                      {product.name}
-                    </h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-bold text-text-primary capitalize">
+                        {product?.name}
+                      </h3>
+                      <button
+                        onClick={() =>
+                          removeFromWishlist(product?._id as string)
+                        }
+                        className="p-2 border border-border text-text-secondary hover:text-red-400 hover:border-error transition-all rounded-lg cursor-pointer"
+                      >
+                        <DeleteOutlineIcon fontSize="small" className="" />
+                      </button>
+                    </div>
+
                     <p className="text-accent font-bold">
-                      ₹{product.price.toFixed(2)}
+                      ₹{product?.price?.toFixed(2)}
                     </p>
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <button
-                      onClick={() => handleMoveToCart(product)}
-                      className="flex-grow bg-accent text-text-inverse text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-accent-hover transition-colors uppercase tracking-wider"
-                    >
-                      <ShoppingCartIcon fontSize="small" />
-                      Move to Cart
-                    </button>
-                    <button
-                      onClick={() => removeFromWishlist(product._id as string)}
-                      className="p-2 border border-border text-text-secondary hover:text-error hover:border-error transition-all rounded-lg"
-                    >
-                      <DeleteOutlineIcon fontSize="small" />
-                    </button>
                   </div>
                 </div>
               </div>

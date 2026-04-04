@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import MobileBottomNav from "../components/MobileBottomNav";
 import AddToCartModal from "../components/AddToCartModal";
 import { useStore } from "../store/useStore";
 
@@ -22,12 +23,14 @@ const AppLayout = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow ">
+      <main className="flex-grow sm:pb-16 md:pb-0">
         <Outlet />
       </main>
       <Footer />
-      
-      <AddToCartModal 
+
+      <MobileBottomNav />
+
+      <AddToCartModal
         open={isAddToCartModalOpen}
         onClose={closeAddToCartModal}
         product={lastAddedProduct}

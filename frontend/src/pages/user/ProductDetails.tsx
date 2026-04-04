@@ -72,7 +72,7 @@ const ProductDetails: React.FC = () => {
 
     // Stock check
     if (product.hasSizes && selectedSize) {
-      const sizeObj = product.sizes?.find(s => s.size === selectedSize);
+      const sizeObj = product.sizes?.find((s) => s.size === selectedSize);
       if (!sizeObj || sizeObj.stock <= 0) {
         toast.error("Size is out of stock");
         return;
@@ -197,12 +197,12 @@ const ProductDetails: React.FC = () => {
                             ?.stock ?? 0;
                         return sizeStock > 0 ? (
                           sizeStock < 5 ? (
-                            <span className="text-success text-xs font-bold uppercase tracking-tighter">
-                              In Stock
-                            </span>
-                          ) : (
                             <span className="badge bg-orange-500 text-white border-none text-xs font-bold uppercase tracking-tighter px-2 rounded-md">
                               Only {sizeStock} left
+                            </span>
+                          ) : (
+                            <span className="text-success text-xs font-bold uppercase tracking-tighter">
+                              In Stock
                             </span>
                           )
                         ) : (

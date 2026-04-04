@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       toast.error("Product is out of stock");
       return;
     }
-    
+
     if (product.hasSizes) {
       // If it has sizes, navigate to details to pick a size instead of adding random one
       navigate(`/product/${product?._id}`);
@@ -74,11 +74,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Status Badge */}
         {isOutOfStock ? (
-          <span className="absolute top-3 left-3 badge bg-error text-white border-none shadow-lg px-2 rounded-2xl z-10">
+          <span className="text-[.7rem] absolute top-3 left-3 badge bg-error text-white border-none shadow-lg px-2 rounded-2xl z-10">
             Out of Stock
           </span>
         ) : product?.category ? (
-          <span className="absolute top-3 left-3 badge bg-accent text-text-inverse border-none shadow-lg px-2 rounded-2xl z-10">
+          <span className="text-[.7rem] absolute top-3 left-3 badge bg-accent text-text-inverse border-none shadow-lg px-2 rounded-2xl z-10">
             {typeof product?.category === "object"
               ? product?.category?.name
               : "Category"}
@@ -88,7 +88,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Wishlist Toggle Button */}
         <button
           onClick={toggleWishlist}
-          className="absolute top-3 right-3 p-2 rounded-full bg-surface/20 backdrop-blur-md border border-border/20 text-text-primary hover:bg-surface hover:text-error transition-all duration-300 z-10"
+          className="absolute top-1 sm:top-3 right-1 sm:right-3 p-1 sm:p-2 rounded-full bg-surface/20 backdrop-blur-md border border-border/20 text-text-primary hover:bg-surface hover:text-error transition-all duration-300 z-10"
         >
           {isInWishlist ? (
             <FavoriteIcon fontSize="small" className="text-error" />
@@ -114,11 +114,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <h3 className="text-lg font-bold truncate mb-1 text-text-primary group-hover:text-accent transition-colors capitalize">
           {product?.name}
         </h3>
-        <p className="text-sm text-text-secondary line-clamp-2 mb-4 leading-relaxed flex-grow capitalize">
+        <p className="text-sm text-text-secondary line-clamp-2 mb-1 sm:mb-4 leading-relaxed flex-grow capitalize">
           {product?.description}
         </p>
 
-        <div className="mt-auto flex justify-between items-center pt-2 sm:pt-4 border-t border-border">
+        <div className="mt-auto flex justify-between items-center pt-1 sm:pt-4 border-t border-border">
           <p className="text-xl font-bold text-text-primary">
             ₹{product?.price.toFixed(2)}
           </p>

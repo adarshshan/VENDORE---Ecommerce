@@ -12,24 +12,38 @@ interface StoreState {
   openModal: () => void;
   closeModal: () => void;
   logout: () => void;
-  
+
   isAddToCartModalOpen: boolean;
   lastAddedProduct: Product | null;
   lastAddedSize: string | null;
   openAddToCartModal: (product: Product, size?: string | null) => void;
   closeAddToCartModal: () => void;
-  
+
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number, size?: string, color?: string) => void;
-  removeFromCart: (productId: string | number, size?: string, color?: string) => void;
-  updateQuantity: (productId: string | number, quantity: number, size?: string, color?: string) => void;
+  addToCart: (
+    product: Product,
+    quantity?: number,
+    size?: string,
+    color?: string,
+  ) => void;
+  removeFromCart: (
+    productId: string | number,
+    size?: string,
+    color?: string,
+  ) => void;
+  updateQuantity: (
+    productId: string | number,
+    quantity: number,
+    size?: string,
+    color?: string,
+  ) => void;
   clearCart: () => void;
 
   wishlist: Product[];
   addToWishlist: (product: Product) => Promise<void>;
   removeFromWishlist: (productId: string | number) => Promise<void>;
   fetchWishlist: () => Promise<void>;
-  
+
   theme: "dark" | "light";
   setTheme: (theme: "dark" | "light") => void;
   toggleTheme: () => void;
@@ -54,29 +68,43 @@ export const useStore = create<StoreState>()(
       isAddToCartModalOpen: false,
       lastAddedProduct: null,
       lastAddedSize: null,
-      openAddToCartModal: (product, size = null) => 
-        set({ isAddToCartModalOpen: true, lastAddedProduct: product, lastAddedSize: size }),
-      closeAddToCartModal: () => 
-        set({ isAddToCartModalOpen: false, lastAddedProduct: null, lastAddedSize: null }),
+      openAddToCartModal: (product, size = null) =>
+        set({
+          isAddToCartModalOpen: true,
+          lastAddedProduct: product,
+          lastAddedSize: size,
+        }),
+      closeAddToCartModal: () =>
+        set({
+          isAddToCartModalOpen: false,
+          lastAddedProduct: null,
+          lastAddedSize: null,
+        }),
 
       cart: [],
       addToCart: (product, quantity = 1, size, color) => {
         const currentCart = get().cart;
-        
+
         // Stock check
         const existingItem = currentCart.find(
-          (item) => item._id === product._id && item.selectedSize === size && item.selectedColor === color
+          (item) =>
+            item._id === product._id &&
+            item.selectedSize === size &&
+            item.selectedColor === color,
         );
         const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
         const totalRequestedQuantity = currentQuantityInCart + quantity;
 
         if (product.hasSizes) {
-          const sizeObj = product.sizes?.find(s => s.size === size);
+          const sizeObj = product.sizes?.find((s) => s.size === size);
           if (!sizeObj || totalRequestedQuantity > sizeObj.stock) {
             console.warn("Cannot add more than available stock for this size");
             return;
           }
-        } else if (product.stock !== undefined && totalRequestedQuantity > product.stock) {
+        } else if (
+          product.stock !== undefined &&
+          totalRequestedQuantity > product.stock
+        ) {
           console.warn("Cannot add more than available global stock");
           return;
         }
@@ -86,27 +114,45 @@ export const useStore = create<StoreState>()(
           const index = currentCart.indexOf(existingItem);
           newCart[index] = {
             ...newCart[index],
-            quantity: totalRequestedQuantity
+            quantity: totalRequestedQuantity,
           };
           set({ cart: newCart });
         } else {
           set({
-            cart: [...currentCart, { ...product, quantity, selectedSize: size, selectedColor: color } as CartItem],
+            cart: [
+              ...currentCart,
+              {
+                ...product,
+                quantity,
+                selectedSize: size,
+                selectedColor: color,
+              } as CartItem,
+            ],
           });
         }
       },
       removeFromCart: (productId, size, color) =>
-        set({ 
-          cart: get().cart.filter((item) => 
-            !(item._id === productId && item.selectedSize === size && item.selectedColor === color)
-          ) 
+        set({
+          cart: get().cart.filter(
+            (item) =>
+              !(
+                item._id === productId &&
+                item.selectedSize === size &&
+                item.selectedColor === color
+              ),
+          ),
         }),
       updateQuantity: (productId, quantity, size, color) => {
-        const item = get().cart.find(i => i._id === productId && i.selectedSize === size && i.selectedColor === color);
+        const item = get().cart.find(
+          (i) =>
+            i._id === productId &&
+            i.selectedSize === size &&
+            i.selectedColor === color,
+        );
         if (!item) return;
 
         if (item.hasSizes) {
-          const sizeObj = item.sizes?.find(s => s.size === size);
+          const sizeObj = item.sizes?.find((s) => s.size === size);
           if (!sizeObj || quantity > sizeObj.stock) return;
         } else if (item.stock !== undefined && quantity > item.stock) {
           return;
@@ -114,9 +160,11 @@ export const useStore = create<StoreState>()(
 
         set({
           cart: get().cart.map((item) =>
-            item._id === productId && item.selectedSize === size && item.selectedColor === color 
-              ? { ...item, quantity } 
-              : item
+            item._id === productId &&
+            item.selectedSize === size &&
+            item.selectedColor === color
+              ? { ...item, quantity }
+              : item,
           ),
         });
       },
@@ -137,7 +185,9 @@ export const useStore = create<StoreState>()(
         if (!currentWishlist.find((item) => item._id === product._id)) {
           if (get().user) {
             try {
-              const { wishlist } = await api.addToWishlist(product._id as string);
+              const { wishlist } = await api.addToWishlist(
+                product._id as string,
+              );
               set({ wishlist });
             } catch (error) {
               console.error("Error adding to wishlist:", error);
@@ -182,7 +232,7 @@ export const useStore = create<StoreState>()(
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
-      name: "kids-own-storage",
+      name: "vendora-storage",
       onRehydrateStorage: (state) => {
         return () => {
           state?.setHasHydrated(true);
@@ -195,12 +245,12 @@ export const useStore = create<StoreState>()(
           }
         };
       },
-      partialize: (state) => ({ 
-        user: state.user, 
-        cart: state.cart, 
+      partialize: (state) => ({
+        user: state.user,
+        cart: state.cart,
         wishlist: state.wishlist,
-        theme: state.theme
+        theme: state.theme,
       }),
-    }
-  )
+    },
+  ),
 );

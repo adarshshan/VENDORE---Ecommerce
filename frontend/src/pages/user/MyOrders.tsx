@@ -12,9 +12,9 @@ import Pagination from "../../components/Pagination";
 const MyOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const { user } = useStore();
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,8 +27,8 @@ const MyOrders = () => {
       try {
         setLoading(true);
         const data = await getMyOrders(page);
-        setOrders(data.orders);
-        setTotalPages(data.totalPages);
+        setOrders(data?.orders);
+        setTotalPages(data?.totalPages);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -59,9 +59,9 @@ const MyOrders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
+    <div className="min-h-screen bg-background py-4 sm:py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
       <div className="container-custom ">
-        <div className="mb-10">
+        <div className="mb-4 sm:mb-10">
           <h1 className="text-3xl md:text-4xl font-serif font-black mb-2">
             Order History
           </h1>
@@ -96,7 +96,7 @@ const MyOrders = () => {
                 onClick={() => navigate(`/orders/${order?._id}`)}
                 className="card bg-surface p-3 sm:p-4 hover:border-accent/30 transition-all cursor-pointer group"
               >
-                <div className="flex flex-col md:flex-row justify-between gap-6">
+                <div className="flex flex-col md:flex-row justify-between sm:gap-6">
                   <div className="space-y-1 sm:space-y-3 flex-grow">
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="text-lg font-bold text-text-primary uppercase tracking-tighter">
@@ -112,7 +112,7 @@ const MyOrders = () => {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-sm">
                       <div className="flex items-center gap-2 text-text-secondary">
                         <CalendarTodayIcon sx={{ fontSize: 16 }} />
                         <span>
@@ -161,7 +161,7 @@ const MyOrders = () => {
                 </div>
               </div>
             ))}
-            <div className="mt-8">
+            <div className="mb-4 sm:mt-8">
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}

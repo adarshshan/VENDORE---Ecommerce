@@ -28,7 +28,7 @@ const Login: React.FC = () => {
         };
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
-        
+
         // Redirect back to original page or home
         const redirectPath = sessionStorage.getItem("redirectAfterLogin");
         if (redirectPath) {
@@ -59,13 +59,11 @@ const Login: React.FC = () => {
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md p-10 m-4 bg-surface/80 backdrop-blur-xl rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-border text-center transform transition-all">
         <div className="mb-10">
-          <h1 className="text-4xl font-serif font-black text-white tracking-widest mb-2">
-            KIDS-OWN
+          <h1 className="text-4xl font-serif font-black tracking-widest mb-2">
+            VENDORA
           </h1>
           <div className="h-1 w-12 bg-accent mx-auto rounded-full mb-8"></div>
-          <p className="text-white text-xl font-serif mb-2">
-            Welcome Back
-          </p>
+          <p className="text-xl font-serif mb-2">Welcome Back</p>
           <p className="text-text-secondary text-sm">
             Sign in to access your account and explore our premium collection.
           </p>
@@ -89,20 +87,21 @@ const Login: React.FC = () => {
           </div>
 
           <p className="text-xs text-text-muted max-w-[300px] leading-relaxed">
-            By signing in, you agree to our 
+            By signing in, you agree to our
             <span className="text-accent cursor-pointer hover:underline mx-1">
               Terms of Service
-            </span> 
-            and 
+            </span>
+            and
             <span className="text-accent cursor-pointer hover:underline mx-1">
               Privacy Policy
-            </span>.
+            </span>
+            .
           </p>
         </div>
 
         <div className="mt-10 pt-8 border-t border-border">
           <p className="text-text-secondary text-sm">
-            New to KIDS-OWN? Just sign in with Google to get started.
+            New to VENDORA? Just sign in with Google to get started.
           </p>
         </div>
       </div>

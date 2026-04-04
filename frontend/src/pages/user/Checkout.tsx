@@ -109,8 +109,8 @@ const Checkout = () => {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: orderData.amount * 100,
       currency: orderData.currency,
-      name: "KIDS-OWN",
-      description: "Secure Purchase from KIDS-OWN",
+      name: "VENDORA",
+      description: "Secure Purchase from VENDORA",
       order_id: orderData.orderId,
       handler: async (response: any) => {
         try {
@@ -181,7 +181,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem]">
+    <div className="min-h-screen bg-background pb-5 sm:pb-20 px-[1rem] sm:px-[5rem]">
       <OrderSuccessModal
         open={showSuccessModal}
         onClose={() => {
@@ -191,7 +191,7 @@ const Checkout = () => {
         orderId={placedOrderId}
         totalAmount={orderData?.amount}
       />
-      <div className="container-custom py-12">
+      <div className="container-custom py-4 sm:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-serif font-black text-text-primary mb-4">
@@ -235,7 +235,7 @@ const Checkout = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-7">
               {step === 1 ? (
-                <div className="card bg-surface p-6 sm:p-8">
+                <div className="card bg-surface px-6 sm:p-8">
                   <div className="flex items-center gap-3 mb-8">
                     <LocalShippingIcon className="text-accent" />
                     <h3 className="text-xl font-bold text-text-primary">
@@ -386,7 +386,7 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    <div className="pt-6">
+                    <div className="sm:pt-6">
                       <CustomButton type="submit" disabled={isProcessing}>
                         {isProcessing ? "Processing..." : "Continue to Payment"}
                       </CustomButton>
@@ -394,7 +394,7 @@ const Checkout = () => {
                   </form>
                 </div>
               ) : (
-                <div className="card bg-surface p-6 sm:p-8">
+                <div className="card bg-surface px-6 sm:p-8">
                   <div className="flex items-center gap-3 mb-8">
                     <PaymentIcon className="text-accent" />
                     <h3 className="text-xl font-bold text-text-primary">
@@ -422,7 +422,7 @@ const Checkout = () => {
                     <CustomButton
                       onclick={() => setStep(1)}
                       disabled={isProcessing}
-                      className="text-accent"
+                      className="text-[var(--color-text-light)]"
                     >
                       Back
                     </CustomButton>
@@ -440,7 +440,7 @@ const Checkout = () => {
 
             {/* Sidebar Summary */}
             <div className="lg:col-span-5">
-              <div className="card bg-surface p-6 sticky top-24">
+              <div className="card bg-surface px-6 sm:p-6 sticky top-24">
                 <h3 className="text-lg font-bold text-text-primary mb-6 border-b border-border pb-4">
                   Order Summary
                 </h3>

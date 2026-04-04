@@ -10,7 +10,7 @@ axios.defaults.withCredentials = true;
 axios.interceptors.request.use(
   (config) => {
     // Get access token from zustand storage (localStorage)
-    const storage = localStorage.getItem("kids-own-storage");
+    const storage = localStorage.getItem("vendora-storage");
     if (storage) {
       try {
         const parsedStorage = JSON.parse(storage);
@@ -26,7 +26,7 @@ axios.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add a response interceptor
@@ -35,10 +35,10 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       const message = error.response.data?.message || "";
-      
+
       // Check if it's an authorization error (excluding actual login attempts)
       if (
-        message.toLowerCase().includes("not authorized") || 
+        message.toLowerCase().includes("not authorized") ||
         message.toLowerCase().includes("session expired") ||
         message.toLowerCase().includes("token expired")
       ) {
@@ -47,12 +47,12 @@ axios.interceptors.response.use(
           // Save current path for redirect after login
           const currentPath = window.location.pathname + window.location.search;
           sessionStorage.setItem("redirectAfterLogin", currentPath);
-          
+
           // Clear local storage and state
           localStorage.removeItem("user");
           // Note: We can't directly call useStore.getState().logout() here due to circular dependency
           // but removing from localStorage will help on next reload/mount
-          
+
           window.location.href = "/login";
         }
       }

@@ -31,7 +31,7 @@ const Header: React.FC = () => {
     <header className="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-all duration-300 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="md:hidden">
+          {/* <div className="md:hidden">
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -41,7 +41,7 @@ const Header: React.FC = () => {
             >
               <MenuIcon />
             </IconButton>
-          </div>
+          </div> */}
           <Link
             to="/"
             className="text-2xl md:text-3xl font-serif font-black text-[var(--color-text-Header)] tracking-tighter  hover:text-accent transition-colors"
@@ -70,7 +70,7 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-4">
             <IconButton
               onClick={() => navigate("/wishlist")}
-              className="text-text-secondary hover:text-accent transition-colors relative"
+              className="text-text-secondary hover:text-accent transition-colors relative !hidden md:!block"
             >
               <FavoriteIcon className="text-text-primary" />
               {wishlist?.length > 0 && (
@@ -81,7 +81,7 @@ const Header: React.FC = () => {
             </IconButton>
             <IconButton
               onClick={() => navigate("/cart")}
-              className="text-text-secondary hover:text-accent transition-colors relative"
+              className="text-text-secondary hover:text-accent transition-colors relative !hidden md:!block"
             >
               <ShoppingCartIcon className="text-text-primary" />
               {cart?.length > 0 && (

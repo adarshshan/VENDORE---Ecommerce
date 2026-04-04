@@ -19,6 +19,7 @@ import Wishlist from "./pages/user/Wishlist";
 import ContactManagement from "./pages/admin/ContactManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ReturnAndExchange from "./pages/user/ReturnAndExchange";
+import Profile from "./pages/user/Profile";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "/return&exchange",
         element: <ReturnAndExchange />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
       },
       // Protected User Routes
       {

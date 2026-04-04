@@ -62,9 +62,9 @@ const Cart: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
+    <div className="min-h-screen bg-background py-3 sm:py-12 px-[1rem] lg:px-[8rem] xl:px-[20rem]">
       <div className="container-custom">
-        <h1 className="text-3xl md:text-4xl font-serif font-black text-text-primary mb-8">
+        <h1 className="text-3xl md:text-4xl font-serif font-black text-text-primary sm:mb-8">
           Shopping Cart
         </h1>
 
@@ -193,7 +193,7 @@ const Cart: React.FC = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="card bg-surface p-6 sticky top-24">
+            <div className="card bg-surface px-6 sm:p-6 sticky top-24">
               <h3 className="text-xl font-bold text-text-primary mb-6 pb-4 border-b border-border">
                 Order Summary
               </h3>
@@ -237,14 +237,6 @@ const Cart: React.FC = () => {
                 Secure Checkout - 100% Satisfaction Guaranteed
               </p>
             </div>
-
-            <CustomButton
-              onclick={() => navigate("/products")}
-              className="sm:hidden w-full mt-6 btn-outline flex items-center justify-center gap-2"
-            >
-              <ArrowBackIcon fontSize="small" />
-              Continue Shopping
-            </CustomButton>
           </div>
         </div>
       </div>

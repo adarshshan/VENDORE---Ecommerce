@@ -43,20 +43,20 @@ const SlickBanner: React.FC<SlickBannerInterface> = ({}) => {
     <div className="w-full">
       <Slider {...settings}>
         {slides.map((slide) => (
-          <div key={slide?.id} className="relative h-[400px] md:h-[600px]">
+          <div key={slide?.id} className="relative h-[250px] md:h-[600px]">
             <img
               src={slide?.image}
               alt={slide?.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center  p-6">
-              <h1 className="text-4xl md:text-7xl font-serif font-black mb-4 text-center drop-shadow-2xl text-text-primary">
+            <div className=" absolute inset-0 bg-black/40 flex flex-col justify-center items-center  p-6">
+              <h1 className="!text-[#ffffff] text-4xl md:text-7xl font-serif font-black mb-4 text-center drop-shadow-2xl">
                 {slide?.title}
               </h1>
-              <p className="text-lg md:text-2xl font-medium mb-10 text-center drop-shadow-lg text-text-secondary font-sans">
+              <p className="text-lg md:text-2xl font-medium mb-10 text-center drop-shadow-lg text-[#ffffff] font-sans">
                 {slide?.subtitle}
               </p>
-              <button className="text-text-primary btn-lg shadow-2xl hover:scale-105 transition-all duration-300 border border-[var(--color-border)] rounded-xl px-3 py-1">
+              <button className="btn-lg shadow-2xl hover:scale-105 transition-all duration-300 border border-[var(--color-border)] rounded-xl px-3 py-1 text-[#ffffff]">
                 Shop Now
               </button>
             </div>
