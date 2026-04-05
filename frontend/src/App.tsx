@@ -1,30 +1,42 @@
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomePage from "./pages/user/HomePage";
-import Cart from "./pages/user/Cart";
 import AppLayout from "./layouts/AppLayout";
-import AdminLayout from "./layouts/AdminLayout";
-import ProductManagement from "./pages/admin/ProductManagement";
-import UserManagement from "./pages/admin/UserManagement";
-import OrderManagement from "./pages/admin/OrderManagement";
-import CategoryManagement from "./pages/admin/CategoryManagement";
-import ProductList from "./pages/user/ProductList";
-import ProductDetails from "./pages/user/ProductDetails";
-import Dashboard from "./pages/admin/Dashboard";
-import Login from "./pages/user/Login";
-import Checkout from "./pages/user/Checkout";
-import MyOrders from "./pages/user/MyOrders";
-import OrderDetails from "./pages/user/OrderDetails";
-import ContactUs from "./pages/user/ContactUs";
-import Wishlist from "./pages/user/Wishlist";
-import ContactManagement from "./pages/admin/ContactManagement";
+import Loading from "./components/Loading";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ReturnAndExchange from "./pages/user/ReturnAndExchange";
-import Profile from "./pages/user/Profile";
+
+// Lazy load pages
+const HomePage = lazy(() => import("./pages/user/HomePage"));
+const Cart = lazy(() => import("./pages/user/Cart"));
+const ProductList = lazy(() => import("./pages/user/ProductList"));
+const ProductDetails = lazy(() => import("./pages/user/ProductDetails"));
+const Login = lazy(() => import("./pages/user/Login"));
+const Checkout = lazy(() => import("./pages/user/Checkout"));
+const MyOrders = lazy(() => import("./pages/user/MyOrders"));
+const OrderDetails = lazy(() => import("./pages/user/OrderDetails"));
+const ContactUs = lazy(() => import("./pages/user/ContactUs"));
+const Wishlist = lazy(() => import("./pages/user/Wishlist"));
+const ReturnAndExchange = lazy(() => import("./pages/user/ReturnAndExchange"));
+const Profile = lazy(() => import("./pages/user/Profile"));
+
+// Admin pages
+const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const ProductManagement = lazy(() => import("./pages/admin/ProductManagement"));
+const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
+const OrderManagement = lazy(() => import("./pages/admin/OrderManagement"));
+const CategoryManagement = lazy(
+  () => import("./pages/admin/CategoryManagement"),
+);
+const ContactManagement = lazy(() => import("./pages/admin/ContactManagement"));
 
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <Login />
+      </Suspense>
+    ),
   },
   {
     path: "/",
@@ -32,35 +44,67 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <HomePage />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <HomePage />
+          </Suspense>
+        ),
       },
       {
         path: "/products",
-        element: <ProductList />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ProductList />
+          </Suspense>
+        ),
       },
       {
         path: "/product/:id",
-        element: <ProductDetails />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ProductDetails />
+          </Suspense>
+        ),
       },
       {
         path: "/cart",
-        element: <Cart />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Cart />
+          </Suspense>
+        ),
       },
       {
         path: "/wishlist",
-        element: <Wishlist />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Wishlist />
+          </Suspense>
+        ),
       },
       {
         path: "/contact",
-        element: <ContactUs />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ContactUs />
+          </Suspense>
+        ),
       },
       {
         path: "/return&exchange",
-        element: <ReturnAndExchange />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ReturnAndExchange />
+          </Suspense>
+        ),
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Profile />
+          </Suspense>
+        ),
       },
       // Protected User Routes
       {
@@ -68,15 +112,27 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/checkout",
-            element: <Checkout />,
+            element: (
+              <Suspense fallback={<Loading />}>
+                <Checkout />
+              </Suspense>
+            ),
           },
           {
             path: "/orders",
-            element: <MyOrders />,
+            element: (
+              <Suspense fallback={<Loading />}>
+                <MyOrders />
+              </Suspense>
+            ),
           },
           {
             path: "/orders/:id",
-            element: <OrderDetails />,
+            element: (
+              <Suspense fallback={<Loading />}>
+                <OrderDetails />
+              </Suspense>
+            ),
           },
         ],
       },
@@ -84,31 +140,59 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <AdminLayout />
+      </Suspense>
+    ),
     children: [
       {
         path: "",
-        element: <Dashboard />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Dashboard />
+          </Suspense>
+        ),
       },
       {
         path: "product-management",
-        element: <ProductManagement />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ProductManagement />
+          </Suspense>
+        ),
       },
       {
         path: "user-management",
-        element: <UserManagement />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <UserManagement />
+          </Suspense>
+        ),
       },
       {
         path: "order-management",
-        element: <OrderManagement />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <OrderManagement />
+          </Suspense>
+        ),
       },
       {
         path: "category-management",
-        element: <CategoryManagement />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <CategoryManagement />
+          </Suspense>
+        ),
       },
       {
         path: "contact-management",
-        element: <ContactManagement />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ContactManagement />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -119,14 +203,14 @@ import { Toaster } from "react-hot-toast";
 const App = () => {
   return (
     <>
-      <Toaster 
+      <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: 'var(--color-surface)',
-            color: 'var(--color-text-primary)',
-            border: '1px solid var(--color-border)',
-            borderRadius: '12px',
+            background: "var(--color-surface)",
+            color: "var(--color-text-primary)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "12px",
           },
         }}
       />

@@ -9,6 +9,121 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CustomButton from "../../components/CustomButton";
 
+interface CartItemProps {
+  item: any;
+  removeFromCart: (id: string | number, size?: string, color?: string) => void;
+  updateQuantity: (id: string | number, quantity: number, size?: string, color?: string) => void;
+}
+
+const CartItem: React.FC<CartItemProps> = React.memo(({ item, removeFromCart, updateQuantity }) => {
+  return (
+    <div className="card bg-surface p-4 sm:p-6 flex flex-col sm:row gap-6 items-start sm:items-center group hover:border-border-light transition-all">
+      {/* Product Image */}
+      <div className="w-full sm:w-24 h-32 sm:h-24 flex-shrink-0 bg-surface-light rounded-lg overflow-hidden">
+        {item?.images && item?.images?.length > 0 ? (
+          <img
+            src={item?.images[0]}
+            alt={item?.name}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-text-muted">
+            <ShoppingBagIcon />
+          </div>
+        )}
+      </div>
+
+      {/* Product Details */}
+      <div className="w-full flex-grow min-w-0">
+        <div className="w-full flex justify-between items-start mb-0 sm:mb-2">
+          <h3 className="text-lg font-bold text-text-primary truncate pr-4">
+            <Link
+              to={`/product/${item?._id}`}
+              className="hover:text-accent transition-colors"
+            >
+              {item?.name}
+            </Link>
+          </h3>
+          <button
+            onClick={() =>
+              removeFromCart(
+                item?._id,
+                item?.selectedSize,
+                item?.selectedColor,
+              )
+            }
+            className="text-text-muted hover:text-error transition-colors p-1 cursor-pointer"
+            aria-label="Remove item"
+          >
+            <DeleteOutlineIcon fontSize="small" />
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-4 text-sm text-text-secondary mb-4">
+          {item?.selectedSize && (
+            <span className="bg-surface-light px-2 py-1 rounded border border-border">
+              Size:{" "}
+              <span className="text-text-primary font-medium">
+                {item?.selectedSize}
+              </span>
+            </span>
+          )}
+          {item?.selectedColor && (
+            <span className="bg-surface-light px-2 py-1 rounded border border-border flex items-center gap-2">
+              Color:{" "}
+              <span
+                className="w-3 h-3 rounded-full border border-border"
+                style={{ backgroundColor: item?.selectedColor }}
+              ></span>
+            </span>
+          )}
+        </div>
+
+        <div className="w-full flex justify-between items-center md:items-end">
+          {/* Quantity Controls */}
+          <div className="flex items-center bg-surface-light rounded-lg border border-border">
+            <button
+              className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-l-lg transition-colors"
+              onClick={() =>
+                updateQuantity(
+                  item?._id,
+                  Math.max(1, item?.quantity - 1),
+                  item?.selectedSize,
+                  item?.selectedColor,
+                )
+              }
+              disabled={item?.quantity <= 1}
+            >
+              <RemoveIcon fontSize="small" />
+            </button>
+            <span className="w-10 text-center font-bold text-text-primary">
+              {item?.quantity}
+            </span>
+            <button
+              className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-r-lg transition-colors"
+              onClick={() =>
+                updateQuantity(
+                  item?._id,
+                  item?.quantity + 1,
+                  item?.selectedSize,
+                  item?.selectedColor,
+                )
+              }
+            >
+              <AddIcon fontSize="small" />
+            </button>
+          </div>
+
+          <p className="text-xl font-bold text-accent">
+            ₹{(item?.price * item?.quantity).toFixed(2)}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 const Cart: React.FC = () => {
   const cart = useStore((state) => state.cart);
   const removeFromCart = useStore((state) => state.removeFromCart);
@@ -71,116 +186,14 @@ const Cart: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-8">
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-4">
-            {cart &&
-              cart?.length > 0 &&
-              cart?.map((item) => (
-                <div
-                  key={`${item?._id}-${item?.selectedSize}-${item?.selectedColor}`}
-                  className="card bg-surface p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center group hover:border-border-light transition-all"
-                >
-                  {/* Product Image */}
-                  <div className="w-full sm:w-24 h-32 sm:h-24 flex-shrink-0 bg-surface-light rounded-lg overflow-hidden">
-                    {item?.images && item?.images?.length > 0 ? (
-                      <img
-                        src={item?.images[0]}
-                        alt={item?.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-text-muted">
-                        <ShoppingBagIcon />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Details */}
-                  <div className="w-full flex-grow min-w-0">
-                    <div className="w-full flex justify-between items-start mb-0 sm:mb-2">
-                      <h3 className="text-lg font-bold text-text-primary truncate pr-4">
-                        <Link
-                          to={`/product/${item?._id}`}
-                          className="hover:text-accent transition-colors"
-                        >
-                          {item?.name}
-                        </Link>
-                      </h3>
-                      <button
-                        onClick={() =>
-                          removeFromCart(
-                            item?._id,
-                            item?.selectedSize,
-                            item?.selectedColor,
-                          )
-                        }
-                        className="text-text-muted hover:text-error transition-colors p-1 cursor-pointer"
-                        aria-label="Remove item"
-                      >
-                        <DeleteOutlineIcon fontSize="small" />
-                      </button>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4 text-sm text-text-secondary mb-4">
-                      {item?.selectedSize && (
-                        <span className="bg-surface-light px-2 py-1 rounded border border-border">
-                          Size:{" "}
-                          <span className="text-text-primary font-medium">
-                            {item?.selectedSize}
-                          </span>
-                        </span>
-                      )}
-                      {item?.selectedColor && (
-                        <span className="bg-surface-light px-2 py-1 rounded border border-border flex items-center gap-2">
-                          Color:{" "}
-                          <span
-                            className="w-3 h-3 rounded-full border border-border"
-                            style={{ backgroundColor: item?.selectedColor }}
-                          ></span>
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="w-full flex justify-between items-center md:items-end">
-                      {/* Quantity Controls */}
-                      <div className="flex items-center bg-surface-light rounded-lg border border-border">
-                        <button
-                          className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-l-lg transition-colors"
-                          onClick={() =>
-                            updateQuantity(
-                              item?._id,
-                              Math.max(1, item?.quantity - 1),
-                              item?.selectedSize,
-                              item?.selectedColor,
-                            )
-                          }
-                          disabled={item?.quantity <= 1}
-                        >
-                          <RemoveIcon fontSize="small" />
-                        </button>
-                        <span className="w-10 text-center font-bold text-text-primary">
-                          {item?.quantity}
-                        </span>
-                        <button
-                          className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-hover rounded-r-lg transition-colors"
-                          onClick={() =>
-                            updateQuantity(
-                              item?._id,
-                              item?.quantity + 1,
-                              item?.selectedSize,
-                              item?.selectedColor,
-                            )
-                          }
-                        >
-                          <AddIcon fontSize="small" />
-                        </button>
-                      </div>
-
-                      <p className="text-xl font-bold text-accent">
-                        ₹{(item?.price * item?.quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {cart.map((item) => (
+              <CartItem
+                key={`${item?._id}-${item?.selectedSize}-${item?.selectedColor}`}
+                item={item}
+                removeFromCart={removeFromCart}
+                updateQuantity={updateQuantity}
+              />
+            ))}
 
             <button
               onClick={() => navigate("/products")}

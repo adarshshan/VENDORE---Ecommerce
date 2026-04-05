@@ -12,8 +12,10 @@ const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const cart = useStore((state) => state.cart);
-  const wishlist = useStore((state) => state.wishlist);
+  
+  // Use specific selectors to prevent re-renders on unrelated store changes
+  const cartLength = useStore((state) => state.cart.length);
+  const wishlistLength = useStore((state) => state.wishlist.length);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -30,17 +32,6 @@ const Header: React.FC = () => {
     <header className="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-all duration-300 px-[1rem] sm:px-[5rem]">
       <div className="container-custom py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          {/* <div className="md:hidden">
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              className="!text-text-primary"
-            >
-              <MenuIcon />
-            </IconButton>
-          </div> */}
           <Link
             to="/"
             className="text-2xl md:text-3xl font-serif font-black text-[var(--color-text-Header)] tracking-tighter  hover:text-accent transition-colors"
@@ -72,9 +63,9 @@ const Header: React.FC = () => {
               className="text-text-secondary hover:text-accent transition-colors relative !hidden md:!block"
             >
               <FavoriteIcon className="text-text-primary" />
-              {wishlist?.length > 0 && (
+              {wishlistLength > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-text-primary text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
-                  {wishlist?.length}
+                  {wishlistLength}
                 </span>
               )}
             </IconButton>
@@ -83,9 +74,9 @@ const Header: React.FC = () => {
               className="text-text-secondary hover:text-accent transition-colors relative !hidden md:!block"
             >
               <ShoppingCartIcon className="text-text-primary" />
-              {cart?.length > 0 && (
+              {cartLength > 0 && (
                 <span className="absolute -top-1 -right-1 bg-accent text-text-inverse text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
-                  {cart?.length}
+                  {cartLength}
                 </span>
               )}
             </IconButton>
