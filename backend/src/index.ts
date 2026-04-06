@@ -12,6 +12,7 @@ import { categoryRoutes } from "./routes/CategoryRoutes";
 import { contactRoutes } from "./routes/ContactRoutes";
 import { wishlistRoutes } from "./routes/WishlistRoutes";
 import { searchRoutes } from "./routes/SearchRoutes";
+import sellerRoutes from "./routes/SellerRoutes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +29,7 @@ app.use(
       "Authorization",
       "Accept",
       "X-Requested-With",
+      "X-Seller-Token",
     ],
   }),
 );
@@ -54,6 +56,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/seller", sellerRoutes);
 
 // Start Server
 const startServer = async () => {

@@ -60,6 +60,8 @@ export interface OrderDocument extends Document {
   refundAmount?: number;
   refundStatus?: string;
   refundDate?: Date;
+  sellerBooked: boolean;
+  sellerBookedAt?: Date;
 }
 
 const orderItemSchema = new Schema<OrderItem>(
@@ -142,6 +144,8 @@ const orderSchema = new Schema<OrderDocument>(
     refundAmount: { type: Number },
     refundStatus: { type: String },
     refundDate: { type: Date },
+    sellerBooked: { type: Boolean, default: false, index: true },
+    sellerBookedAt: { type: Date },
   },
   {
     timestamps: true,

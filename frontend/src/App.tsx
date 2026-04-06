@@ -29,6 +29,12 @@ const CategoryManagement = lazy(
 );
 const ContactManagement = lazy(() => import("./pages/admin/ContactManagement"));
 
+// Seller pages
+const SellerLayout = lazy(() => import("./pages/seller/SellerLayout"));
+const SellerLogin = lazy(() => import("./pages/seller/Login"));
+const SellerInventory = lazy(() => import("./pages/seller/Inventory"));
+const SellerOrders = lazy(() => import("./pages/seller/Orders"));
+
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -191,6 +197,40 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <ContactManagement />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/seller-login",
+    element: (
+      <Suspense fallback={<Loading />}>
+        <SellerLogin />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/seller",
+    element: (
+      <Suspense fallback={<Loading />}>
+        <SellerLayout />
+      </Suspense>
+    ),
+    children: [
+      {
+        path: "inventory",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <SellerInventory />
+          </Suspense>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <SellerOrders />
           </Suspense>
         ),
       },
