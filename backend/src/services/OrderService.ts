@@ -119,15 +119,16 @@ export class OrderService {
       status: "Processing",
     });
 
-    // Notify Admin
+    // Notify Admin & Customer
     const orderWithUser: any = await this.orderRepository.findByIdWithPopulate(
       String(createdOrder?._id),
       "user",
     );
-    notificationService.notifyAdmin({
+    notificationService.notify({
       eventType: "Placed",
       orderId: String(createdOrder?._id),
       customerName: orderWithUser?.user?.name || "Unknown",
+      customerEmail: orderWithUser?.user?.email,
       amount: createdOrder?.totalPrice,
       items: createdOrder?.items,
     });
@@ -222,17 +223,19 @@ export class OrderService {
 
     const updatedOrder = await this.orderRepository.save(order);
 
-    // Notify Admin
+    // Notify Admin & Customer
     const orderWithUser: any = await this.orderRepository.findByIdWithPopulate(
       String(updatedOrder?._id),
       "user",
     );
-    notificationService.notifyAdmin({
+    notificationService.notify({
       eventType: "Cancelled",
       orderId: String(updatedOrder?._id),
       customerName: orderWithUser?.user?.name || "Unknown",
+      customerEmail: orderWithUser?.user?.email,
       amount: updatedOrder?.totalPrice,
       items: updatedOrder?.items,
+      reason: order.cancelReason,
     });
 
     // Restore stock
@@ -312,7 +315,24 @@ export class OrderService {
     item.returnReason = reason;
     item.customReturnReason = customReason;
 
-    return await this.orderRepository.save(order);
+    const savedOrder = await this.orderRepository.save(order);
+
+    // Notify Admin & Customer
+    const orderWithUser: any = await this.orderRepository.findByIdWithPopulate(
+      String(order?._id),
+      "user",
+    );
+    notificationService.notify({
+      eventType: "ReturnRequested",
+      orderId: String(order?._id),
+      customerName: orderWithUser?.user?.name || "Unknown",
+      customerEmail: orderWithUser?.user?.email,
+      amount: order.totalPrice,
+      items: [item],
+      reason: reason + (customReason ? `: ${customReason}` : ""),
+    });
+
+    return savedOrder;
   }
 
   async getAllOrders(pageNumber: number, limit: number = 10) {
@@ -400,17 +420,18 @@ export class OrderService {
 
     const updatedOrder = await this.orderRepository.save(order);
 
-    // Notify Admin on Approval
+    // Notify Admin & Customer on Approval
     if (status === "Approved") {
       const orderWithUser: any =
         await this.orderRepository.findByIdWithPopulate(
           String(updatedOrder?._id),
           "user",
         );
-      notificationService.notifyAdmin({
+      notificationService.notify({
         eventType: "Returned",
         orderId: String(updatedOrder?._id),
         customerName: orderWithUser?.user?.name || "Unknown",
+        customerEmail: orderWithUser?.user?.email,
         amount: updatedOrder.totalPrice,
         items: updatedOrder?.items?.filter(
           (i) => i?.returnStatus === "Approved",
