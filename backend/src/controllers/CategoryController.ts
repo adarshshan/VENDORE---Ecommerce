@@ -16,7 +16,9 @@ export class CategoryController {
 
   async getCategoryById(req: Request, res: Response): Promise<void> {
     try {
-      const category = await this.categoryService.getCategoryById(req.params.id);
+      const category = await this.categoryService.getCategoryById(
+        req.params.id,
+      );
       if (!category) {
         res.status(404).json({ message: "Category not found" });
         return;
@@ -40,7 +42,7 @@ export class CategoryController {
     try {
       const category = await this.categoryService.updateCategory(
         req.params.id,
-        req.body
+        req.body,
       );
       if (!category) {
         res.status(404).json({ message: "Category not found" });

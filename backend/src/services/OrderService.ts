@@ -12,8 +12,6 @@ export class OrderService {
     private orderRepository: IOrderRepository,
     private productRepository: IProductRepository,
   ) {
-    console.log('razorpay..........')
-    console.log(process.env.RAZORPAY_KEY_ID)
     this.razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID as string,
       key_secret: process.env.RAZORPAY_KEY_SECRET as string,
@@ -121,15 +119,16 @@ export class OrderService {
       status: "Processing",
     });
 
-    // Notify Admin
+    // Notify Admin & Customer
     const orderWithUser: any = await this.orderRepository.findByIdWithPopulate(
       String(createdOrder?._id),
       "user",
     );
-    notificationService.notifyAdmin({
+    notificationService.notify({
       eventType: "Placed",
       orderId: String(createdOrder?._id),
       customerName: orderWithUser?.user?.name || "Unknown",
+      customerEmail: orderWithUser?.user?.email,
       amount: createdOrder?.totalPrice,
       items: createdOrder?.items,
     });
@@ -165,10 +164,18 @@ export class OrderService {
     return createdOrder;
   }
 
-  async getMyOrders(userId: string, pageNumber: number = 1, limit: number = 10) {
+  async getMyOrders(
+    userId: string,
+    pageNumber: number = 1,
+    limit: number = 10,
+  ) {
     const page = pageNumber || 1;
     const pageSize = limit || 10;
-    return await this.orderRepository.findByUserWithPagination(userId, page, pageSize);
+    return await this.orderRepository.findByUserWithPagination(
+      userId,
+      page,
+      pageSize,
+    );
   }
 
   async getOrderById(orderId: string) {
@@ -216,22 +223,24 @@ export class OrderService {
 
     const updatedOrder = await this.orderRepository.save(order);
 
-    // Notify Admin
+    // Notify Admin & Customer
     const orderWithUser: any = await this.orderRepository.findByIdWithPopulate(
       String(updatedOrder?._id),
       "user",
     );
-    notificationService.notifyAdmin({
+    notificationService.notify({
       eventType: "Cancelled",
       orderId: String(updatedOrder?._id),
       customerName: orderWithUser?.user?.name || "Unknown",
+      customerEmail: orderWithUser?.user?.email,
       amount: updatedOrder?.totalPrice,
       items: updatedOrder?.items,
+      reason: order.cancelReason,
     });
 
     // Restore stock
     for (const item of order?.items) {
-      if (item.size) {
+      if (item?.size) {
         const product = await this.productRepository.findById(
           String(item?.product),
         );
@@ -306,19 +315,39 @@ export class OrderService {
     item.returnReason = reason;
     item.customReturnReason = customReason;
 
-    return await this.orderRepository.save(order);
+    const savedOrder = await this.orderRepository.save(order);
+
+    // Notify Admin & Customer
+    const orderWithUser: any = await this.orderRepository.findByIdWithPopulate(
+      String(order?._id),
+      "user",
+    );
+    notificationService.notify({
+      eventType: "ReturnRequested",
+      orderId: String(order?._id),
+      customerName: orderWithUser?.user?.name || "Unknown",
+      customerEmail: orderWithUser?.user?.email,
+      amount: order.totalPrice,
+      items: [item],
+      reason: reason + (customReason ? `: ${customReason}` : ""),
+    });
+
+    return savedOrder;
   }
 
   async getAllOrders(pageNumber: number, limit: number = 10) {
     const pageSize = limit || 10;
     const page = pageNumber || 1;
 
-    const { orders, totalItems } = await this.orderRepository.findAllWithPagination(
-      page,
-      pageSize,
-    );
+    const { orders, totalItems } =
+      await this.orderRepository.findAllWithPagination(page, pageSize);
 
-    return { orders, page, totalItems, totalPages: Math.ceil(totalItems / pageSize) };
+    return {
+      orders,
+      page,
+      totalItems,
+      totalPages: Math.ceil(totalItems / pageSize),
+    };
   }
 
   async updateOrderStatus(orderId: string, status: any) {
@@ -391,17 +420,18 @@ export class OrderService {
 
     const updatedOrder = await this.orderRepository.save(order);
 
-    // Notify Admin on Approval
+    // Notify Admin & Customer on Approval
     if (status === "Approved") {
       const orderWithUser: any =
         await this.orderRepository.findByIdWithPopulate(
           String(updatedOrder?._id),
           "user",
         );
-      notificationService.notifyAdmin({
+      notificationService.notify({
         eventType: "Returned",
         orderId: String(updatedOrder?._id),
         customerName: orderWithUser?.user?.name || "Unknown",
+        customerEmail: orderWithUser?.user?.email,
         amount: updatedOrder.totalPrice,
         items: updatedOrder?.items?.filter(
           (i) => i?.returnStatus === "Approved",

@@ -7,7 +7,7 @@ export interface ICategoryRepository {
   create(category: Partial<CategoryDocument>): Promise<CategoryDocument>;
   update(
     id: string,
-    category: Partial<CategoryDocument>
+    category: Partial<CategoryDocument>,
   ): Promise<CategoryDocument | null>;
   delete(id: string): Promise<boolean>;
 }
@@ -38,13 +38,13 @@ export class CategoryRepository implements ICategoryRepository {
 
   async update(
     id: string,
-    categoryData: Partial<CategoryDocument>
+    categoryData: Partial<CategoryDocument>,
   ): Promise<CategoryDocument | null> {
     try {
       return await CategoryModel.findByIdAndUpdate(
         id,
         { $set: categoryData },
-        { new: true }
+        { new: true },
       ).exec();
     } catch (error) {
       return null;

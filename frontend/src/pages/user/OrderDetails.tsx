@@ -18,8 +18,17 @@ const OrderDetails: React.FC = () => {
   const [error, setError] = useState("");
 
   const [isCancelOpen, setIsCancelOpen] = useState(false);
-  const [reason, setReason] = useState("");
+  const [selectedReason, setSelectedReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+
+  const cancellationReasons = [
+    "Ordered by mistake",
+    "Delivery takes too long",
+    "Found better price elsewhere",
+    "Changed my mind",
+    "Others",
+  ];
 
   useEffect(() => {
     fetchOrder();
@@ -43,12 +52,17 @@ const OrderDetails: React.FC = () => {
   };
 
   const handleCancelOrder = async () => {
-    if (!id || !reason) return;
+    if (!id) return;
+    const finalReason =
+      selectedReason === "Others" ? customReason : selectedReason;
+    if (!finalReason) return;
+
     try {
       setActionLoading(true);
-      await cancelOrder(id, reason);
+      await cancelOrder(id, finalReason);
       setIsCancelOpen(false);
-      setReason("");
+      setSelectedReason("");
+      setCustomReason("");
       fetchOrder();
     } catch (err: any) {
       alert(err.response?.data?.message || "Error cancelling order");
@@ -375,36 +389,99 @@ const OrderDetails: React.FC = () => {
       </div>
 
       {/* Cancel Modal */}
-      <CustomModal open={isCancelOpen} onClose={() => setIsCancelOpen(false)}>
-        <div className="bg-surface p-8 max-w-md w-full border border-border rounded-3xl">
-          <h2 className="text-2xl font-serif font-bold text-text-primary mb-4">
-            Cancel Order
-          </h2>
-          <p className="text-text-secondary mb-6">
-            Please let us know why you need to cancel this order. This action
-            cannot be undone.
-          </p>
-          <label className="label">Reason for Cancellation</label>
-          <textarea
-            className="input min-h-[100px] mb-6"
-            placeholder="Tell us more..."
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          />
-          <div className="flex gap-4">
-            <button
-              onClick={() => setIsCancelOpen(false)}
-              className="btn-secondary flex-1"
-            >
-              Keep Order
-            </button>
-            <button
-              onClick={handleCancelOrder}
-              disabled={!reason || actionLoading}
-              className="btn-primary !bg-error !text-text-primary flex-1 disabled:opacity-50"
-            >
-              {actionLoading ? "Processing..." : "Confirm Cancel"}
-            </button>
+      <CustomModal
+        open={isCancelOpen}
+        onClose={() => {
+          if (!actionLoading) setIsCancelOpen(false);
+        }}
+      >
+        <div className="bg-surface max-w-lg w-full  overflow-hidden animate-in fade-in zoom-in duration-300">
+          <div className="p-8">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center flex-shrink-0">
+                <svg
+                  className="w-6 h-6 text-error"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-2xl font-serif font-black text-text-primary">
+                  Cancel Order?
+                </h2>
+                <p className="text-sm text-text-secondary">
+                  This action is permanent and cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <label className="text-sm font-bold uppercase tracking-widest text-text-muted px-1">
+                Why are you cancelling?
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {cancellationReasons.map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => setSelectedReason(r)}
+                    className={`px-4 py-3 rounded-xl text-sm font-medium border transition-all text-left ${
+                      selectedReason === r
+                        ? "bg-accent border-accent text-text-inverse shadow-lg shadow-accent/20"
+                        : "bg-surface-light border-border text-text-secondary hover:border-accent/50"
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+
+              {selectedReason === "Others" && (
+                <div className="animate-in slide-in-from-top-2 duration-300">
+                  <textarea
+                    className="w-full bg-surface-light border border-border rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all min-h-[100px]"
+                    placeholder="Please tell us more about why you're cancelling..."
+                    value={customReason}
+                    onChange={(e) => setCustomReason(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row gap-3">
+              <button
+                disabled={actionLoading}
+                onClick={() => setIsCancelOpen(false)}
+                className="flex-1 px-6 py-4 rounded-xl font-bold text-text-secondary hover:bg-surface-light transition-colors disabled:opacity-50"
+              >
+                Go Back
+              </button>
+              <button
+                disabled={
+                  !selectedReason ||
+                  (selectedReason === "Others" && !customReason) ||
+                  actionLoading
+                }
+                onClick={handleCancelOrder}
+                className="flex-[1.5] px-6 py-4 rounded-xl font-bold bg-error text-text-inverse shadow-lg shadow-error/20 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {actionLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Confirm Cancellation"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </CustomModal>

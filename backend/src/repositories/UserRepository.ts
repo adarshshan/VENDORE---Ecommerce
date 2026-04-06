@@ -2,15 +2,24 @@ import { UserDocument, UserModel } from "../models/UserSchema";
 import { connectToDatabase } from "../config/database";
 
 export interface IUserRepository {
-  findAll(page?: number, limit?: number): Promise<{ users: UserDocument[]; totalItems: number }>;
+  findAll(
+    page?: number,
+    limit?: number,
+  ): Promise<{ users: UserDocument[]; totalItems: number }>;
   findById(id: string): Promise<UserDocument | null>;
   findByEmail(email: string): Promise<UserDocument | null>;
   create(user: Omit<UserDocument, "_id">): Promise<UserDocument>;
   update(id: string, user: Partial<UserDocument>): Promise<UserDocument | null>;
   delete(id: string): Promise<boolean>;
   getWishlist(userId: string): Promise<UserDocument | null>;
-  addToWishlist(userId: string, productId: string): Promise<UserDocument | null>;
-  removeFromWishlist(userId: string, productId: string): Promise<UserDocument | null>;
+  addToWishlist(
+    userId: string,
+    productId: string,
+  ): Promise<UserDocument | null>;
+  removeFromWishlist(
+    userId: string,
+    productId: string,
+  ): Promise<UserDocument | null>;
   countAll(): Promise<number>;
 }
 
@@ -55,7 +64,10 @@ export class UserRepository implements IUserRepository {
     return await UserModel.countDocuments({});
   }
 
-  async findAll(page?: number, limit?: number): Promise<{ users: UserDocument[]; totalItems: number }> {
+  async findAll(
+    page?: number,
+    limit?: number,
+  ): Promise<{ users: UserDocument[]; totalItems: number }> {
     const totalItems = await UserModel.countDocuments({});
     const query = UserModel.find();
 

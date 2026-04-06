@@ -69,7 +69,10 @@ export class OrderRepository implements IOrderRepository {
     populate: string,
   ): Promise<OrderDocument | null> {
     try {
-      return await OrderModel.findById(id).populate(populate).lean().exec() as any;
+      return (await OrderModel.findById(id)
+        .populate(populate)
+        .lean()
+        .exec()) as any;
     } catch (error) {
       if (
         error instanceof Error &&
@@ -92,13 +95,13 @@ export class OrderRepository implements IOrderRepository {
     pageSize: number,
   ): Promise<{ orders: OrderDocument[]; totalItems: number }> {
     const totalItems = await OrderModel.countDocuments({ user: userId });
-    const orders = await OrderModel.find({ user: userId })
+    const orders = (await OrderModel.find({ user: userId })
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1))
       .select("totalPrice status createdAt items.image items.name")
       .lean()
-      .exec() as any;
+      .exec()) as any;
     return { orders, totalItems };
   }
 
@@ -107,13 +110,13 @@ export class OrderRepository implements IOrderRepository {
     pageSize: number,
   ): Promise<{ orders: OrderDocument[]; totalItems: number }> {
     const totalItems = await OrderModel.countDocuments({});
-    const orders = await OrderModel.find({})
+    const orders = (await OrderModel.find({})
       .populate("user", "name email")
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1))
       .lean()
-      .exec() as any;
+      .exec()) as any;
     return { orders, totalItems };
   }
 

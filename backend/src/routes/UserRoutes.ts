@@ -2,13 +2,8 @@ import { Router } from "express";
 import { UserController } from "../controllers/UserController";
 import { UserService } from "../services/UserService";
 import { UserRepository } from "../repositories/UserRepository";
-import { UserModel } from "../models/UserSchema";
-import jwt from "jsonwebtoken";
 import Encrypt from "../utils/comparePassword";
 import { CreateJWT } from "../utils/generateToken";
-import { protect } from "../middleware/auth";
-const { OAuth2Client } = require("google-auth-library");
-const client = new OAuth2Client();
 
 const router = Router();
 const encrypt = new Encrypt();

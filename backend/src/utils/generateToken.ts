@@ -5,7 +5,6 @@ dotenv.config();
 export class CreateJWT {
   generateToken(payload: string | undefined): string | undefined {
     if (payload) {
-      console.log(`JWT_SECRET: ${process.env.JWT_SECRET}`);
       const token = jwt.sign(
         { data: payload },
         process.env.JWT_SECRET as Secret,
@@ -28,7 +27,11 @@ export class CreateJWT {
     return undefined;
   }
 
-  verifyToken(token: string): { success: boolean; decoded?: JwtPayload; message?: string } {
+  verifyToken(token: string): {
+    success: boolean;
+    decoded?: JwtPayload;
+    message?: string;
+  } {
     try {
       const secret = process.env.JWT_SECRET as Secret;
       const decoded = jwt.verify(token, secret) as JwtPayload;
@@ -41,9 +44,13 @@ export class CreateJWT {
     }
   }
 
-  verifyRefreshToken(token: string): { success: boolean; decoded?: JwtPayload; message?: string } {
+  verifyRefreshToken(token: string): {
+    success: boolean;
+    decoded?: JwtPayload;
+    message?: string;
+  } {
     try {
-      if (!token || typeof token !== 'string') {
+      if (!token || typeof token !== "string") {
         throw new Error("jwt must be a string");
       }
       const secret = process.env.JWT_REFRESH_SECRET as Secret;
@@ -55,7 +62,9 @@ export class CreateJWT {
     }
   }
 
-  refreshAccessToken = async (refreshToken: string): Promise<string | undefined> => {
+  refreshAccessToken = async (
+    refreshToken: string,
+  ): Promise<string | undefined> => {
     try {
       if (!refreshToken) throw new Error("No refresh token found");
 

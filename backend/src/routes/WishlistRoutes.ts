@@ -15,11 +15,7 @@ const userService = new UserService(userRepository, encrypt, createJWT);
 const userController = new UserController(userService, createJWT);
 
 router.get("/", protect, (req, res) => userController.getWishlist(req, res));
-router.post("/add", protect, (req, res) =>
-  userController.addToWishlist(req, res),
-);
-router.delete("/remove/:productId", protect, (req, res) =>
-  userController.removeFromWishlist(req, res),
-);
+router.post("/add", protect, (req, res) => userController.addToWishlist(req, res));
+router.delete("/remove/:productId", protect, (req, res) => userController.removeFromWishlist(req, res));
 
 export { router as wishlistRoutes };

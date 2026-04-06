@@ -2,11 +2,13 @@ import nodemailer from "nodemailer";
 import twilio from "twilio";
 
 interface NotificationData {
-  eventType: "Placed" | "Cancelled" | "Returned";
+  eventType: "Placed" | "Cancelled" | "Returned" | "ReturnRequested";
   orderId: string;
   customerName: string;
+  customerEmail?: string;
   amount: number;
   items: any[];
+  reason?: string;
 }
 
 class NotificationService {
@@ -62,17 +64,90 @@ class NotificationService {
     }
   }
 
-  private formatMessage(data: NotificationData): string {
-    const { eventType, orderId, customerName, amount, items } = data;
+  private formatWhatsAppMessage(data: NotificationData): string {
+    const { eventType, orderId, customerName, amount, items, reason } = data;
     const itemsList = items
       .map((item) => `${item.name} (x${item.quantity})`)
       .join(", ");
 
-    return `*${eventType.toUpperCase()} Notification!* 👗
-*Order ID:* #${orderId}
-*Customer:* ${customerName}
-*Items:* ${itemsList}
-*Amount:* ₹${amount.toFixed(2)}`;
+    let message = `*${eventType.toUpperCase()} Notification!* 👗\n`;
+    message += `*Order ID:* #${orderId}\n`;
+    message += `*Customer:* ${customerName}\n`;
+    message += `*Items:* ${itemsList}\n`;
+    message += `*Amount:* ₹${amount.toFixed(2)}`;
+    
+    if (reason) {
+      message += `\n*Reason:* ${reason}`;
+    }
+
+    return message;
+  }
+
+  private getEmailTemplate(data: NotificationData, isForAdmin: boolean): { subject: string; html: string } {
+    const { eventType, orderId, customerName, amount, items, reason } = data;
+    const itemsHtml = items
+      .map(
+        (item) =>
+          `<li>${item.name} - Quantity: ${item.quantity} - Price: ₹${item.price}</li>`,
+      )
+      .join("");
+
+    let title = "";
+    let subject = "";
+    let messageBody = "";
+
+    switch (eventType) {
+      case "Placed":
+        title = "Order Placed Successfully";
+        subject = `VENDORA Order Placed: #${orderId}`;
+        messageBody = isForAdmin 
+          ? `<p>A new order has been placed by <strong>${customerName}</strong>.</p>`
+          : `<p>Thank you for your order, <strong>${customerName}</strong>! We're processing it now.</p>`;
+        break;
+      case "Cancelled":
+        title = "Order Cancelled";
+        subject = `VENDORA Order Cancelled: #${orderId}`;
+        messageBody = isForAdmin
+          ? `<p>Order #${orderId} has been cancelled by <strong>${customerName}</strong>.</p>`
+          : `<p>Your order #${orderId} has been successfully cancelled.</p>`;
+        if (reason) messageBody += `<p><strong>Reason:</strong> ${reason}</p>`;
+        break;
+      case "ReturnRequested":
+        title = "Return Requested";
+        subject = `VENDORA Return Request: #${orderId}`;
+        messageBody = isForAdmin
+          ? `<p>A return has been requested for Order #${orderId} by <strong>${customerName}</strong>.</p>`
+          : `<p>Your return request for Order #${orderId} has been received and is being reviewed.</p>`;
+        if (reason) messageBody += `<p><strong>Reason for Return:</strong> ${reason}</p>`;
+        break;
+      case "Returned":
+        title = "Return Processed";
+        subject = `VENDORA Return Approved: #${orderId}`;
+        messageBody = isForAdmin
+          ? `<p>The return for Order #${orderId} has been approved.</p>`
+          : `<p>Your return for Order #${orderId} has been approved and processed.</p>`;
+        break;
+    }
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #e67e22; margin: 0;">VENDORA</h1>
+        </div>
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">${title}</h2>
+        ${messageBody}
+        <p><strong>Order ID:</strong> #${orderId}</p>
+        <p><strong>Total Amount:</strong> ₹${amount.toFixed(2)}</p>
+        <h3>Order Details:</h3>
+        <ul>${itemsHtml}</ul>
+        <div style="margin-top: 20px; font-size: 12px; color: #777; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
+          ${isForAdmin ? "This is an automated notification for Admin." : "If you have any questions, please contact our support team."}
+          <br/>© ${new Date().getFullYear()} VENDORA. All rights reserved.
+        </div>
+      </div>
+    `;
+
+    return { subject, html };
   }
 
   async sendWhatsAppMessage(data: NotificationData): Promise<void> {
@@ -89,7 +164,7 @@ class NotificationService {
         return;
       }
 
-      const message = this.formatMessage(data);
+      const message = this.formatWhatsAppMessage(data);
 
       await client.messages.create({
         from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
@@ -108,54 +183,72 @@ class NotificationService {
       const transporter = this.initTransporter();
       if (!transporter) return;
 
-      if (
-        !process.env.ADMIN_EMAIL ||
-        process.env.ADMIN_EMAIL === "admin@kidsown.com"
-      ) {
+      const adminEmailConfig = process.env.ADMIN_EMAIL || "";
+      if (!adminEmailConfig || adminEmailConfig === "admin@kidsown.com") {
         console.warn("Admin email missing or default.");
         return;
       }
 
-      const { eventType, orderId, customerName, amount, items } = data;
-      const itemsHtml = items
-        .map(
-          (item) =>
-            `<li>${item.name} - Quantity: ${item.quantity} - Price: ₹${item.price}</li>`,
-        )
-        .join("");
+      // Support multiple admin emails
+      const adminEmails = adminEmailConfig.split(",").map(email => email.trim());
+
+      const { subject, html } = this.getEmailTemplate(data, true);
 
       const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.ADMIN_EMAIL,
-        subject: `VENDORA Order ${eventType}: #${orderId}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-            <h2 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Order ${eventType}</h2>
-            <p><strong>Order ID:</strong> #${orderId}</p>
-            <p><strong>Customer Name:</strong> ${customerName}</p>
-            <p><strong>Total Amount:</strong> ₹${amount.toFixed(2)}</p>
-            <h3>Items:</h3>
-            <ul>${itemsHtml}</ul>
-            <div style="margin-top: 20px; font-size: 12px; color: #777; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
-              This is an automated notification from VENDORA Admin System.
-            </div>
-          </div>
-        `,
+        from: `VENDORA <${process.env.EMAIL_USER}>`,
+        to: adminEmails.join(","),
+        subject: subject,
+        html: html,
       };
 
       await transporter.sendMail(mailOptions);
-      console.log(`Email notification sent for order ${orderId}`);
+      console.log(`Email notification sent to admins for order ${data.orderId}`);
+
+      // Send to customer if email is provided
+      if (data.customerEmail) {
+        await this.sendCustomerEmail(data);
+      }
     } catch (error) {
       console.error("Email notification failed:", error);
     }
   }
 
+  private async sendCustomerEmail(data: NotificationData): Promise<void> {
+    try {
+      const transporter = this.initTransporter();
+      if (!transporter || !data.customerEmail) return;
+
+      const { subject, html } = this.getEmailTemplate(data, false);
+
+      const mailOptions = {
+        from: `VENDORA <${process.env.EMAIL_USER}>`,
+        to: data.customerEmail,
+        subject: subject,
+        html: html,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log(`Email notification sent to customer (${data.customerEmail}) for order ${data.orderId}`);
+    } catch (error) {
+      console.error(`Customer email notification failed for ${data.customerEmail}:`, error);
+    }
+  }
+
+  async notify(data: NotificationData): Promise<void> {
+    // Using setImmediate to not block the main process
+    setImmediate(async () => {
+      await Promise.allSettled([
+        this.sendWhatsAppMessage(data),
+        this.sendEmailNotification(data),
+      ]);
+    });
+  }
+
+  // Keep notifyAdmin for backward compatibility, but it calls notify
   async notifyAdmin(data: NotificationData): Promise<void> {
-    await Promise.allSettled([
-      this.sendWhatsAppMessage(data),
-      this.sendEmailNotification(data),
-    ]);
+    return this.notify(data);
   }
 }
 
 export const notificationService = new NotificationService();
+
