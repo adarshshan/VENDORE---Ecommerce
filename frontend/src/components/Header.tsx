@@ -12,7 +12,7 @@ const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Use specific selectors to prevent re-renders on unrelated store changes
   const cartLength = useStore((state) => state.cart.length);
   const wishlistLength = useStore((state) => state.wishlist.length);
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
             to="/"
             className="text-2xl md:text-3xl font-serif font-black text-[var(--color-text-Header)] tracking-tighter  hover:text-accent transition-colors"
           >
-            VENDORA
+            ThreadCo
           </Link>
         </div>
 

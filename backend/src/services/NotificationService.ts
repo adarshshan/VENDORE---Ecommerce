@@ -75,7 +75,7 @@ class NotificationService {
     message += `*Customer:* ${customerName}\n`;
     message += `*Items:* ${itemsList}\n`;
     message += `*Amount:* ₹${amount.toFixed(2)}`;
-    
+
     if (reason) {
       message += `\n*Reason:* ${reason}`;
     }
@@ -83,7 +83,10 @@ class NotificationService {
     return message;
   }
 
-  private getEmailTemplate(data: NotificationData, isForAdmin: boolean): { subject: string; html: string } {
+  private getEmailTemplate(
+    data: NotificationData,
+    isForAdmin: boolean,
+  ): { subject: string; html: string } {
     const { eventType, orderId, customerName, amount, items, reason } = data;
     const itemsHtml = items
       .map(
@@ -99,14 +102,14 @@ class NotificationService {
     switch (eventType) {
       case "Placed":
         title = "Order Placed Successfully";
-        subject = `VENDORA Order Placed: #${orderId}`;
-        messageBody = isForAdmin 
+        subject = `ThreadCo Order Placed: #${orderId}`;
+        messageBody = isForAdmin
           ? `<p>A new order has been placed by <strong>${customerName}</strong>.</p>`
           : `<p>Thank you for your order, <strong>${customerName}</strong>! We're processing it now.</p>`;
         break;
       case "Cancelled":
         title = "Order Cancelled";
-        subject = `VENDORA Order Cancelled: #${orderId}`;
+        subject = `ThreadCo Order Cancelled: #${orderId}`;
         messageBody = isForAdmin
           ? `<p>Order #${orderId} has been cancelled by <strong>${customerName}</strong>.</p>`
           : `<p>Your order #${orderId} has been successfully cancelled.</p>`;
@@ -114,15 +117,16 @@ class NotificationService {
         break;
       case "ReturnRequested":
         title = "Return Requested";
-        subject = `VENDORA Return Request: #${orderId}`;
+        subject = `ThreadCo Return Request: #${orderId}`;
         messageBody = isForAdmin
           ? `<p>A return has been requested for Order #${orderId} by <strong>${customerName}</strong>.</p>`
           : `<p>Your return request for Order #${orderId} has been received and is being reviewed.</p>`;
-        if (reason) messageBody += `<p><strong>Reason for Return:</strong> ${reason}</p>`;
+        if (reason)
+          messageBody += `<p><strong>Reason for Return:</strong> ${reason}</p>`;
         break;
       case "Returned":
         title = "Return Processed";
-        subject = `VENDORA Return Approved: #${orderId}`;
+        subject = `ThreadCo Return Approved: #${orderId}`;
         messageBody = isForAdmin
           ? `<p>The return for Order #${orderId} has been approved.</p>`
           : `<p>Your return for Order #${orderId} has been approved and processed.</p>`;
@@ -132,7 +136,7 @@ class NotificationService {
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #e67e22; margin: 0;">VENDORA</h1>
+          <h1 style="color: #e67e22; margin: 0;">ThreadCo</h1>
         </div>
         <h2 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">${title}</h2>
         ${messageBody}
@@ -142,7 +146,7 @@ class NotificationService {
         <ul>${itemsHtml}</ul>
         <div style="margin-top: 20px; font-size: 12px; color: #777; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
           ${isForAdmin ? "This is an automated notification for Admin." : "If you have any questions, please contact our support team."}
-          <br/>© ${new Date().getFullYear()} VENDORA. All rights reserved.
+          <br/>© ${new Date().getFullYear()} ThreadCo. All rights reserved.
         </div>
       </div>
     `;
@@ -190,19 +194,23 @@ class NotificationService {
       }
 
       // Support multiple admin emails
-      const adminEmails = adminEmailConfig.split(",").map(email => email.trim());
+      const adminEmails = adminEmailConfig
+        .split(",")
+        .map((email) => email.trim());
 
       const { subject, html } = this.getEmailTemplate(data, true);
 
       const mailOptions = {
-        from: `VENDORA <${process.env.EMAIL_USER}>`,
+        from: `ThreadCo <${process.env.EMAIL_USER}>`,
         to: adminEmails.join(","),
         subject: subject,
         html: html,
       };
 
       await transporter.sendMail(mailOptions);
-      console.log(`Email notification sent to admins for order ${data.orderId}`);
+      console.log(
+        `Email notification sent to admins for order ${data.orderId}`,
+      );
 
       // Send to customer if email is provided
       if (data.customerEmail) {
@@ -221,16 +229,21 @@ class NotificationService {
       const { subject, html } = this.getEmailTemplate(data, false);
 
       const mailOptions = {
-        from: `VENDORA <${process.env.EMAIL_USER}>`,
+        from: `ThreadCo <${process.env.EMAIL_USER}>`,
         to: data.customerEmail,
         subject: subject,
         html: html,
       };
 
       await transporter.sendMail(mailOptions);
-      console.log(`Email notification sent to customer (${data.customerEmail}) for order ${data.orderId}`);
+      console.log(
+        `Email notification sent to customer (${data.customerEmail}) for order ${data.orderId}`,
+      );
     } catch (error) {
-      console.error(`Customer email notification failed for ${data.customerEmail}:`, error);
+      console.error(
+        `Customer email notification failed for ${data.customerEmail}:`,
+        error,
+      );
     }
   }
 
@@ -251,4 +264,3 @@ class NotificationService {
 }
 
 export const notificationService = new NotificationService();
-

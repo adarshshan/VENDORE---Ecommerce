@@ -130,7 +130,7 @@ const Profile: React.FC = () => {
 
         <div className="mt-12 text-center text-text-muted">
           <p className="text-[10px] uppercase tracking-[0.2em] font-bold">
-            VENDORA Premium Apparel
+            ThreadCo Premium Apparel
           </p>
           <p className="text-[10px] mt-1 opacity-50">Version 1.0.0 (BETA)</p>
         </div>

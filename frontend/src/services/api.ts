@@ -10,7 +10,7 @@ axios.defaults.withCredentials = true;
 axios.interceptors.request.use(
   (config) => {
     // Get access token from zustand storage (localStorage)
-    const storage = localStorage.getItem("vendora-storage");
+    const storage = localStorage.getItem("threadco-storage");
     if (storage) {
       try {
         const parsedStorage = JSON.parse(storage);
@@ -184,23 +184,37 @@ export const unblockUser = async (id: string): Promise<User> => {
 };
 
 // Seller management
-export const getSellers = async (): Promise<{ success: boolean; sellers: User[] }> => {
+export const getSellers = async (): Promise<{
+  success: boolean;
+  sellers: User[];
+}> => {
   const response = await axios.get(`${VITE_API_URL}/admin/sellers`);
   return response.data;
 };
 
-export const createSeller = async (sellerData: any): Promise<{ success: boolean; message: string; seller: User }> => {
-  const response = await axios.post(`${VITE_API_URL}/admin/seller/create`, sellerData);
+export const createSeller = async (
+  sellerData: any,
+): Promise<{ success: boolean; message: string; seller: User }> => {
+  const response = await axios.post(
+    `${VITE_API_URL}/admin/seller/create`,
+    sellerData,
+  );
   return response.data;
 };
 
-export const blockSeller = async (id: string): Promise<{ success: boolean; message: string; seller: User }> => {
+export const blockSeller = async (
+  id: string,
+): Promise<{ success: boolean; message: string; seller: User }> => {
   const response = await axios.put(`${VITE_API_URL}/admin/seller/${id}/block`);
   return response.data;
 };
 
-export const unblockSeller = async (id: string): Promise<{ success: boolean; message: string; seller: User }> => {
-  const response = await axios.put(`${VITE_API_URL}/admin/seller/${id}/unblock`);
+export const unblockSeller = async (
+  id: string,
+): Promise<{ success: boolean; message: string; seller: User }> => {
+  const response = await axios.put(
+    `${VITE_API_URL}/admin/seller/${id}/unblock`,
+  );
   return response.data;
 };
 
@@ -404,8 +418,11 @@ export const getSearchSuggestions = async (
 
 // Shipping API
 export const validatePincode = async (pincode: string) => {
-  const response = await axios.post(`${VITE_API_URL}/shipping/validate-pincode`, {
-    pincode,
-  });
+  const response = await axios.post(
+    `${VITE_API_URL}/shipping/validate-pincode`,
+    {
+      pincode,
+    },
+  );
   return response.data;
 };

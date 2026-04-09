@@ -139,6 +139,8 @@ const Cart: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const currentPath = window.location.pathname + window.location.search;
+    sessionStorage.setItem("redirectAfterLogin", currentPath);
     window.scrollTo(0, 0);
   }, []);
 

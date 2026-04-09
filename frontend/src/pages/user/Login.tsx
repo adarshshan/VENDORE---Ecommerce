@@ -32,8 +32,8 @@ const Login: React.FC = () => {
         // Redirect back to original page or home
         const redirectPath = sessionStorage.getItem("redirectAfterLogin");
         if (redirectPath) {
-          sessionStorage.removeItem("redirectAfterLogin");
           navigate(redirectPath);
+          sessionStorage.removeItem("redirectAfterLogin");
         } else {
           navigate("/");
         }
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
       <div className="relative z-10 w-full max-w-md p-10 m-4 bg-surface/80 backdrop-blur-xl rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-border text-center transform transition-all">
         <div className="mb-10">
           <h1 className="text-4xl font-serif font-black tracking-widest mb-2">
-            VENDORA
+            ThreadCo
           </h1>
           <div className="h-1 w-12 bg-accent mx-auto rounded-full mb-8"></div>
           <p className="text-xl font-serif mb-2">Welcome Back</p>
@@ -101,7 +101,7 @@ const Login: React.FC = () => {
 
         <div className="mt-10 pt-8 border-t border-border">
           <p className="text-text-secondary text-sm">
-            New to VENDORA? Just sign in with Google to get started.
+            New to ThreadCo? Just sign in with Google to get started.
           </p>
         </div>
       </div>
