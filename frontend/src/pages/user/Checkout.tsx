@@ -5,6 +5,7 @@ import {
   createRazorpayOrder,
   verifyPayment,
   createOrder,
+  validatePincode,
 } from "../../services/api";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
@@ -40,6 +41,66 @@ const Checkout = () => {
     phone: "",
   });
 
+  const [pincodeStatus, setPincodeStatus] = useState<{
+    loading: boolean;
+    valid: boolean | null;
+    message: string;
+    estimatedDelivery?: string;
+  }>({
+    loading: false,
+    valid: null,
+    message: "",
+  });
+
+  useEffect(() => {
+    if (
+      shippingAddress.postalCode.length === 6 &&
+      /^\d{6}$/.test(shippingAddress.postalCode)
+    ) {
+      const timer = setTimeout(async () => {
+        try {
+          setPincodeStatus((prev) => ({ ...prev, loading: true, message: "" }));
+          const data = await validatePincode(shippingAddress.postalCode);
+          if (data.success) {
+            setPincodeStatus({
+              loading: false,
+              valid: true,
+              message: `Serviceable in ${data.city}, ${data.state}`,
+              estimatedDelivery: data.estimatedDeliveryDate,
+            });
+            // Auto-fill city and state if they are empty
+            setShippingAddress((prev) => ({
+              ...prev,
+              city: prev.city || data.city,
+              state: prev.state || data.state,
+            }));
+          }
+        } catch (error: any) {
+          setPincodeStatus({
+            loading: false,
+            valid: false,
+            message:
+              error.response?.data?.message ||
+              "Invalid PIN code or not serviceable.",
+          });
+        }
+      }, 600);
+      return () => clearTimeout(timer);
+    } else if (shippingAddress.postalCode.length > 0) {
+      setPincodeStatus({
+        loading: false,
+        valid: false,
+        message: "PIN code must be 6 digits.",
+      });
+    } else {
+      setPincodeStatus({
+        loading: false,
+        valid: null,
+        message: "",
+      });
+    }
+  }, [shippingAddress.postalCode]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [scrollup]);
@@ -55,6 +116,10 @@ const Checkout = () => {
 
   const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (pincodeStatus.valid === false) {
+      setErrorMessage("Please enter a valid and serviceable PIN code.");
+      return;
+    }
     setScrollup(!scrollup);
     try {
       setIsProcessing(true);
@@ -134,6 +199,7 @@ const Checkout = () => {
                 color: item.selectedColor,
               })),
               shippingAddress,
+              estimatedDeliveryDate: pincodeStatus.estimatedDelivery,
               paymentMethod: "Razorpay",
               itemsPrice: cart?.reduce(
                 (acc, item) => acc + item.price * item.quantity,
@@ -335,15 +401,48 @@ const Checkout = () => {
                             type="text"
                             placeholder="6-digit code"
                             required
-                            className="w-full bg-surface-light border border-border hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all"
+                            maxLength={6}
+                            className={`w-full bg-surface-light border ${
+                              pincodeStatus.valid === true
+                                ? "border-success"
+                                : pincodeStatus.valid === false
+                                  ? "border-error"
+                                  : "border-border"
+                            } hover:border-border-light focus:border-accent focus:ring-1 focus:ring-accent outline-none px-4 py-3 rounded-xl transition-all`}
                             value={shippingAddress.postalCode}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, "");
                               setShippingAddress({
                                 ...shippingAddress,
-                                postalCode: e.target.value,
-                              })
-                            }
+                                postalCode: value,
+                              });
+                            }}
                           />
+                          {pincodeStatus.loading && (
+                            <p className="text-xs text-accent animate-pulse">
+                              Checking serviceability...
+                            </p>
+                          )}
+                          {pincodeStatus.message && (
+                            <p
+                              className={`text-xs font-medium ${pincodeStatus.valid ? "text-success" : "text-error"}`}
+                            >
+                              {pincodeStatus.message}
+                            </p>
+                          )}
+                          {pincodeStatus.valid &&
+                            pincodeStatus.estimatedDelivery && (
+                              <p className="text-sm font-bold text-accent mt-1 bg-accent/5 p-2 rounded-lg border border-accent/10">
+                                🚚 Expected delivery by{" "}
+                                {new Date(
+                                  pincodeStatus.estimatedDelivery,
+                                ).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </p>
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-2">

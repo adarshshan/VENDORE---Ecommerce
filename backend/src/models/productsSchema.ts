@@ -26,6 +26,7 @@ export interface ProductDocument extends Document {
   tags?: string[];
   isFeatured: boolean;
   isActive: boolean;
+  sellerId?: Types.ObjectId;
 }
 
 const sizeSchema = new Schema<ProductSize>({
@@ -55,6 +56,7 @@ const productSchema = new Schema<ProductDocument>(
     tags: { type: [String], index: true },
     isFeatured: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
+    sellerId: { type: Schema.Types.ObjectId, ref: "User", index: true },
   },
   {
     timestamps: true,

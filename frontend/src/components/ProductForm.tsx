@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Product, ProductSize } from "../types/Product";
-import { getCategories } from "../services/api";
+import { getCategories, getSellers } from "../services/api";
 
 const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "3XL"];
 
@@ -34,6 +34,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
+  const [sellerId, setSellerId] = useState("");
+  const [sellers, setSellers] = useState<any[]>([]);
   const [stock, setStock] = useState<number>(0);
   const [hasSizes, setHasSizes] = useState<boolean>(false);
   const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
@@ -43,15 +45,21 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [picMessage, setPicMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCats = async () => {
+    const fetchCatsAndSellers = async () => {
       try {
-        const data = await getCategories("Active");
-        setCategories(data);
+        const [catsData, sellersData] = await Promise.all([
+          getCategories("Active"),
+          getSellers(),
+        ]);
+        setCategories(catsData);
+        if (sellersData.success) {
+          setSellers(sellersData.sellers);
+        }
       } catch (error) {
-        console.error("Failed to fetch categories", error);
+        console.error("Failed to fetch categories or sellers", error);
       }
     };
-    fetchCats();
+    fetchCatsAndSellers();
 
     if (product) {
       setName(product.name);
@@ -62,6 +70,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           ? (product.category as any)._id
           : (product?.category ?? ""),
       );
+      setSellerId(product?.sellerId ?? "");
       setStock(product?.stock ?? 0);
       setHasSizes(product?.hasSizes ?? false);
 
@@ -78,6 +87,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setPrice(null);
       setDescription("");
       setCategory("");
+      setSellerId("");
       setStock(0);
       setHasSizes(false);
       setSelectedSizes([]);
@@ -154,6 +164,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     formData.append("price", price ? price.toString() : "0");
     formData.append("description", description);
     formData.append("category", category);
+    formData.append("sellerId", sellerId);
     formData.append("hasSizes", hasSizes.toString());
 
     if (hasSizes) {
@@ -320,27 +331,53 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </div>
           </Box>
         )}
-        <TextField
-          id="category"
-          select
-          label="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          variant="outlined"
-          fullWidth
-          required
-          className="rounded-md"
-          InputProps={{
-            className:
-              "!text-[var(--color-text-light)] border border-[var(--color-border)]",
-          }}
-        >
-          {categories.map((cat) => (
-            <MenuItem key={cat._id} value={cat._id}>
-              {cat.name}
+        <div className="flex gap-4">
+          <TextField
+            id="category"
+            select
+            label="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            variant="outlined"
+            fullWidth
+            required
+            className="rounded-md"
+            InputProps={{
+              className:
+                "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+            }}
+          >
+            {categories.map((cat) => (
+              <MenuItem key={cat._id} value={cat._id}>
+                {cat.name}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            id="seller"
+            select
+            label="Seller"
+            value={sellerId}
+            onChange={(e) => setSellerId(e.target.value)}
+            variant="outlined"
+            fullWidth
+            className="rounded-md"
+            InputProps={{
+              className:
+                "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+            }}
+          >
+            <MenuItem value="">
+              <em>None (Admin)</em>
             </MenuItem>
-          ))}
-        </TextField>
+            {sellers.map((seller) => (
+              <MenuItem key={seller._id} value={seller._id}>
+                {seller.name} ({seller.email})
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
 
         <TextField
           id="description"

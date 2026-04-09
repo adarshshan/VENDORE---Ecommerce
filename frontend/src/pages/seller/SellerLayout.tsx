@@ -42,7 +42,7 @@ const SellerLayout: React.FC = () => {
             to="/seller/inventory"
             className="text-xl font-serif font-black text-text-primary tracking-tight"
           >
-            VENDORA{" "}
+            ThreadCo{" "}
             <span className="text-accent text-sm font-sans font-bold uppercase ml-1">
               Seller
             </span>

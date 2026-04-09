@@ -103,7 +103,7 @@ const HeaderDrawer: React.FC<HeaderDrawerInterface> = ({
             color: "var(--color-text-primary)",
           }}
         >
-          VENDORA
+          ThreadCo
         </Typography>
         <Box sx={{ display: "flex", gap: 0.5 }}>
           <IconButton

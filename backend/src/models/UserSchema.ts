@@ -17,7 +17,7 @@ export interface UserDocument extends Document {
   email: string;
   password?: string;
   name: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "seller";
   status: "active" | "blocked";
   comparePassword(candidatePassword: string): Promise<boolean>;
   authSource: string;
@@ -48,7 +48,7 @@ const userSchema = new Schema<UserDocument>(
     },
     password: { type: String, required: false },
     name: { type: String, required: true, trim: true },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
+    role: { type: String, enum: ["user", "admin", "seller"], default: "user" },
     status: { type: String, enum: ["active", "blocked"], default: "active" },
     authSource: {
       type: String,

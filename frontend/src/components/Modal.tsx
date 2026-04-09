@@ -4,6 +4,7 @@ import { Modal, Box } from "@mui/material";
 interface CustomModalProps {
   open: boolean;
   onClose: () => void;
+  title?: string;
   children: React.ReactElement;
 }
 
@@ -19,11 +20,13 @@ const style = {
   borderRadius: "16px",
   boxShadow: 24,
   p: 4,
+  outline: "none",
 };
 
 const CustomModal: React.FC<CustomModalProps> = ({
   open,
   onClose,
+  title,
   children,
 }) => {
   return (
@@ -33,7 +36,14 @@ const CustomModal: React.FC<CustomModalProps> = ({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>{children}</Box>
+      <Box sx={style}>
+        {title && (
+          <h2 id="modal-modal-title" className="text-xl font-bold mb-4 text-text-primary">
+            {title}
+          </h2>
+        )}
+        {children}
+      </Box>
     </Modal>
   );
 };

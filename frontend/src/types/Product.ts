@@ -14,6 +14,7 @@ export interface Product {
   category?: { _id: string; name: string };
   sizes?: ProductSize[];
   images?: string[];
+  sellerId?: string;
   createdAt?: string;
   updatedAt?: string;
 }

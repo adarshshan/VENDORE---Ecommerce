@@ -44,6 +44,7 @@ export interface OrderDocument extends Document {
   isDelivered: boolean;
   createdAt: string;
   deliveredAt?: Date;
+  estimatedDeliveryDate?: Date;
   status:
     | "Pending"
     | "Processing"
@@ -118,6 +119,7 @@ const orderSchema = new Schema<OrderDocument>(
     paidAt: { type: Date },
     isDelivered: { type: Boolean, required: true, default: false },
     deliveredAt: { type: Date },
+    estimatedDeliveryDate: { type: Date },
     status: {
       type: String,
       required: true,

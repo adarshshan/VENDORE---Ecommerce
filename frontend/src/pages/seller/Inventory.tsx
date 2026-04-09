@@ -270,11 +270,9 @@ const Inventory: React.FC = () => {
       <Modal
         open={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}
+        title="Update Quantity"
       >
         <div className="bg-surface max-w-md w-full">
-          <h2 className="text-2xl font-serif font-black text-text-primary mb-2">
-            Update Quantity
-          </h2>
           <p className="text-text-secondary text-sm mb-6">
             {selectedProduct?.name}
           </p>

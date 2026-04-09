@@ -47,6 +47,7 @@ export interface Order {
   paidAt?: string;
   isDelivered: boolean;
   deliveredAt?: string;
+  estimatedDeliveryDate?: string;
   status:
     | "Pending"
     | "Processing"

@@ -9,6 +9,7 @@ export interface ProductFilters {
   sort?: string;
   limit?: number;
   page?: number;
+  sellerId?: string | any;
 }
 
 export interface IProductRepository {
@@ -60,6 +61,7 @@ export class ProductRepository implements IProductRepository {
     const query: any = { isActive: true };
 
     if (filters.category) query.category = filters.category;
+    if (filters.sellerId) query.sellerId = filters.sellerId;
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
       query.price = {};
       if (filters.minPrice !== undefined) query.price.$gte = filters.minPrice;
@@ -76,6 +78,7 @@ export class ProductRepository implements IProductRepository {
     const query: any = { isActive: true };
 
     if (filters.category) query.category = filters.category;
+    if (filters.sellerId) query.sellerId = filters.sellerId;
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
       query.price = {};
       if (filters.minPrice !== undefined) query.price.$gte = filters.minPrice;
@@ -102,7 +105,8 @@ export class ProductRepository implements IProductRepository {
 
     const findQuery = ProductModel.find(query)
       .populate("category", "name")
-      .select("name price images category stock hasSizes sizes")
+      .populate("sellerId", "name email")
+      .select("name price images category stock hasSizes sizes sellerId")
       .sort(sortOption)
       .lean();
 

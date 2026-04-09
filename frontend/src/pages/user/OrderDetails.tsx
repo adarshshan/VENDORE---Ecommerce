@@ -27,6 +27,7 @@ const OrderDetails: React.FC = () => {
     "Delivery takes too long",
     "Found better price elsewhere",
     "Changed my mind",
+    "Wrong Devlivery address entered",
     "Others",
   ];
 

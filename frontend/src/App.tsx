@@ -28,6 +28,7 @@ const CategoryManagement = lazy(
   () => import("./pages/admin/CategoryManagement"),
 );
 const ContactManagement = lazy(() => import("./pages/admin/ContactManagement"));
+const SellerManagement = lazy(() => import("./pages/admin/Sellers"));
 
 // Seller pages
 const SellerLayout = lazy(() => import("./pages/seller/SellerLayout"));
@@ -197,6 +198,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <ContactManagement />
+          </Suspense>
+        ),
+      },
+      {
+        path: "seller-management",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <SellerManagement />
           </Suspense>
         ),
       },

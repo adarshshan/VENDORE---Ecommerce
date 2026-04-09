@@ -12,7 +12,9 @@ import { categoryRoutes } from "./routes/CategoryRoutes";
 import { contactRoutes } from "./routes/ContactRoutes";
 import { wishlistRoutes } from "./routes/WishlistRoutes";
 import { searchRoutes } from "./routes/SearchRoutes";
-import sellerRoutes from "./routes/SellerRoutes";
+import { shippingRoutes } from "./routes/ShippingRoutes";
+import { sellerRoutes } from "./routes/SellerRoutes";
+import { bannerRoutes } from "./routes/BannerRoutes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
@@ -57,6 +59,8 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/seller", sellerRoutes);
+app.use("/api/shipping", shippingRoutes);
+app.use("/api/banners", bannerRoutes);
 
 // Start Server
 const startServer = async () => {

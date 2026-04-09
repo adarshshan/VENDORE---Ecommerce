@@ -4,7 +4,7 @@ import { sellerLogin } from "../../services/sellerApi";
 import CustomButton from "../../components/CustomButton";
 
 const SellerLogin: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ const SellerLogin: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const data = await sellerLogin({ username, password });
+      const data = await sellerLogin({ email, password });
       if (data.success) {
         navigate("/seller/inventory");
       }
@@ -43,14 +43,14 @@ const SellerLogin: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-bold uppercase tracking-widest text-text-muted mb-2 px-1">
-              Username
+              Email
             </label>
             <input
-              type="text"
+              type="email"
               className="w-full bg-surface-light border border-border rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>

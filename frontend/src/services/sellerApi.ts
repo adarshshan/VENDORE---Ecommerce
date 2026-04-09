@@ -2,24 +2,15 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const getSellerToken = () => localStorage.getItem("sellerToken");
-
 const sellerApi = axios.create({
   baseURL: `${API_URL}/seller`,
-});
-
-sellerApi.interceptors.request.use((config) => {
-  const token = getSellerToken();
-  if (token) {
-    config.headers["X-Seller-Token"] = token;
-  }
-  return config;
+  withCredentials: true,
 });
 
 export const sellerLogin = async (credentials: any) => {
   const { data } = await sellerApi.post("/login", credentials);
   if (data.success) {
-    localStorage.setItem("sellerToken", data.token);
+    localStorage.setItem("sellerUser", JSON.stringify(data.user));
   }
   return data;
 };
@@ -45,9 +36,11 @@ export const bookSellerOrder = async (id: string) => {
 };
 
 export const sellerLogout = () => {
-  localStorage.removeItem("sellerToken");
+  localStorage.removeItem("sellerUser");
+  // Cookies are cleared by the browser if the backend sends a clear cookie instruction, 
+  // or we can add a logout API call if needed.
 };
 
 export const isSellerAuthenticated = () => {
-  return !!localStorage.getItem("sellerToken");
+  return !!localStorage.getItem("sellerUser");
 };

@@ -3,6 +3,10 @@ import { IProductRepository } from "../repositories/ProductRepository";
 import { IOrderRepository } from "../repositories/OrderRepository";
 import { OrderModel } from "../models/OrderSchema";
 import { ProductModel } from "../models/productsSchema";
+import { UserModel } from "../models/UserSchema";
+import { CreateJWT } from "../utils/generateToken";
+
+const createJWT = new CreateJWT();
 
 export class SellerController {
   constructor(
@@ -11,32 +15,77 @@ export class SellerController {
   ) {}
 
   async login(req: Request, res: Response) {
-    const { username, password } = req.body;
-    const sellerUser = process.env.SELLER_USERNAME || "seller";
-    const sellerPass = process.env.SELLER_PASSWORD || "seller123";
-    const sellerToken = process.env.SELLER_TOKEN || "seller-secret-token";
+    try {
+      const { email, password } = req.body;
 
-    if (username === sellerUser && password === sellerPass) {
-      return res.status(200).json({
-        success: true,
-        token: sellerToken,
-        message: "Logged in successfully",
-      });
+      const user = await UserModel.findOne({ email });
+
+      if (!user || user.role !== "seller") {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid credentials or not a seller",
+        });
+      }
+
+      if (user.status === "blocked") {
+        return res.status(403).json({
+          success: false,
+          message: "Your account is blocked. Please contact admin.",
+        });
+      }
+
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid credentials",
+        });
+      }
+
+      const token = createJWT.generateToken(user._id as string);
+      const refreshToken = createJWT.generateRefreshToken(user._id as string);
+
+      const accessTokenMaxAge = 30 * 60 * 1000;
+      const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
+
+      res
+        .status(200)
+        .cookie("access_token", token, {
+          maxAge: accessTokenMaxAge,
+          sameSite: "none",
+          secure: true,
+          httpOnly: true,
+        })
+        .cookie("refresh_token", refreshToken, {
+          maxAge: refreshTokenMaxAge,
+          sameSite: "none",
+          secure: true,
+          httpOnly: true,
+        })
+        .json({
+          success: true,
+          message: "Logged in successfully",
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          },
+        });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
     }
-
-    return res.status(401).json({
-      success: false,
-      message: "Invalid credentials",
-    });
   }
 
   async getInventory(req: Request, res: Response) {
     try {
       const { category, search, page = 1, limit = 10 } = req.query;
+      const sellerId = req.userId;
 
       const filters: any = {
         page: Number(page),
         limit: Number(limit),
+        sellerId: sellerId,
       };
 
       if (category && category !== "All") {
@@ -47,8 +96,17 @@ export class SellerController {
         filters.search = search as string;
       }
 
-      const { products, totalItems } =
-        await this.productRepository.findAll(filters);
+      const query: any = { sellerId: sellerId };
+      if (filters.category) query.category = filters.category;
+      if (filters.search) query.$text = { $search: filters.search };
+
+      const totalItems = await ProductModel.countDocuments(query);
+      const products = await ProductModel.find(query)
+        .populate("category", "name")
+        .sort({ createdAt: -1 })
+        .limit(Number(limit))
+        .skip(Number(limit) * (Number(page) - 1))
+        .lean();
 
       res.status(200).json({
         success: true,
@@ -66,20 +124,30 @@ export class SellerController {
     try {
       const { id } = req.params;
       const { stock, sizeStock } = req.body;
+      const sellerId = req.userId;
+
+      // Ensure the product belongs to the seller
+      const product = await ProductModel.findOne({ _id: id, sellerId });
+      if (!product) {
+        return res.status(403).json({
+          success: false,
+          message: "Unauthorized access to this product",
+        });
+      }
 
       let updatedProduct;
 
       if (sizeStock) {
         // Atomic update for specific size
         updatedProduct = await ProductModel.findOneAndUpdate(
-          { _id: id, "sizes.size": sizeStock.size },
+          { _id: id, "sizes.size": sizeStock.size, sellerId },
           { $set: { "sizes.$.stock": sizeStock.stock } },
           { new: true, runValidators: false },
         );
       } else if (stock !== undefined) {
         // Atomic update for global stock
-        updatedProduct = await ProductModel.findByIdAndUpdate(
-          id,
+        updatedProduct = await ProductModel.findOneAndUpdate(
+          { _id: id, sellerId },
           { $set: { stock: stock } },
           { new: true, runValidators: false },
         );
@@ -108,8 +176,18 @@ export class SellerController {
   async getOrders(req: Request, res: Response) {
     try {
       const { page = 1, limit = 10, status, isBooked } = req.query;
+      const sellerId = req.userId;
 
-      const query: any = {};
+      // Find all product IDs belonging to this seller
+      const sellerProducts = await ProductModel.find({ sellerId }).select(
+        "_id",
+      );
+      const sellerProductIds = sellerProducts.map((p) => p._id);
+
+      const query: any = {
+        "items.product": { $in: sellerProductIds },
+      };
+
       if (status) {
         query.status = status;
       } else {
@@ -129,9 +207,19 @@ export class SellerController {
         .populate("user", "name email")
         .lean();
 
+      // For each order, we might want to only show items belonging to this seller
+      const filteredOrders = orders.map((order: any) => ({
+        ...order,
+        items: order.items.filter((item: any) =>
+          sellerProductIds.some(
+            (spId: any) => spId.toString() === item.product.toString(),
+          ),
+        ),
+      }));
+
       res.status(200).json({
         success: true,
-        orders,
+        orders: filteredOrders,
         totalItems,
         totalPages: Math.ceil(totalItems / Number(limit)),
         currentPage: Number(page),
@@ -144,16 +232,28 @@ export class SellerController {
   async bookOrder(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const order = await OrderModel.findByIdAndUpdate(
-        id,
-        { $set: { sellerBooked: true, sellerBookedAt: new Date() } },
-        { new: true, runValidators: false },
+      const sellerId = req.userId;
+
+      // Verify the order contains at least one product from this seller
+      const sellerProducts = await ProductModel.find({ sellerId }).select(
+        "_id",
       );
+      const sellerProductIds = sellerProducts.map((p) => p._id);
+
+      const order = await OrderModel.findOne({
+        _id: id,
+        "items.product": { $in: sellerProductIds },
+      });
+
       if (!order) {
         return res
           .status(404)
-          .json({ success: false, message: "Order not found" });
+          .json({ success: false, message: "Order not found or unauthorized" });
       }
+
+      order.sellerBooked = true;
+      order.sellerBookedAt = new Date();
+      await order.save();
 
       res.status(200).json({
         success: true,

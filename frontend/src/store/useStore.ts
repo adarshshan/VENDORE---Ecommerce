@@ -232,7 +232,7 @@ export const useStore = create<StoreState>()(
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
-      name: "vendora-storage",
+      name: "threadco-storage",
       onRehydrateStorage: (state) => {
         return () => {
           state?.setHasHydrated(true);

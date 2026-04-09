@@ -8,6 +8,7 @@ const Sidebar: React.FC = () => {
   const menuItems = [
     { label: "Dashboard", path: "/admin" },
     { label: "Products", path: "/admin/product-management" },
+    { label: "Sellers", path: "/admin/seller-management" },
     { label: "Customers", path: "/admin/user-management" },
     { label: "Orders", path: "/admin/order-management" },
     { label: "Categories", path: "/admin/category-management" },
@@ -18,7 +19,7 @@ const Sidebar: React.FC = () => {
     <div className="bg-surface border-r border-border text-text-primary w-64 h-screen sticky top-0 flex flex-col">
       <div className="flex justify-between items-center p-6 border-b border-border">
         <div>
-          <h2 className="text-3xl font-serif font-bold ">VENDORA</h2>
+          <h2 className="text-3xl font-serif font-bold ">ThreadCo</h2>
         </div>
         <div className="pb-5 ps-6">
           <ThemeToggle />
