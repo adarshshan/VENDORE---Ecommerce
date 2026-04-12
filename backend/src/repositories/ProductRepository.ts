@@ -106,7 +106,9 @@ export class ProductRepository implements IProductRepository {
     const findQuery = ProductModel.find(query)
       .populate("category", "name")
       .populate("sellerId", "name email")
-      .select("name price images category stock hasSizes sizes sellerId")
+      .select(
+        "_id name price images category stock hasSizes sizes sellerId weight",
+      )
       .sort(sortOption)
       .lean();
 
@@ -148,14 +150,26 @@ export class ProductRepository implements IProductRepository {
     productData: Partial<ProductDocument>,
   ): Promise<ProductDocument | null> {
     try {
-      return (await ProductModel.findByIdAndUpdate(
+      console.log("Repository updating product with ID:", id);
+      console.log("Repository update data:", productData);
+
+      const updatedProduct = await ProductModel.findByIdAndUpdate(
         id,
         { $set: productData },
         { new: true },
       )
         .populate("category")
-        .exec()) as ProductDocument | null;
+        .exec();
+
+      if (!updatedProduct) {
+        console.log("No product found in DB for ID:", id);
+      } else {
+        console.log("Product updated successfully in DB");
+      }
+
+      return updatedProduct as ProductDocument | null;
     } catch (error) {
+      console.error("Error in Repository update:", error);
       if (
         error instanceof Error &&
         error.message.includes("Cast to ObjectId failed")

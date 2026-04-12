@@ -11,6 +11,8 @@ interface OrderSuccessModalProps {
   onClose: () => void;
   orderId?: string;
   totalAmount?: number;
+  itemsPrice?: number;
+  shippingPrice?: number;
 }
 
 const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
@@ -18,6 +20,8 @@ const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
   onClose,
   orderId,
   totalAmount,
+  itemsPrice,
+  shippingPrice,
 }) => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -85,19 +89,38 @@ const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
         </p>
 
         {(orderId || totalAmount) && (
-          <div className="bg-surface-light border border-border p-4 rounded-2xl mb-8 text-left space-y-2">
+          <div className="bg-surface-light border border-border p-4 rounded-2xl mb-8 text-left space-y-3">
             {orderId && (
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm pb-2 border-b border-border/50">
                 <span className="text-text-muted">Order ID:</span>
                 <span className="text-text-primary font-mono font-bold truncate ml-4">
                   #{orderId.slice(-8).toUpperCase()}
                 </span>
               </div>
             )}
-            {totalAmount && (
+            
+            {itemsPrice !== undefined && (
               <div className="flex justify-between text-sm">
-                <span className="text-text-muted">Total Amount:</span>
-                <span className="text-accent font-bold">
+                <span className="text-text-muted">Subtotal:</span>
+                <span className="text-text-primary">
+                  ₹{itemsPrice.toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            {shippingPrice !== undefined && (
+              <div className="flex justify-between text-sm">
+                <span className="text-text-muted">Shipping:</span>
+                <span className={shippingPrice === 0 ? "text-success font-bold" : "text-text-primary"}>
+                  {shippingPrice === 0 ? "FREE" : `₹${shippingPrice.toFixed(2)}`}
+                </span>
+              </div>
+            )}
+
+            {totalAmount && (
+              <div className="flex justify-between text-base pt-2 border-t border-border mt-2">
+                <span className="text-text-primary font-bold">Total Paid:</span>
+                <span className="text-accent font-black">
                   ₹{totalAmount.toFixed(2)}
                 </span>
               </div>

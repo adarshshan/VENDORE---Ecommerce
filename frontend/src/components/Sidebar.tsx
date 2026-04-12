@@ -12,6 +12,7 @@ const Sidebar: React.FC = () => {
     { label: "Customers", path: "/admin/user-management" },
     { label: "Orders", path: "/admin/order-management" },
     { label: "Categories", path: "/admin/category-management" },
+    { label: "Banners", path: "/admin/banner-management" },
     { label: "Contact Messages", path: "/admin/contact-management" },
   ];
 

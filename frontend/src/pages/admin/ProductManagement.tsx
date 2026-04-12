@@ -20,6 +20,10 @@ const ProductManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const { isModalOpen, openModal, closeModal } = useStore();
 
+  // const stock = product?.hasSizes
+  //   ? (product.sizes?.reduce((acc, s) => acc + s.stock, 0) ?? 0)
+  //   : (product?.stock ?? 0);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["products", page],
     queryFn: () => getProducts({ page, limit: 10 }),
@@ -161,7 +165,12 @@ const ProductManagement: React.FC = () => {
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="font-medium">{product?.stock}</div>
+                    {/* <div className="font-medium">{product?.stock}</div> */}
+                    <div className="font-medium">
+                      {product?.hasSizes
+                        ? product?.sizes?.reduce((acc, s) => acc + s.stock, 0)
+                        : (product?.stock ?? 0)}
+                    </div>
                   </td>
 
                   <td className="px-6 py-4">

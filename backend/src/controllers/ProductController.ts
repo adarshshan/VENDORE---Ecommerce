@@ -66,34 +66,50 @@ export class ProductController {
       const product = await this.productService.createProduct({
         ...productData,
         hasSizes: productData.hasSizes === "true",
-        images: JSON.parse(productData.images),
+        images: productData.images ? JSON.parse(productData.images) : [],
         sizes: productData.sizes ? JSON.parse(productData.sizes) : [],
       });
       res.status(201).json(product);
     } catch (error) {
-      console.log(error);
+      console.log("Error in createProduct:", error);
       res.status(500).json({ message: "Error creating product" });
     }
   }
 
   async updateProduct(req: Request, res: Response): Promise<void> {
     try {
+      console.log("Updating product ID:", req.params.id);
+      console.log("Update data:", req.body);
       const productData = { ...req.body };
+      
+      // Remove _id from data if it exists to prevent Mongoose error
+      if (productData._id) delete productData._id;
 
       const product = await this.productService.updateProduct(req.params.id, {
         ...productData,
         hasSizes: productData.hasSizes === "true",
-        images: JSON.parse(productData.images),
+        images: productData.images ? JSON.parse(productData.images) : [],
         sizes: productData.sizes ? JSON.parse(productData.sizes) : [],
+        sellerId: 
+          productData.sellerId === "" || 
+          productData.sellerId === "null" || 
+          productData.sellerId === "[object Object]" 
+            ? undefined : productData.sellerId,
+        category: 
+          productData.category === "" || 
+          productData.category === "null" || 
+          productData.category === "[object Object]" 
+            ? undefined : productData.category,
       });
 
       if (!product) {
+        console.log("Product not found with ID:", req.params.id);
         res.status(404).json({ message: "Product not found" });
         return;
       }
       res.json(product);
     } catch (error) {
-      console.log(error);
+      console.log("Error in updateProduct:", error);
       res.status(500).json({ message: "Error updating product" });
     }
   }

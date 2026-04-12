@@ -37,6 +37,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [sellerId, setSellerId] = useState("");
   const [sellers, setSellers] = useState<any[]>([]);
   const [stock, setStock] = useState<number>(0);
+  const [weight, setWeight] = useState<number>(500);
   const [hasSizes, setHasSizes] = useState<boolean>(false);
   const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
   const [images, setImages] = useState<(File | string | null | undefined)[]>(
@@ -65,13 +66,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setName(product.name);
       setPrice(product.price);
       setDescription(product?.description ?? "");
-      setCategory(
-        typeof product?.category === "object"
-          ? (product.category as any)._id
-          : (product?.category ?? ""),
-      );
-      setSellerId(product?.sellerId ?? "");
+      
+      const categoryId = typeof product?.category === "object" ? (product.category as any)?._id : (product?.category ?? "");
+      setCategory(categoryId);
+
+      const sellerIdStr = typeof product?.sellerId === "object" ? (product.sellerId as any)?._id : (product?.sellerId ?? "");
+      setSellerId(sellerIdStr);
+      
       setStock(product?.stock ?? 0);
+      setWeight(product?.weight ?? 500);
       setHasSizes(product?.hasSizes ?? false);
 
       // Normalize sizes: Handle old string array and new object array
@@ -165,6 +168,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     formData.append("description", description);
     formData.append("category", category);
     formData.append("sellerId", sellerId);
+    formData.append("weight", weight.toString());
     formData.append("hasSizes", hasSizes.toString());
 
     if (hasSizes) {
@@ -378,6 +382,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
             ))}
           </TextField>
         </div>
+
+        <TextField
+          id="weight"
+          label="Product Weight (grams)"
+          type="number"
+          value={weight}
+          onChange={(e) => setWeight(Number(e.target.value))}
+          variant="outlined"
+          fullWidth
+          required
+          InputProps={{
+            className:
+              "!text-[var(--color-text-light)] border border-[var(--color-border)]",
+          }}
+          helperText="Used for delivery charge calculation"
+        />
 
         <TextField
           id="description"

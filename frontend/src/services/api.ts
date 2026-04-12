@@ -264,10 +264,10 @@ export const deleteCategory = async (id: string) => {
 };
 
 // Order & Payment
-export const createRazorpayOrder = async (items: any[]) => {
+export const createRazorpayOrder = async (items: any[], pincode?: string) => {
   const response = await axios.post(
     `${VITE_API_URL}/orders/create-razorpay-order`,
-    { items },
+    { items, pincode },
   );
   return response.data;
 };
@@ -417,12 +417,73 @@ export const getSearchSuggestions = async (
 };
 
 // Shipping API
-export const validatePincode = async (pincode: string) => {
+export const validatePincode = async (pincode: string, cartItems?: any[]) => {
   const response = await axios.post(
     `${VITE_API_URL}/shipping/validate-pincode`,
     {
       pincode,
+      cartItems,
     },
   );
+  return response.data;
+};
+
+// Banner API
+import type { Banner } from "../types/Banner";
+
+export const getActiveBanners = async (): Promise<{
+  success: boolean;
+  banners: Banner[];
+}> => {
+  const response = await axios.get(`${VITE_API_URL}/banners`);
+  return response.data;
+};
+
+export const getAllBanners = async (): Promise<{
+  success: boolean;
+  banners: Banner[];
+}> => {
+  const response = await axios.get(`${VITE_API_URL}/banners/admin/all`);
+  return response.data;
+};
+
+export const createBanner = async (
+  formData: FormData,
+): Promise<{ success: boolean; banner: Banner }> => {
+  const response = await axios.post(`${VITE_API_URL}/banners/admin`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const updateBanner = async (
+  id: string,
+  formData: FormData,
+): Promise<{ success: boolean; banner: Banner }> => {
+  const response = await axios.put(
+    `${VITE_API_URL}/banners/admin/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+  return response.data;
+};
+
+export const deleteBanner = async (
+  id: string,
+): Promise<{ success: boolean; message: string }> => {
+  const response = await axios.delete(`${VITE_API_URL}/banners/admin/${id}`);
+  return response.data;
+};
+
+export const toggleBannerVisibility = async (
+  id: string,
+): Promise<{ success: boolean; banner: Banner }> => {
+  const response = await axios.put(`${VITE_API_URL}/banners/admin/${id}/toggle`);
   return response.data;
 };

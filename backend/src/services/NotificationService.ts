@@ -7,6 +7,8 @@ interface NotificationData {
   customerName: string;
   customerEmail?: string;
   amount: number;
+  itemsPrice?: number;
+  shippingPrice?: number;
   items: any[];
   reason?: string;
 }
@@ -65,7 +67,7 @@ class NotificationService {
   }
 
   private formatWhatsAppMessage(data: NotificationData): string {
-    const { eventType, orderId, customerName, amount, items, reason } = data;
+    const { eventType, orderId, customerName, amount, items, reason, itemsPrice, shippingPrice } = data;
     const itemsList = items
       .map((item) => `${item.name} (x${item.quantity})`)
       .join(", ");
@@ -74,7 +76,13 @@ class NotificationService {
     message += `*Order ID:* #${orderId}\n`;
     message += `*Customer:* ${customerName}\n`;
     message += `*Items:* ${itemsList}\n`;
-    message += `*Amount:* ₹${amount.toFixed(2)}`;
+    
+    if (itemsPrice !== undefined && shippingPrice !== undefined) {
+      message += `*Items Price:* ₹${itemsPrice.toFixed(2)}\n`;
+      message += `*Shipping:* ${shippingPrice === 0 ? "FREE" : `₹${shippingPrice.toFixed(2)}`}\n`;
+    }
+    
+    message += `*Total Amount:* ₹${amount.toFixed(2)}`;
 
     if (reason) {
       message += `\n*Reason:* ${reason}`;
@@ -87,7 +95,7 @@ class NotificationService {
     data: NotificationData,
     isForAdmin: boolean,
   ): { subject: string; html: string } {
-    const { eventType, orderId, customerName, amount, items, reason } = data;
+    const { eventType, orderId, customerName, amount, items, reason, itemsPrice, shippingPrice } = data;
     const itemsHtml = items
       .map(
         (item) =>
@@ -133,6 +141,27 @@ class NotificationService {
         break;
     }
 
+    const priceBreakdownHtml = (itemsPrice !== undefined && shippingPrice !== undefined) ? `
+      <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 5px 0; color: #777;">Items Subtotal:</td>
+            <td style="padding: 5px 0; text-align: right; font-weight: bold;">₹${itemsPrice.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; color: #777;">Shipping Charges:</td>
+            <td style="padding: 5px 0; text-align: right; font-weight: bold; color: ${shippingPrice === 0 ? "#27ae60" : "#333"};">${shippingPrice === 0 ? "FREE" : `₹${shippingPrice.toFixed(2)}`}</td>
+          </tr>
+          <tr style="border-top: 1px solid #ddd;">
+            <td style="padding: 10px 0 0 0; font-size: 18px; font-weight: bold;">Total Amount:</td>
+            <td style="padding: 10px 0 0 0; text-align: right; font-size: 18px; font-weight: bold; color: #e67e22;">₹${amount.toFixed(2)}</td>
+          </tr>
+        </table>
+      </div>
+    ` : `
+      <p style="font-size: 18px;"><strong>Total Amount:</strong> ₹${amount.toFixed(2)}</p>
+    `;
+
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
         <div style="text-align: center; margin-bottom: 20px;">
@@ -141,7 +170,9 @@ class NotificationService {
         <h2 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">${title}</h2>
         ${messageBody}
         <p><strong>Order ID:</strong> #${orderId}</p>
-        <p><strong>Total Amount:</strong> ₹${amount.toFixed(2)}</p>
+        
+        ${priceBreakdownHtml}
+
         <h3>Order Details:</h3>
         <ul>${itemsHtml}</ul>
         <div style="margin-top: 20px; font-size: 12px; color: #777; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">

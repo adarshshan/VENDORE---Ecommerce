@@ -46,6 +46,9 @@ const Checkout = () => {
     valid: boolean | null;
     message: string;
     estimatedDelivery?: string;
+    deliveryCharge?: number;
+    deliveryType?: string;
+    totalWeight?: number;
   }>({
     loading: false,
     valid: null,
@@ -60,7 +63,10 @@ const Checkout = () => {
       const timer = setTimeout(async () => {
         try {
           setPincodeStatus((prev) => ({ ...prev, loading: true, message: "" }));
-          const data = await validatePincode(shippingAddress.postalCode);
+          const data = await validatePincode(
+            shippingAddress.postalCode,
+            cart.map((item) => ({ productId: item._id, quantity: item.quantity })),
+          );
 
           if (data.success) {
             setPincodeStatus({
@@ -68,12 +74,16 @@ const Checkout = () => {
               valid: true,
               message: `Serviceable in ${data.city}, ${data.state}`,
               estimatedDelivery: data.estimatedDeliveryDate,
+              deliveryCharge: data.deliveryCharge,
+              deliveryType: data.deliveryType,
+              totalWeight: data.totalWeight,
             });
-            // Auto-fill city and state if they are empty
+            // Auto-fill city, state, and country
             setShippingAddress((prev) => ({
               ...prev,
-              city: prev.city || data.city,
-              state: prev.state || data.state,
+              city: data.city,
+              state: data.state,
+              country: data.country || "India",
             }));
           }
         } catch (error: any) {
@@ -131,6 +141,7 @@ const Checkout = () => {
           quantity: item.quantity,
           size: item.selectedSize,
         })),
+        shippingAddress.postalCode,
       );
       setOrderData(data);
       setStep(2);
@@ -586,13 +597,20 @@ const Checkout = () => {
                         .toFixed(2)}
                     </span>
                   </div>
-                  {orderData && (
-                    <div className="flex justify-between text-sm text-text-secondary">
-                      <span>Shipping</span>
-                      <span className="text-success font-mono font-bold">
-                        ₹{orderData?.shipping?.toFixed(2)}
-                      </span>
-                    </div>
+                  {pincodeStatus.valid && (
+                    <>
+                      <div className="flex justify-between text-sm text-text-secondary">
+                        <div className="flex flex-col">
+                          <span>Shipping ({pincodeStatus.deliveryType})</span>
+                          <span className="text-[10px] text-text-muted">
+                            Total Weight: {(pincodeStatus.totalWeight! / 1000).toFixed(2)}kg
+                          </span>
+                        </div>
+                        <span className="text-success font-mono font-bold">
+                          {pincodeStatus.deliveryCharge === 0 ? "FREE" : `₹${pincodeStatus.deliveryCharge?.toFixed(2)}`}
+                        </span>
+                      </div>
+                    </>
                   )}
                 </div>
 
@@ -604,11 +622,8 @@ const Checkout = () => {
                     <span className="text-2xl font-black text-accent font-mono">
                       ₹
                       {(
-                        orderData?.amount ||
-                        cart.reduce(
-                          (acc, item) => acc + item.price * item.quantity,
-                          0,
-                        )
+                        (orderData?.amount) ||
+                        (cart.reduce((acc, item) => acc + item.price * item.quantity, 0) + (pincodeStatus.deliveryCharge || 0))
                       ).toFixed(2)}
                     </span>
                   </div>

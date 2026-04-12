@@ -27,6 +27,7 @@ export interface ProductDocument extends Document {
   isFeatured: boolean;
   isActive: boolean;
   sellerId?: Types.ObjectId;
+  weight: number; // weight in grams
 }
 
 const sizeSchema = new Schema<ProductSize>({
@@ -57,6 +58,7 @@ const productSchema = new Schema<ProductDocument>(
     isFeatured: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     sellerId: { type: Schema.Types.ObjectId, ref: "User", index: true },
+    weight: { type: Number, default: 500, min: 0 },
   },
   {
     timestamps: true,

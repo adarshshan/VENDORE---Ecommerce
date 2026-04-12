@@ -4,6 +4,10 @@ import { IOrderRepository } from "../repositories/OrderRepository";
 import { IProductRepository } from "../repositories/ProductRepository";
 import { ProductModel } from "../models/productsSchema";
 import { notificationService } from "./NotificationService";
+import { ShippingService } from "./ShippingService";
+import axios from "axios";
+
+const shippingService = new ShippingService();
 
 export class OrderService {
   private razorpay: Razorpay;
@@ -18,7 +22,7 @@ export class OrderService {
     });
   }
 
-  async createRazorpayOrder(items: any[]) {
+  async createRazorpayOrder(items: any[], pincode?: string) {
     // Validate stock before creating Razorpay order
     for (const item of items) {
       const product = await this.productRepository.findById(item?.product);
@@ -46,17 +50,49 @@ export class OrderService {
       }
     }
 
-    // Calculate total price server-side to prevent tampering
-    let totalAmount = 0;
+    // Calculate total items price server-side
+    let itemsPrice = 0;
     for (const item of items) {
       const product = await this.productRepository.findById(item?.product);
       if (product) {
-        totalAmount += product?.price * item?.quantity;
+        itemsPrice += product?.price * item?.quantity;
       }
     }
 
-    const shippingAmount = totalAmount > 100 ? 0 : 10;
-    const finalAmount = totalAmount + shippingAmount;
+    // Calculate dynamic shipping price
+    let shippingAmount = 0;
+    if (pincode) {
+      try {
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+        const data = response.data[0];
+        if (data.Status === "Success") {
+          const destinationState = data.PostOffice[0].State;
+          const destinationCity = data.PostOffice[0].District;
+          
+          const cartItemsForShipping = items.map(item => ({
+            productId: item.product,
+            quantity: item.quantity
+          }));
+
+          const deliveryDetails = await shippingService.calculateDeliveryCharge(
+            pincode,
+            destinationCity,
+            destinationState,
+            cartItemsForShipping
+          );
+          shippingAmount = deliveryDetails.deliveryCharge;
+        }
+      } catch (error) {
+        console.error("Error calculating shipping during order creation:", error);
+        // Fallback or handle error - here we might want to default to something safe
+        shippingAmount = itemsPrice > 1000 ? 0 : 100; 
+      }
+    } else {
+      // If no pincode provided, use a default (or throw error if required)
+      shippingAmount = itemsPrice > 1000 ? 0 : 100;
+    }
+
+    const finalAmount = itemsPrice + shippingAmount;
 
     const options = {
       amount: Math.round(finalAmount * 100),
@@ -70,6 +106,7 @@ export class OrderService {
       orderId: order?.id,
       amount: finalAmount,
       shipping: shippingAmount,
+      itemsPrice: itemsPrice,
       currency: order?.currency,
     };
   }
@@ -130,6 +167,8 @@ export class OrderService {
       customerName: orderWithUser?.user?.name || "Unknown",
       customerEmail: orderWithUser?.user?.email,
       amount: createdOrder?.totalPrice,
+      itemsPrice: createdOrder?.itemsPrice,
+      shippingPrice: createdOrder?.shippingPrice,
       items: createdOrder?.items,
     });
 
@@ -234,6 +273,8 @@ export class OrderService {
       customerName: orderWithUser?.user?.name || "Unknown",
       customerEmail: orderWithUser?.user?.email,
       amount: updatedOrder?.totalPrice,
+      itemsPrice: updatedOrder?.itemsPrice,
+      shippingPrice: updatedOrder?.shippingPrice,
       items: updatedOrder?.items,
       reason: order.cancelReason,
     });
@@ -328,6 +369,8 @@ export class OrderService {
       customerName: orderWithUser?.user?.name || "Unknown",
       customerEmail: orderWithUser?.user?.email,
       amount: order.totalPrice,
+      itemsPrice: order.itemsPrice,
+      shippingPrice: order.shippingPrice,
       items: [item],
       reason: reason + (customReason ? `: ${customReason}` : ""),
     });
@@ -433,6 +476,8 @@ export class OrderService {
         customerName: orderWithUser?.user?.name || "Unknown",
         customerEmail: orderWithUser?.user?.email,
         amount: updatedOrder.totalPrice,
+        itemsPrice: updatedOrder.itemsPrice,
+        shippingPrice: updatedOrder.shippingPrice,
         items: updatedOrder?.items?.filter(
           (i) => i?.returnStatus === "Approved",
         ),

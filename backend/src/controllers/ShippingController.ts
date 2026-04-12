@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 import axios from "axios";
+import { ShippingService } from "../services/ShippingService";
 
-// Warehouse location (Origin)
-const ORIGIN_PINCODE = "560001"; // Bangalore example
-const ORIGIN_STATE = "Karnataka";
+const shippingService = new ShippingService();
 
 export class ShippingController {
   async validatePincode(req: Request, res: Response): Promise<void> {
     try {
-      const { pincode } = req.body;
+      const { pincode, cartItems } = req.body;
 
       if (!pincode || !/^\d{6}$/.test(pincode)) {
         res.status(400).json({
@@ -35,30 +34,21 @@ export class ShippingController {
         return;
       }
 
-      // 2. DTDC Serviceability & Estimation Logic
-      // For this implementation, we assume DTDC serves all valid Indian PIN codes
-      // But we calculate delivery days based on distance (Same State vs Other)
-
       const destinationState = data.PostOffice[0].State;
       const destinationCity = data.PostOffice[0].District;
 
-      let estimatedDays = 5; // Default (Far states)
-
-      if (destinationState === ORIGIN_STATE) {
-        estimatedDays = 2; // Same state
-      } else if (
-        [
-          "Tamil Nadu",
-          "Kerala",
-          "Andhra Pradesh",
-          "Telangana",
-          "Goa",
-          "Maharashtra",
-        ].includes(destinationState)
-      ) {
-        estimatedDays = 3; // Nearby states
+      // 2. Calculate Delivery Charges if cartItems are provided
+      let deliveryDetails = null;
+      if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+        deliveryDetails = await shippingService.calculateDeliveryCharge(
+          pincode,
+          destinationCity,
+          destinationState,
+          cartItems
+        );
       }
 
+      const estimatedDays = deliveryDetails?.estimatedDays || 5;
       const estimatedDate = new Date();
       estimatedDate.setDate(estimatedDate.getDate() + estimatedDays);
 
@@ -68,6 +58,9 @@ export class ShippingController {
         serviceable: true,
         city: destinationCity,
         state: destinationState,
+        deliveryCharge: deliveryDetails?.deliveryCharge || 0,
+        deliveryType: deliveryDetails?.deliveryType || "Inter-State",
+        totalWeight: deliveryDetails?.totalWeight || 0,
         estimatedDays,
         estimatedDeliveryDate: estimatedDate.toISOString().split("T")[0],
       });

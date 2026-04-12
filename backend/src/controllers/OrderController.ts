@@ -7,8 +7,8 @@ export class OrderController {
   // Create Razorpay Order
   async createRazorpayOrder(req: Request, res: Response): Promise<void> {
     try {
-      const { items } = req.body;
-      const order = await this.orderService.createRazorpayOrder(items);
+      const { items, pincode } = req.body;
+      const order = await this.orderService.createRazorpayOrder(items, pincode);
       res.send(order);
     } catch (error: any) {
       console.log(error as Error);

@@ -1,10 +1,14 @@
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
-import cover01 from "../../src/assets/coverImages/kids-own-01.jpg";
-import cover02 from "../../src/assets/coverImages/kids-own-02.jpg";
-import cover03 from "../../src/assets/coverImages/kids-own-03.jpg";
+import { getActiveBanners } from "../services/api";
+import { type Banner } from "../types/Banner";
+import { useNavigate } from "react-router-dom";
 
-interface SlickBannerInterface {}
-const SlickBanner: React.FC<SlickBannerInterface> = ({}) => {
+const SlickBanner: React.FC = () => {
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   const settings = {
     dots: true,
     infinite: true,
@@ -12,53 +16,64 @@ const SlickBanner: React.FC<SlickBannerInterface> = ({}) => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 5000,
     fade: true,
     arrows: true,
     cssEase: "linear",
+    pauseOnHover: false,
   };
 
-  const slides = [
-    {
-      id: 1,
-      image: cover01,
-      title: "New Summer Collection",
-      subtitle: "Up to 50% Off on all kids wear",
-    },
-    {
-      id: 2,
-      image: cover02,
-      title: "Playful Prints",
-      subtitle: "Comfortable and stylish for active kids",
-    },
-    {
-      id: 3,
-      image: cover03,
-      title: "Special Occasion Wear",
-      subtitle: "Elegant styles for every celebration",
-    },
-  ];
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const data = await getActiveBanners();
+        if (data.success) {
+          setBanners(data.banners);
+        }
+      } catch (error) {
+        console.error("Error fetching banners:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBanners();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full h-[250px] md:h-[600px] bg-surface-light animate-pulse" />
+    );
+  }
+
+  if (banners.length === 0) {
+    return null;
+  }
 
   return (
     <div className="w-full">
       <Slider {...settings}>
-        {slides.map((slide) => (
-          <div key={slide?.id} className="relative h-[250px] md:h-[600px]">
+        {banners.map((banner) => (
+          <div
+            key={banner._id}
+            className="relative h-[250px] md:h-[600px] outline-none"
+          >
             <img
-              src={slide?.image}
-              alt={slide?.title}
+              src={banner.image}
+              alt={banner.title}
               className="w-full h-full object-cover"
             />
-            <div className=" absolute inset-0 bg-black/40 flex flex-col justify-center items-center  p-6">
-              <h1 className="!text-[#ffffff] text-4xl md:text-7xl font-serif font-black mb-4 text-center drop-shadow-2xl">
-                {slide?.title}
+            <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center p-6 text-center">
+              <h1 className="text-[#ffffff] text-4xl md:text-7xl font-serif font-black mb-4 drop-shadow-2xl max-w-4xl">
+                {banner.title}
               </h1>
-              <p className="text-lg md:text-2xl font-medium mb-10 text-center drop-shadow-lg text-[#ffffff] font-sans">
-                {slide?.subtitle}
-              </p>
-              <button className="btn-lg shadow-2xl hover:scale-105 transition-all duration-300 border border-[var(--color-border)] rounded-xl px-3 py-1 text-[#ffffff]">
-                Shop Now
-              </button>
+              {banner.link && (
+                <button
+                  onClick={() => navigate(banner.link)}
+                  className="mt-6 btn-lg shadow-2xl hover:scale-105 transition-all duration-300 border border-white/50 bg-white/10 backdrop-blur-sm rounded-xl px-8 py-3 text-[#ffffff] font-bold"
+                >
+                  Shop Now
+                </button>
+              )}
             </div>
           </div>
         ))}

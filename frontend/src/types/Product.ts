@@ -15,6 +15,7 @@ export interface Product {
   sizes?: ProductSize[];
   images?: string[];
   sellerId?: string;
+  weight?: number;
   createdAt?: string;
   updatedAt?: string;
 }
