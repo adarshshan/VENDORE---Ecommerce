@@ -352,12 +352,17 @@ const OrderDetails: React.FC = () => {
               {/* Order Actions */}
               <div className="space-y-3">
                 {isCancelEligible(order) ? (
-                  <CustomButton
-                    onclick={() => setIsCancelOpen(true)}
-                    className="btn-outline text-error border-error/30 hover:bg-error/10 hover:border-error"
-                  >
-                    Cancel Order
-                  </CustomButton>
+                  <div className="space-y-2">
+                    <p className="text-xs text-text-muted text-center font-medium">
+                      Cancellation available within 24 hours of ordering
+                    </p>
+                    <CustomButton
+                      onclick={() => setIsCancelOpen(true)}
+                      className="btn-outline text-error border-error/30 hover:bg-error/10 hover:border-error"
+                    >
+                      Cancel Order
+                    </CustomButton>
+                  </div>
                 ) : (
                   order.status !== "Shipped" &&
                   order.status !== "Delivered" &&

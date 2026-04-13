@@ -121,9 +121,17 @@ const ReturnAndExchange = () => {
               <li className="flex gap-3">
                 <span className="text-accent">✓</span>
                 <p>
+                  Cancellations are allowed within{" "}
+                  <span className="text-text-primary font-bold">24 hours</span>{" "}
+                  of placing the order.
+                </p>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-accent">✓</span>
+                <p>
                   Returns are allowed within{" "}
-                  <span className="text-text-primary font-bold">5 days</span> after
-                  delivery.
+                  <span className="text-text-primary font-bold">5 days</span>{" "}
+                  after delivery.
                 </p>
               </li>
               <li className="flex gap-3">
@@ -153,7 +161,9 @@ const ReturnAndExchange = () => {
 
         {/* Form Section */}
         <div className="bg-surface p-8 rounded-2xl border border-border shadow-2xl">
-          <h4 className="text-xl font-bold mb-6 text-text-primary">Submit Request</h4>
+          <h4 className="text-xl font-bold mb-6 text-text-primary">
+            Submit Request
+          </h4>
 
           <form onSubmit={handleReturnRequest} className="space-y-5">
             {/* Select Order */}
