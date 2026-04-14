@@ -17,7 +17,7 @@ export class UserController {
       const { email, password }: { email: string; password: string } = req.body;
       const loginStatus = await this.userService.userLogin(email, password); //This would return authResponse or throws error
 
-      const accessTokenMaxAge = 30 * 60 * 1000;
+      const accessTokenMaxAge = 2 * 60 * 60 * 1000;
       const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
 
       res
@@ -235,13 +235,11 @@ export class UserController {
         return;
       }
       const user = await this.userService.addAddress(userId, req.body);
-      res
-        .status(201)
-        .json({
-          success: true,
-          message: "Address added",
-          addresses: user?.addresses,
-        });
+      res.status(201).json({
+        success: true,
+        message: "Address added",
+        addresses: user?.addresses,
+      });
     } catch (error) {
       res.status(500).json({ message: "Error adding address" });
     }
@@ -339,8 +337,8 @@ export class UserController {
         user?._id as string,
       );
 
-      const accessTokenMaxAge = 30 * 60 * 1000;
-      const refreshTokenMaxAge = 48 * 60 * 60 * 1000;
+      const accessTokenMaxAge = 2 * 60 * 60 * 1000; //two hours
+      const refreshTokenMaxAge = 48 * 60 * 60 * 1000; //two days
       // Send the token as a cookie and response
       res
         .status(200)
