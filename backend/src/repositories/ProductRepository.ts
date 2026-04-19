@@ -91,9 +91,20 @@ export class ProductRepository implements IProductRepository {
   async countAll(filters: ProductFilters = {}): Promise<number> {
     const query: any = { isActive: true };
 
-    if (filters.category) query.category = filters.category;
+    if (filters.category) {
+      query.$or = [
+        { category: filters.category },
+        { categories: filters.category },
+      ];
+    }
     if (filters.categories && filters.categories.length > 0) {
-      query.categories = { $in: filters.categories };
+      if (query.$or) {
+        // If both are provided, we should probably merge them or prioritize categories
+        // For simplicity, let's just add it to the $or if it exists or use $in
+        query.categories = { $in: filters.categories };
+      } else {
+        query.categories = { $in: filters.categories };
+      }
     }
     if (filters.sellerId) query.sellerId = filters.sellerId;
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
@@ -111,7 +122,12 @@ export class ProductRepository implements IProductRepository {
   ): Promise<{ products: ProductDocument[]; totalItems: number }> {
     const query: any = { isActive: true };
 
-    if (filters.category) query.category = filters.category;
+    if (filters.category) {
+      query.$or = [
+        { category: filters.category },
+        { categories: filters.category },
+      ];
+    }
     if (filters.categories && filters.categories.length > 0) {
       query.categories = { $in: filters.categories };
     }
