@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useQuery } from "@tanstack/react-query";
 import type { Product, ProductImage } from "../../types/Product";
-import { getProductsById, getRelatedProducts } from "../../services/api";
+import { getProductBySlug, getRelatedProducts } from "../../services/api";
 import { useStore } from "../../store/useStore";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -17,11 +17,13 @@ import ProductCarousel from "../../components/ProductCarousel";
 import CustomButton from "../../components/CustomButton";
 import toast from "react-hot-toast";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import SEO from "../../components/SEO";
+import { getOptimizedImage } from "../../utils/imageOptimizer";
 
 const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "3XL"];
 
 const ProductDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState<string | undefined>();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -38,24 +40,57 @@ const ProductDetails: React.FC = () => {
     isLoading,
     isError,
   } = useQuery<Product>({
-    queryKey: ["product", id],
-    queryFn: () => getProductsById(id ?? ""),
-    enabled: !!id,
+    queryKey: ["product", slug],
+    queryFn: () => getProductBySlug(slug ?? ""),
+    enabled: !!slug,
   });
 
   const { data: relatedProducts = [], isLoading: isRelatedLoading } = useQuery<
     Product[]
   >({
-    queryKey: ["relatedProducts", id],
-    queryFn: () => getRelatedProducts(id ?? ""),
-    enabled: !!id,
+    queryKey: ["relatedProducts", product?._id],
+    queryFn: () => getRelatedProducts(product?._id as string),
+    enabled: !!product?._id,
   });
 
   const isInWishlist = wishlist.some((item) => item?._id === product?._id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [slug]);
+
+  // Structured Data (JSON-LD)
+  const structuredData = useMemo(() => {
+    if (!product) return null;
+    return {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      name: product?.name,
+      image: product.images?.map((img) => img?.url),
+      description: product?.description,
+      brand: {
+        "@type": "Brand",
+        name: product?.brand || "Kids Own",
+      },
+      offers: {
+        "@type": "Offer",
+        url: window.location.href,
+        priceCurrency: "INR",
+        price: product?.price,
+        availability: (
+          product?.hasSizes
+            ? product?.sizes?.some((s) => s?.stock > 0)
+            : product?.stock && product?.stock > 0
+        )
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        seller: {
+          "@type": "Organization",
+          name: "ThreadCo",
+        },
+      },
+    };
+  }, [product]);
 
   useEffect(() => {
     if (product?.images?.[0]) {
@@ -155,6 +190,14 @@ const ProductDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background pb-1 sm:pb-20">
+      <SEO
+        title={product?.name}
+        description={product?.description}
+        image={product?.images?.[0]?.url}
+        url={`/product/${product?.slug}`}
+        type="product"
+        schema={structuredData}
+      />
       <div className="px-[1rem] sm:px-[20rem]">
         <div className="container-custom py-3 sm:py-8">
           {/* Breadcrumbs / Back button */}
@@ -179,7 +222,7 @@ const ProductDetails: React.FC = () => {
                   <Zoom>
                     <div className="w-full aspect-square flex items-center justify-center bg-surface-light">
                       <img
-                        src={selectedImage}
+                        src={getOptimizedImage(selectedImage, 800)}
                         alt={product?.name}
                         className="w-full h-full object-cover"
                       />
@@ -209,7 +252,7 @@ const ProductDetails: React.FC = () => {
                     }`}
                   >
                     <img
-                      src={image?.url}
+                      src={getOptimizedImage(image?.url, 100)}
                       alt={`${product?.name} thumb ${index}`}
                       className="w-full h-full object-cover"
                     />
@@ -450,7 +493,7 @@ const ImageSlider: React.FC<ImageSliderInterface> = ({
           <Zoom key={index}>
             <div className="relative w-full aspect-square flex items-center justify-center bg-surface-light">
               <img
-                src={item?.url}
+                src={getOptimizedImage(item?.url, 600)}
                 alt={item?.url}
                 className="w-full h-full object-cover"
               />

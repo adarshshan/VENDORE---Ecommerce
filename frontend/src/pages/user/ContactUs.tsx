@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { submitContact } from "../../services/api";
 import CustomButton from "../../components/CustomButton";
+import SEO from "../../components/SEO";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -65,6 +66,11 @@ const ContactUs: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background py-5 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with ThreadCo. We're here to help with any questions about our products or your order."
+        url="/contact"
+      />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-5 sm:mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-text-primary mb-4">
@@ -89,7 +95,9 @@ const ContactUs: React.FC = () => {
                     <PhoneIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-text-primary font-semibold">Phone & Helpline</p>
+                    <p className="text-text-primary font-semibold">
+                      Phone & Helpline
+                    </p>
                     <p className="text-text-secondary">+91 7356683993</p>
                     <p className="text-text-secondary">
                       1-800-KIDS-OWN (Toll Free)
@@ -102,7 +110,9 @@ const ContactUs: React.FC = () => {
                     <EmailIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-text-primary font-semibold">Email Address</p>
+                    <p className="text-text-primary font-semibold">
+                      Email Address
+                    </p>
                     <p className="text-text-secondary">
                       vendorashop555@gmail.com
                     </p>
@@ -117,7 +127,9 @@ const ContactUs: React.FC = () => {
                     <LocationIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-text-primary font-semibold">Physical Address</p>
+                    <p className="text-text-primary font-semibold">
+                      Physical Address
+                    </p>
                     <p className="text-text-secondary">
                       Kootilangadi, Malappuram
                     </p>
@@ -130,7 +142,9 @@ const ContactUs: React.FC = () => {
                     <TimeIcon className="text-text-primary" />
                   </div>
                   <div>
-                    <p className="text-text-primary font-semibold">Working Hours</p>
+                    <p className="text-text-primary font-semibold">
+                      Working Hours
+                    </p>
                     <p className="text-text-secondary">
                       Mon - Fri: 9:00 AM - 6:00 PM
                     </p>

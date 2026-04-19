@@ -11,6 +11,7 @@ const categoryController = new CategoryController(categoryService);
 
 // Public routes
 router.get("/", (req, res) => categoryController.getAllCategories(req, res));
+router.get("/slug/:slug", (req, res) => categoryController.getCategoryBySlug(req, res));
 router.get("/:id", (req, res) => categoryController.getCategoryById(req, res));
 
 // Admin routes

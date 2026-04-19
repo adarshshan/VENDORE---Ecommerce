@@ -104,6 +104,11 @@ export const getProductsById = async (id: string): Promise<Product> => {
   return response.data;
 };
 
+export const getProductBySlug = async (slug: string): Promise<Product> => {
+  const response = await axios.get(`${VITE_API_URL}/products/slug/${slug}`);
+  return response.data;
+};
+
 export const getRelatedProducts = async (
   productId: string,
 ): Promise<Product[]> => {
@@ -244,6 +249,11 @@ export const getCategories = async (status?: string) => {
   const response = await axios.get(
     `${VITE_API_URL}/categories?${params.toString()}`,
   );
+  return response.data;
+};
+
+export const getCategoryBySlug = async (slug: string) => {
+  const response = await axios.get(`${VITE_API_URL}/categories/slug/${slug}`);
   return response.data;
 };
 

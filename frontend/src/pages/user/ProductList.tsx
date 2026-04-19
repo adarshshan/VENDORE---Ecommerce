@@ -23,8 +23,10 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "../../utils/cn";
+import { getCategoryBySlug } from "../../services/api";
+import SEO from "../../components/SEO";
 
 const SearchContainer = styled("div")(({ theme }) => ({
   position: "relative",
@@ -79,11 +81,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const ProductList: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
   const [filters, setFilters] = useState<ProductFilters>({
     page: 1,
     limit: 12,
   });
   const [categories, setCategories] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState<any>(null);
+  // ... rest of state
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
@@ -123,7 +128,7 @@ const ProductList: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
     const fetchCats = async () => {
@@ -136,6 +141,31 @@ const ProductList: React.FC = () => {
     };
     fetchCats();
   }, []);
+
+  // Handle slug changes
+  useEffect(() => {
+    const handleSlug = async () => {
+      if (slug) {
+        try {
+          const category = await getCategoryBySlug(slug);
+          if (category) {
+            setActiveCategory(category);
+            setFilters((prev) => ({
+              ...prev,
+              category: category._id,
+              page: 1,
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching category by slug", error);
+        }
+      } else {
+        setActiveCategory(null);
+        setFilters((prev) => ({ ...prev, category: undefined, page: 1 }));
+      }
+    };
+    handleSlug();
+  }, [slug]);
 
   // Main fetch effect
   useEffect(() => {
@@ -339,6 +369,19 @@ const ProductList: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 px-[1rem] sm:px-[5rem] transition-colors">
+      <SEO
+        title={
+          activeCategory
+            ? `${activeCategory.name} Collection`
+            : "Our Collection"
+        }
+        description={
+          activeCategory
+            ? `Explore our ${activeCategory.name} collection. High-quality and stylish products for Men, Women and Kids.`
+            : "Discover our latest styles and seasonal favorites designed for comfort and play."
+        }
+        url={slug ? `/category/${slug}` : "/products"}
+      />
       <div className="container-custom py-2 sm:py-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6">

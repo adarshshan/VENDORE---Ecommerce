@@ -14,6 +14,10 @@ export class CategoryService {
     return this.categoryRepository.findById(id);
   }
 
+  async getCategoryBySlug(slug: string): Promise<CategoryDocument | null> {
+    return this.categoryRepository.findBySlug(slug);
+  }
+
   async createCategory(
     categoryData: Partial<CategoryDocument>,
   ): Promise<CategoryDocument> {

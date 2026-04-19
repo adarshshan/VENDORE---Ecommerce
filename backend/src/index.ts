@@ -15,6 +15,7 @@ import { searchRoutes } from "./routes/SearchRoutes";
 import { shippingRoutes } from "./routes/ShippingRoutes";
 import { sellerRoutes } from "./routes/SellerRoutes";
 import { bannerRoutes } from "./routes/BannerRoutes";
+import { generateSitemap } from "./controllers/SitemapController";
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
@@ -61,6 +62,15 @@ app.use("/api/search", searchRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/banners", bannerRoutes);
+
+// Sitemap & Robots
+app.get("/sitemap.xml", (req, res) => generateSitemap(req, res));
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(`User-agent: *
+Allow: /
+  Sitemap: https://www.backend.threadco.online/sitemap.xml`);
+});
 
 // Start Server
 const startServer = async () => {

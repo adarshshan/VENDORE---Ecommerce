@@ -11,6 +11,7 @@ const productController = new ProductController(productService);
 
 router.get("/", (req, res) => productController.getAllProducts(req, res));
 router.get("/related/:productId", (req, res) => productController.getRelatedProducts(req, res));
+router.get("/slug/:slug", (req, res) => productController.getProductBySlug(req, res));
 router.get("/:id", (req, res) => productController.getProductById(req, res));
 router.post("/", upload.array("images"), (req, res) =>
   productController.createProduct(req, res)

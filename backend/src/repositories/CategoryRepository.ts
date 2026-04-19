@@ -3,6 +3,7 @@ import { CategoryDocument, CategoryModel } from "../models/CategorySchema";
 export interface ICategoryRepository {
   findAll(status?: "Active" | "Inactive"): Promise<CategoryDocument[]>;
   findById(id: string): Promise<CategoryDocument | null>;
+  findBySlug(slug: string): Promise<CategoryDocument | null>;
   findByName(name: string): Promise<CategoryDocument | null>;
   create(category: Partial<CategoryDocument>): Promise<CategoryDocument>;
   update(
@@ -17,6 +18,10 @@ export class CategoryRepository implements ICategoryRepository {
     const query: any = {};
     if (status) query.status = status;
     return await CategoryModel.find(query).sort({ name: 1 }).exec();
+  }
+
+  async findBySlug(slug: string): Promise<CategoryDocument | null> {
+    return await CategoryModel.findOne({ slug, status: "Active" }).exec();
   }
 
   async findById(id: string): Promise<CategoryDocument | null> {
