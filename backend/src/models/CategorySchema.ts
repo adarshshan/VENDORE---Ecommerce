@@ -25,7 +25,7 @@ const categorySchema = new Schema<CategoryDocument>(
 
 // Pre-save hook to generate slug if needed (can be expanded)
 categorySchema.pre("save", function (next) {
-  if (this.isModified("name")) {
+  if (this.isModified("name") || !this.slug) {
     this.slug = this.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")

@@ -4,6 +4,7 @@ import ProductCarousel from "../../components/ProductCarousel";
 import { getProducts } from "../../services/api";
 import { type Product } from "../../types/Product";
 import SlickBanner from "../../components/SlickBanner";
+import SEO from "../../components/SEO";
 
 const HomePage: React.FC = () => {
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
@@ -25,6 +26,11 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Home"
+        description="ThreadCo is your go-to online store for fashion, clothing, and accessories for men, women, and kids. Explore trending styles, premium quality products, and great deals with fast delivery and easy returns."
+        url="/"
+      />
       <section className="relative overflow-hidden">
         <SlickBanner />
       </section>

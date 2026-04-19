@@ -18,6 +18,10 @@ export class ProductService {
     return this.productRepository.findById(id);
   }
 
+  async getProductBySlug(slug: string): Promise<ProductDocument | null> {
+    return this.productRepository.findBySlug(slug);
+  }
+
   async getRelatedProducts(
     productId: string,
     limit?: number,

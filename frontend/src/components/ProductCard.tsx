@@ -6,6 +6,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import toast from "react-hot-toast";
+import { getOptimizedImage } from "../utils/imageOptimizer";
 
 interface ProductCardProps {
   product: Product;
@@ -39,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = memo(({ product }) => {
     }
 
     if (product?.hasSizes) {
-      navigate(`/product/${product?._id}`);
+      navigate(`/product/${product?.slug || product?._id}`);
       toast("Please select a size", { icon: "📏" });
       return;
     }
@@ -66,12 +67,12 @@ const ProductCard: React.FC<ProductCardProps> = memo(({ product }) => {
 
   return (
     <div
-      onClick={() => navigate(`/product/${product?._id}`)}
+      onClick={() => navigate(`/product/${product?.slug || product?._id}`)}
       className={`card card-hover group flex flex-col cursor-pointer relative h-full bg-surface ${isOutOfStock ? "opacity-75" : ""}`}
     >
       <div className="relative overflow-hidden aspect-[3/4]">
         <img
-          src={product?.images?.[0]?.url}
+          src={getOptimizedImage(product?.images?.[0]?.url, 400)}
           alt={product?.name}
           loading="lazy"
           className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isOutOfStock ? "grayscale" : ""}`}

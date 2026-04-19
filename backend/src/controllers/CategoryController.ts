@@ -29,6 +29,21 @@ export class CategoryController {
     }
   }
 
+  async getCategoryBySlug(req: Request, res: Response): Promise<void> {
+    try {
+      const category = await this.categoryService.getCategoryBySlug(
+        req.params.slug,
+      );
+      if (!category) {
+        res.status(404).json({ message: "Category not found" });
+        return;
+      }
+      res.json(category);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching category by slug" });
+    }
+  }
+
   async createCategory(req: Request, res: Response): Promise<void> {
     try {
       const category = await this.categoryService.createCategory(req.body);

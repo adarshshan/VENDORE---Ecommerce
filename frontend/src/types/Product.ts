@@ -10,6 +10,7 @@ export interface ProductImage {
 
 export interface Product {
   _id: string | number;
+  slug: string;
   name: string;
   brand?: string;
   price: number;
