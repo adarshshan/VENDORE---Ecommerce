@@ -66,11 +66,12 @@ app.use("/api/banners", bannerRoutes);
 // Sitemap & Robots
 app.get("/sitemap.xml", (req, res) => generateSitemap(req, res));
 app.get("/robots.txt", (req, res) => {
+  const baseUrl = process.env.FRONTEND_URL || "https://www.threadco.online";
   res.type("text/plain");
   res.send(`User-agent: *
 Allow: /
 
-Sitemap: https://www.threadco.online/sitemap.xml`);
+Sitemap: ${baseUrl}/sitemap.xml`);
 });
 
 // Start Server
