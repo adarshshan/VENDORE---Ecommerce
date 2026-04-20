@@ -464,7 +464,9 @@ const ProductList: React.FC = () => {
                             <div
                               key={product?._id}
                               onClick={() => {
-                                navigate(`/product/${product?.slug || product?._id}`);
+                                navigate(
+                                  `/product/${product?.slug || product?._id}`,
+                                );
                                 setShowDropdown(false);
                               }}
                               className="flex items-center gap-3 p-2 hover:bg-surface-hover rounded-lg cursor-pointer transition-colors"
@@ -578,8 +580,8 @@ const ProductList: React.FC = () => {
         </div>
 
         {/* Category Pills (Mobile Only) */}
-        <div className="md:hidden mb-8 overflow-hidden">
-          <div className="flex overflow-x-auto gap-2 scrollbar-hide pb-2 scroll-smooth">
+        <div className="md:hidden sticky top-[64px] z-40 bg-background/80 backdrop-blur-md -mx-4 px-4 py-3 mb-6 border-b border-border/50">
+          <div className="flex overflow-x-auto gap-2 scrollbar-hide scroll-smooth">
             <button
               onClick={() => handleCategoryChange("All")}
               className={cn(
