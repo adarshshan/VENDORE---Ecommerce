@@ -580,7 +580,7 @@ const ProductList: React.FC = () => {
         </div>
 
         {/* Category Pills (Mobile Only) */}
-        <div className="md:hidden sticky top-[64px] z-40 bg-background/80 backdrop-blur-md -mx-4 px-4 py-3 mb-6 border-b border-border/50">
+        <div className="md:hidden sticky top-[64px] z-40 bg-background/80 backdrop-blur-md -mx-4 px-4 pt-2 pb-1 mb-6 border-b border-border/50">
           <div className="flex overflow-x-auto gap-2 scrollbar-hide scroll-smooth">
             <button
               onClick={() => handleCategoryChange("All")}
