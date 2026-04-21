@@ -6,8 +6,10 @@ export class CategoryService {
 
   async getAllCategories(
     status?: "Active" | "Inactive",
-  ): Promise<CategoryDocument[]> {
-    return this.categoryRepository.findAll(status);
+    page?: number,
+    limit?: number,
+  ): Promise<{ categories: CategoryDocument[]; totalItems: number }> {
+    return this.categoryRepository.findAll(status, page, limit);
   }
 
   async getCategoryById(id: string): Promise<CategoryDocument | null> {

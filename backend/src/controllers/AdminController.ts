@@ -72,8 +72,23 @@ export class AdminController {
 
   async getSellers(req: Request, res: Response): Promise<void> {
     try {
-      const sellers = await UserModel.find({ role: "seller" }).select("-password");
-      res.json({ success: true, sellers });
+      const page = req.query.page ? Number(req.query.page) : 1;
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      const skip = (page - 1) * limit;
+
+      const totalItems = await UserModel.countDocuments({ role: "seller" });
+      const sellers = await UserModel.find({ role: "seller" })
+        .select("-password")
+        .skip(skip)
+        .limit(limit);
+
+      res.json({
+        success: true,
+        sellers,
+        totalItems,
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+      });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
     }
