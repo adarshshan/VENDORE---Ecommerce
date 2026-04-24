@@ -60,6 +60,10 @@ export const metadata: Metadata = {
     description: "Quality fashion for men and women.",
     images: ["/og-image.jpg"],
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const jsonLd = {

@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return {
         title,
         description,
+        keywords: `${product.name}, ThreadCo, buy ${product.name} online, premium fashion`,
         alternates: {
           canonical: `https://threadco.online/product/${product?.slug}`,
         },
