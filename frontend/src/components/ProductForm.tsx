@@ -16,6 +16,7 @@ import {
   InputLabel,
   Chip,
   OutlinedInput,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Product, ProductSize, ProductImage } from "../types/Product";
@@ -25,7 +26,7 @@ const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "3XL"];
 
 interface ProductFormProps {
   product?: Product | null;
-  onSave: (product: FormData) => void;
+  onSave: (product: FormData) => void | Promise<void>;
   onCancel: () => void;
   handleDeleteProduct?: (id: string) => void;
 }
@@ -44,13 +45,14 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [sellerId, setSellerId] = useState("");
   const [sellers, setSellers] = useState<any[]>([]);
   const [stock, setStock] = useState<number>(0);
-  const [weight, setWeight] = useState<number>(500);
+  const [weight, setWeight] = useState<number>(100);
   const [hasSizes, setHasSizes] = useState<boolean>(false);
   const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
   const [images, setImages] = useState<
     (File | ProductImage | null | undefined)[]
   >([]);
   const [picMessage, setPicMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCatsAndSellers = async () => {
@@ -98,7 +100,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setSellerId(sellerIdStr);
 
       setStock(product?.stock ?? 0);
-      setWeight(product?.weight ?? 500);
+      setWeight(product?.weight ?? 100);
       setHasSizes(product?.hasSizes ?? false);
 
       const normalizedSizes = (product?.sizes ?? [])?.map((s: any) => {
@@ -115,6 +117,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setSelectedCategoryIds([]);
       setSellerId("");
       setStock(0);
+      setWeight(100);
       setHasSizes(false);
       setSelectedSizes([]);
       setImages([]);
@@ -201,6 +204,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
       return;
     }
 
+    setLoading(true);
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("price", price ? price.toString() : "0");
@@ -238,10 +243,17 @@ const ProductForm: React.FC<ProductFormProps> = ({
           formData.append("images", JSON.stringify(allImages));
       } catch (error) {
         setPicMessage("Image upload failed. Please try again.");
+        setLoading(false);
         return;
       }
     }
-    onSave(formData);
+    try {
+      await onSave(formData);
+    } catch (error) {
+      console.error("Save failed", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -553,9 +565,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
               type="submit"
               variant="contained"
               color="primary"
+              disabled={loading}
               className="!border-[var(--color-border)] !bg-transparent hover:!bg-accent hover:!text-white !text-[var(--color-text-light)] !font-bold !py-2 !px-4 !rounded-md"
             >
-              Save
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Save"}
             </Button>
           </div>
         </Box>

@@ -7,8 +7,22 @@ export class CategoryController {
   async getAllCategories(req: Request, res: Response): Promise<void> {
     try {
       const status = req.query.status as "Active" | "Inactive" | undefined;
-      const categories = await this.categoryService.getAllCategories(status);
-      res.json(categories);
+      const page = req.query.page ? Number(req.query.page) : undefined;
+      const limit = req.query.limit ? Number(req.query.limit) : undefined;
+
+      const { categories, totalItems } =
+        await this.categoryService.getAllCategories(status, page, limit);
+
+      if (page && limit) {
+        res.json({
+          categories,
+          totalItems,
+          currentPage: page,
+          totalPages: Math.ceil(totalItems / limit),
+        });
+      } else {
+        res.json(categories);
+      }
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

@@ -5,10 +5,11 @@ import {
   updateCategory,
   deleteCategory,
 } from "../../services/api";
-import { TextField, Typography, MenuItem } from "@mui/material";
+import { TextField, Typography, MenuItem, CircularProgress } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomModal from "../../components/Modal";
+import Pagination from "../../components/Pagination";
 
 const CategoryManagement: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
@@ -16,6 +17,8 @@ const CategoryManagement: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -23,11 +26,17 @@ const CategoryManagement: React.FC = () => {
     status: "Active",
   });
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (pageNum: number) => {
     setIsLoading(true);
     try {
-      const data = await getCategories();
-      setCategories(data);
+      const data = await getCategories(undefined, pageNum, 10);
+      if (data.categories) {
+        setCategories(data.categories);
+        setTotalPages(data.totalPages);
+      } else {
+        setCategories(data);
+        setTotalPages(1);
+      }
     } catch (error) {
       console.error("Error fetching categories", error);
     } finally {
@@ -36,8 +45,12 @@ const CategoryManagement: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    fetchCategories(page);
+  }, [page]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleOpen = (category: any = null) => {
     if (category) {
@@ -179,6 +192,12 @@ const CategoryManagement: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       <CustomModal open={open} onClose={handleClose}>
         <div className="w-full max-w-md bg-transparent text-text-primary">

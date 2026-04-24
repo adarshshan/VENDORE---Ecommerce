@@ -1,0 +1,50 @@
+[
+  {
+    "_id": 1,
+    "name": "Men's Classic Black T-Shirt",
+    "price": 29.99,
+    "images": ["checkblack.jpg", "checkshirt.jpg", "skyblue.jpg"]
+  },
+  {
+    "_id": 2,
+    "name": "Men's Slim Fit Denim Shirt",
+    "price": 19.99,
+    "images": ["checkshirt.jpg", "skyblue.jpg", "yellowdress.jpg"]
+  },
+  {
+    "_id": 3,
+    "name": "Women's Floral Summer Dress",
+    "price": 14.99,
+    "images": ["skyblue.jpg", "yellowdress.jpg", "checkblack.jpg"]
+  },
+  {
+    "_id": 4,
+    "name": "Unisex Modern Sneakers",
+    "price": 34.99,
+    "images": ["yellowdress.jpg", "checkblack.jpg", "checkshirt.jpg"]
+  },
+  {
+    "_id": 5,
+    "name": "Men's Premium Cotton Hoodie",
+    "price": 29.99,
+    "images": ["checkblack.jpg", "checkshirt.jpg", "skyblue.jpg"]
+  },
+  {
+    "_id": 6,
+    "name": "Women's Elegant Evening Gown",
+    "price": 19.99,
+    "images": ["checkshirt.jpg", "skyblue.jpg", "yellowdress.jpg"]
+  },
+  {
+    "_id": 7,
+    "name": "Men's Formal Leather Belt",
+    "price": 14.99,
+    "images": ["skyblue.jpg", "yellowdress.jpg", "checkblack.jpg"]
+  },
+  {
+    "_id": 8,
+    "name": "Women's Casual Canvas Shoes",
+    "price": 34.99,
+    "images": ["yellowdress.jpg", "checkblack.jpg", "checkshirt.jpg"]
+  }
+]

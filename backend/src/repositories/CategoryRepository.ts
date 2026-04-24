@@ -1,7 +1,11 @@
 import { CategoryDocument, CategoryModel } from "../models/CategorySchema";
 
 export interface ICategoryRepository {
-  findAll(status?: "Active" | "Inactive"): Promise<CategoryDocument[]>;
+  findAll(
+    status?: "Active" | "Inactive",
+    page?: number,
+    limit?: number,
+  ): Promise<{ categories: CategoryDocument[]; totalItems: number }>;
   findById(id: string): Promise<CategoryDocument | null>;
   findBySlug(slug: string): Promise<CategoryDocument | null>;
   findByName(name: string): Promise<CategoryDocument | null>;
@@ -14,10 +18,24 @@ export interface ICategoryRepository {
 }
 
 export class CategoryRepository implements ICategoryRepository {
-  async findAll(status?: "Active" | "Inactive"): Promise<CategoryDocument[]> {
+  async findAll(
+    status?: "Active" | "Inactive",
+    page?: number,
+    limit?: number,
+  ): Promise<{ categories: CategoryDocument[]; totalItems: number }> {
     const query: any = {};
     if (status) query.status = status;
-    return await CategoryModel.find(query).sort({ name: 1 }).exec();
+
+    const totalItems = await CategoryModel.countDocuments(query);
+    let categoriesQuery = CategoryModel.find(query).sort({ name: 1 });
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      categoriesQuery = categoriesQuery.skip(skip).limit(limit);
+    }
+
+    const categories = await categoriesQuery.exec();
+    return { categories, totalItems };
   }
 
   async findBySlug(slug: string): Promise<CategoryDocument | null> {

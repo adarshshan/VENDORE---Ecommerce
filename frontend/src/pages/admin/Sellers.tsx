@@ -11,9 +11,11 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "../../components/Modal";
 import CustomButton from "../../components/CustomButton";
+import Pagination from "../../components/Pagination";
 
 const Sellers: React.FC = () => {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -23,11 +25,16 @@ const Sellers: React.FC = () => {
   const [error, setError] = useState("");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["sellers"],
-    queryFn: getSellers,
+    queryKey: ["sellers", page],
+    queryFn: () => getSellers(page, 10),
   });
 
   const sellers = data?.sellers || [];
+  const totalPages = data?.totalPages || 0;
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const createSellerMutation = useMutation({
     mutationFn: createSeller,
@@ -177,6 +184,12 @@ const Sellers: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       <Modal
         open={isModalOpen}

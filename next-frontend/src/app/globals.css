@@ -1,0 +1,180 @@
+@import "tailwindcss";
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+@theme {
+  --font-sans: "Inter", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* Brand Colors */
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+
+  /* Backgrounds */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+  --color-surface-hover: var(--surface-hover);
+
+  /* Text */
+  --color-text-light: var(--text-light);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-Header: var(--text-header);
+
+  /* Borders */
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+
+  /* Status */
+  --color-success: #10b981; /* Emerald-500 */
+  --color-error: #ef4444; /* Red-500 */
+  --color-warning: #f59e0b; /* Amber-500 */
+  --color-info: #3b82f6; /* Blue-500 */
+}
+
+:root {
+  /* DARK THEME (default) */
+  --primary: #0f172a;
+  --primary-light: #334155;
+  --accent: #38bdf8;
+  --accent-hover: #0ea5e9;
+  --background: #000000;
+  --surface: #0a0a0a;
+  --surface-light: #171717;
+  --surface-hover: #262626;
+  --text-light: #ffffff;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #000000;
+  --text-header: #ffffff;
+  --border: #262626;
+  --border-light: #404040;
+}
+
+:root[data-theme="light"] {
+  /* LIGHT THEME */
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-light: #f1f5f9;
+  --surface-hover: #e2e8f0;
+  --text-light: #0f172a;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+  --text-header: #000000;
+  --border: #e2e8f0;
+  --border-light: #cbd5e1;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans antialiased transition-colors duration-300;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-text-primary transition-colors duration-300;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl mb-6;
+  }
+  h2 {
+    @apply text-3xl md:text-4xl mb-4;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl mb-3;
+  }
+  h4 {
+    @apply text-xl md:text-2xl mb-2;
+  }
+
+  p {
+    @apply leading-relaxed text-text-secondary;
+  }
+
+  a {
+    @apply transition-colors duration-200 hover:text-accent;
+  }
+}
+
+.slick-dots {
+  bottom: 8px !important;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: var(--accent) !important;
+  font-size: 24px !important;
+}
+
+.slick-dots li button:before {
+  content: "" !important;
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--accent) !important;
+  border-radius: 50% !important;
+  display: block !important;
+  opacity: 0.4 !important;
+  transition: all 0.3s ease !important;
+}
+
+.slick-dots li.slick-active button:before {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+  background: var(--accent) !important;
+}
+
+.Mui-selected,
+.MuiList-root {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.menu-drawer .MuiList-root {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Utilities */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}

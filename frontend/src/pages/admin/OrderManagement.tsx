@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   getAllOrders,
   updateOrderStatus,
@@ -8,52 +8,28 @@ import type { Order } from "../../types/Order";
 import CustomModal from "../../components/Modal";
 import { format } from "date-fns";
 import { Tooltip, CircularProgress } from "@mui/material";
+import Pagination from "../../components/Pagination";
 
 const OrderManagement: React.FC = () => {
-  // Infinite Scroll States
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const observer = useRef<IntersectionObserver | null>(null);
 
   // Selected Order for Details Modal
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState<boolean>(false);
 
-  const lastOrderRowRef = useCallback((node: HTMLTableRowElement | null) => {
-    if (isLoading || isFetchingMore) return;
-    if (observer.current) observer.current.disconnect();
-    
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1);
-      }
-    });
-    
-    if (node) observer.current.observe(node);
-  }, [isLoading, isFetchingMore, hasMore]);
-
   const fetchOrders = useCallback(async (pageNum: number) => {
+    setIsLoading(true);
     try {
-      if (pageNum === 1) setIsLoading(true);
-      else setIsFetchingMore(true);
-
-      const data = await getAllOrders(pageNum, 15);
-      
-      if (pageNum === 1) {
-        setOrders(data?.orders || []);
-      } else {
-        setOrders(prev => [...prev, ...(data?.orders || [])]);
-      }
-      
-      setHasMore(data?.hasMore);
+      const data = await getAllOrders(pageNum, 10);
+      setOrders(data?.orders || []);
+      setTotalPages(data?.totalPages || 0);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
       setIsLoading(false);
-      setIsFetchingMore(false);
     }
   }, []);
 
@@ -61,13 +37,15 @@ const OrderManagement: React.FC = () => {
     fetchOrders(page);
   }, [page, fetchOrders]);
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   const handleStatusUpdate = async (id: string, status: string) => {
     if (!window.confirm(`Update status to ${status}?`)) return;
     try {
       await updateOrderStatus(id, status);
-      // Refresh current page data or just update local state
-      const data = await getAllOrders(1, orders.length); // Get all currently loaded to sync
-      setOrders(data?.orders);
+      fetchOrders(page);
       if (selectedOrder && selectedOrder?._id === id) {
         setIsDetailsOpen(false); // Close modal on update
       }
@@ -84,8 +62,7 @@ const OrderManagement: React.FC = () => {
     if (!window.confirm(`${status} return request for this item?`)) return;
     try {
       await handleReturnRequest(orderId, status, productId);
-      const data = await getAllOrders(1, orders.length);
-      setOrders(data?.orders);
+      fetchOrders(page);
       setIsDetailsOpen(false);
     } catch (error) {
       alert("Error handling return");
@@ -105,7 +82,7 @@ const OrderManagement: React.FC = () => {
     <div className="p-6 bg-background min-h-screen text-text-primary">
       <h1 className="text-3xl font-serif font-bold mb-8">Order Management</h1>
 
-      <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-xl mb-10">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-xl">
         <table className="min-w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface-light/50 border-b border-border">
@@ -134,10 +111,10 @@ const OrderManagement: React.FC = () => {
           </thead>
 
           <tbody className="divide-y divide-border">
-            {isLoading && page === 1 ? (
+            {isLoading ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center">
-                   <CircularProgress size={30} className="!text-accent" />
+                  <CircularProgress size={30} className="!text-accent" />
                 </td>
               </tr>
             ) : orders?.length === 0 ? (
@@ -150,102 +127,86 @@ const OrderManagement: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              <>
-                {orders?.map((order, index) => {
-                  const isLast = orders.length === index + 1;
-                  return (
-                    <tr
-                      key={order?._id}
-                      ref={isLast ? lastOrderRowRef : null}
-                      className="hover:bg-surface-hover/30 transition-colors group"
-                    >
-                      <Tooltip title={order?._id}>
-                        <td className="px-6 py-4 font-mono text-xs text-accent">
-                          #
-                          {order?._id
-                            ?.substring(order?._id.length - 8)
-                            .toUpperCase()}
-                        </td>
-                      </Tooltip>
+              orders?.map((order) => (
+                <tr
+                  key={order?._id}
+                  className="hover:bg-surface-hover/30 transition-colors group"
+                >
+                  <Tooltip title={order?._id}>
+                    <td className="px-6 py-4 font-mono text-xs text-accent">
+                      #
+                      {order?._id
+                        ?.substring(order?._id.length - 8)
+                        .toUpperCase()}
+                    </td>
+                  </Tooltip>
 
-                      <td className="px-6 py-4">
-                        <div className="font-bold">
-                          {(order?.user as any)?.name || "Guest"}
-                        </div>
-                        <div className="text-xs text-text-muted">
-                          {(order?.user as any)?.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        {format(new Date(order?.createdAt), "dd MMM yyyy")}
-                      </td>
-                      <td className="px-6 py-4 font-bold text-accent">
-                        ₹{order?.totalPrice.toLocaleString("en-IN")}
-                      </td>
-                      <td className="px-6 py-4">
+                  <td className="px-6 py-4">
+                    <div className="font-bold">
+                      {(order?.user as any)?.name || "Guest"}
+                    </div>
+                    <div className="text-xs text-text-muted">
+                      {(order?.user as any)?.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    {format(new Date(order?.createdAt), "dd MMM yyyy")}
+                  </td>
+                  <td className="px-6 py-4 font-bold text-accent">
+                    ₹{order?.totalPrice.toLocaleString("en-IN")}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${order?.isPaid ? "bg-success/20 text-success border border-success/30" : "bg-error/20 text-error border border-error/30"}`}
+                    >
+                      {order?.isPaid ? "PAID" : "UNPAID"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-tighter ${
+                          order?.status === "Delivered"
+                            ? "bg-success text-background"
+                            : order?.status === "Cancelled"
+                              ? "bg-error text-white"
+                              : order?.status === "Returned"
+                                ? "bg-gray-400 text-black"
+                                : order?.status === "Shipped"
+                                  ? "bg-indigo-500 text-white"
+                                  : "bg-accent text-background"
+                        }`}
+                      >
+                        {order?.status}
+                      </span>
+                      {hasPendingReturns(order) && (
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${order?.isPaid ? "bg-success/20 text-success border border-success/30" : "bg-error/20 text-error border border-error/30"}`}
-                        >
-                          {order?.isPaid ? "PAID" : "UNPAID"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-tighter ${
-                              order?.status === "Delivered"
-                                ? "bg-success text-background"
-                                : order?.status === "Cancelled"
-                                  ? "bg-error text-white"
-                                  : order?.status === "Returned"
-                                    ? "bg-gray-400 text-black"
-                                    : order?.status === "Shipped"
-                                      ? "bg-indigo-500 text-white"
-                                      : "bg-accent text-background"
-                            }`}
-                          >
-                            {order?.status}
-                          </span>
-                          {hasPendingReturns(order) && (
-                            <span
-                              className="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"
-                              title="Pending Return Request"
-                            ></span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => openDetails(order)}
-                          className="bg-surface-light hover:bg-surface-hover px-4 py-1.5 rounded-lg text-xs font-bold border border-border transition-all active:scale-95"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-                
-                {/* Sentinel for Infinite Scroll - specifically for the table body */}
-                {isFetchingMore && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center">
-                      <CircularProgress size={20} className="!text-accent" />
-                    </td>
-                  </tr>
-                )}
-                {!hasMore && orders.length > 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-text-muted text-xs uppercase tracking-widest font-bold">
-                      End of order records
-                    </td>
-                  </tr>
-                )}
-              </>
+                          className="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"
+                          title="Pending Return Request"
+                        ></span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => openDetails(order)}
+                      className="bg-surface-light hover:bg-surface-hover px-4 py-1.5 rounded-lg text-xs font-bold border border-border transition-all active:scale-95"
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       {/* Order Details Modal */}
       <CustomModal open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)}>

@@ -191,11 +191,19 @@ export const unblockUser = async (id: string): Promise<User> => {
 };
 
 // Seller management
-export const getSellers = async (): Promise<{
+export const getSellers = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<{
   success: boolean;
   sellers: User[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
 }> => {
-  const response = await axios.get(`${VITE_API_URL}/admin/sellers`);
+  const response = await axios.get(
+    `${VITE_API_URL}/admin/sellers?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };
 
@@ -243,9 +251,15 @@ export const googleAuth = async (
 };
 
 // Category API
-export const getCategories = async (status?: string) => {
+export const getCategories = async (
+  status?: string,
+  page?: number,
+  limit?: number,
+): Promise<any> => {
   const params = new URLSearchParams();
   if (status) params.append("status", status);
+  if (page) params.append("page", page.toString());
+  if (limit) params.append("limit", limit.toString());
   const response = await axios.get(
     `${VITE_API_URL}/categories?${params.toString()}`,
   );
@@ -380,8 +394,19 @@ export const submitContact = async (contactData: any) => {
   return response.data;
 };
 
-export const getAllContacts = async () => {
-  const response = await axios.get(`${VITE_API_URL}/contact`);
+export const getAllContacts = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<{
+  success: boolean;
+  data: any[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+}> => {
+  const response = await axios.get(
+    `${VITE_API_URL}/contact?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };
 

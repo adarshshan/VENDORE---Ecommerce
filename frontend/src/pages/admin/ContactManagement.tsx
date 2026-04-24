@@ -6,6 +6,7 @@ import {
   Loop as InProgressIcon,
   FiberNew as NewIcon,
 } from "@mui/icons-material";
+import Pagination from "../../components/Pagination";
 
 interface Contact {
   _id: string;
@@ -22,15 +23,19 @@ const ContactManagement: React.FC = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
-    fetchContacts();
-  }, []);
+    fetchContacts(page);
+  }, [page]);
 
-  const fetchContacts = async () => {
+  const fetchContacts = async (pageNum: number) => {
+    setLoading(true);
     try {
-      const response = await getAllContacts();
+      const response = await getAllContacts(pageNum, 10);
       setContacts(response.data);
+      setTotalPages(response.totalPages);
     } catch (error) {
       console.error("Error fetching contacts:", error);
     } finally {
@@ -38,10 +43,14 @@ const ContactManagement: React.FC = () => {
     }
   };
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       await updateContactStatus(id, newStatus);
-      fetchContacts();
+      fetchContacts(page);
       if (selectedContact?._id === id) {
         setSelectedContact((prev) =>
           prev ? { ...prev, status: newStatus as any } : null,
@@ -160,6 +169,11 @@ const ContactManagement: React.FC = () => {
               </table>
             </div>
           </div>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
 
         {/* Details Panel */}
