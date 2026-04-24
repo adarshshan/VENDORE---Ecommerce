@@ -13,15 +13,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const product = await getProductBySlug(slug);
     if (product) {
+      const title = `${product.name} | ThreadCo`;
+      const description =
+        product?.description?.slice(0, 160) ||
+        `Buy ${product?.name} at ThreadCo. Premium fashion and accessories for men and women.`;
+      const imageUrls = product?.images?.map((img) => img?.url) || [];
+
       return {
-        title: product.name,
-        description:
-          product.description ||
-          `Buy ${product.name} at ThreadCo. Modern fashion and accessories for men and women.`,
+        title,
+        description,
+        alternates: {
+          canonical: `https://threadco.online/product/${product?.slug}`,
+        },
         openGraph: {
-          title: product.name,
-          description: product.description,
-          images: product.images?.map((img) => img.url),
+          title,
+          description,
+          type: "article",
+          url: `https://threadco.online/product/${product?.slug}`,
+          images: imageUrls?.map((url) => ({
+            url,
+            width: 800,
+            height: 800,
+            alt: product?.name,
+          })),
+        },
+        twitter: {
+          card: "summary_large_image",
+          title,
+          description,
+          images: imageUrls?.slice(0, 1),
         },
       };
     }
@@ -29,13 +49,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     console.error("Error generating metadata:", error);
   }
   return {
-    title: "Product Details",
+    title: "Product Details | ThreadCo",
   };
 }
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  let product = null;
+  try {
+    product = await getProductBySlug(slug);
+  } catch (error) {
+    console.error("Error fetching product:", error);
+  }
 
   if (!product) {
     return <ProductDetailsContent />;
@@ -44,21 +69,22 @@ export default async function Page({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
-    image: product.images?.map((img) => img.url),
-    description: product.description,
-    sku: product._id.toString(),
+    name: product?.name,
+    image: product.images?.map((img) => img?.url),
+    description: product?.description,
+    sku: product?._id.toString(),
     brand: {
       "@type": "Brand",
-      name: product.brand || "ThreadCo",
+      name: product?.brand || "ThreadCo",
     },
     offers: {
       "@type": "Offer",
-      url: `https://threadco.online/product/${product.slug}`,
+      url: `https://threadco.online/product/${product?.slug}`,
       priceCurrency: "INR",
-      price: product.price,
+      price: product?.price,
+      itemCondition: "https://schema.org/NewCondition",
       availability:
-        product.stock && product.stock > 0
+        product?.stock && product?.stock > 0
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
     },
@@ -83,8 +109,8 @@ export default async function Page({ params }: Props) {
       {
         "@type": "ListItem",
         position: 3,
-        name: product.name,
-        item: `https://threadco.online/product/${product.slug}`,
+        name: product?.name,
+        item: `https://threadco.online/product/${product?.slug}`,
       },
     ],
   };
@@ -101,7 +127,7 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
-      <ProductDetailsContent />
+      <ProductDetailsContent initialData={product} />
     </>
   );
 }

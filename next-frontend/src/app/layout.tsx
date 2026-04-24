@@ -16,12 +16,13 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://threadco.online"),
   title: {
     default: "ThreadCo | Modern Fashion for Men & Women",
     template: "%s | ThreadCo",
   },
   description:
-    "Shop the latest trends in men's and women's fashion at ThreadCo. Discover premium quality clothing, stylish accessories, and trendy outfits designed for the modern lifestyle.",
+    "Shop the latest trends in men's and women's fashion at ThreadCo. Discover premium quality clothing, stylish accessories, and trendy outfits.",
   keywords: [
     "men's fashion",
     "women's clothing",
@@ -30,13 +31,12 @@ export const metadata: Metadata = {
     "online clothing store",
     "ThreadCo",
   ],
+  alternates: {
+    canonical: "./",
+  },
   verification: {
     google: "NA-KL2F4vaF-Dcl0wqe8WX9V3x9sJ1tdjSOTjIGrh9Q",
   },
-  authors: [{ name: "ThreadCo" }],
-  creator: "ThreadCo",
-  publisher: "ThreadCo",
-  metadataBase: new URL("https://threadco.online"),
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -59,17 +59,6 @@ export const metadata: Metadata = {
     title: "ThreadCo | Modern Fashion for Men & Women",
     description: "Quality fashion for men and women.",
     images: ["/og-image.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
   },
 };
 

@@ -81,15 +81,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const ProductList: React.FC = () => {
+interface ProductListProps {
+  initialCategory?: any;
+}
+
+const ProductList: React.FC<ProductListProps> = ({ initialCategory }) => {
   const params_data = useParams();
   const slug = params_data?.slug as string;
   const [filters, setFilters] = useState<ProductFilters>({
     page: 1,
     limit: 12,
+    category: initialCategory?._id,
   });
   const [categories, setCategories] = useState<any[]>([]);
-  const [activeCategory, setActiveCategory] = useState<any>(null);
+  const [activeCategory, setActiveCategory] = useState<any>(initialCategory);
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);

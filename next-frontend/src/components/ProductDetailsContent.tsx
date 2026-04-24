@@ -23,11 +23,19 @@ import { getOptimizedImage } from "@/src/utils/imageOptimizer";
 
 const AVAILABLE_SIZES = ["S", "M", "L", "XL", "XXL", "3XL"];
 
-const ProductDetailsContent: React.FC = () => {
+interface ProductDetailsContentProps {
+  initialData?: Product;
+}
+
+const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({
+  initialData,
+}) => {
   const params_data = useParams();
   const slug = params_data?.slug as string;
   const router = useRouter();
-  const [selectedImage, setSelectedImage] = useState<string | undefined>();
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(
+    initialData?.images?.[0]?.url,
+  );
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
   const addToCart = useStore((state) => state.addToCart);
@@ -45,6 +53,7 @@ const ProductDetailsContent: React.FC = () => {
     queryKey: ["product", slug],
     queryFn: () => getProductBySlug(slug ?? ""),
     enabled: !!slug,
+    initialData: slug === initialData?.slug ? initialData : undefined,
   });
 
   const { data: relatedProducts = [], isLoading: isRelatedLoading } = useQuery<

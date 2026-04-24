@@ -13,16 +13,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const category = await getCategoryBySlug(slug);
     if (category) {
+      const title = `${category.name} Collection | ThreadCo`;
+      const description = `Discover the latest ${category.name} trends at ThreadCo. Shop our exclusive range of high-quality, stylish apparel and accessories.`;
       return {
-        title: `${category.name} Collection`,
-        description: `Explore our ${category.name} collection. High-quality and stylish products for men and women at ThreadCo.`,
+        title,
+        description,
+        alternates: {
+          canonical: `https://threadco.online/category/${slug}`,
+        },
+        openGraph: {
+          title,
+          description,
+          url: `https://threadco.online/category/${slug}`,
+          type: "website",
+        },
+        twitter: {
+          card: "summary",
+          title,
+          description,
+        },
       };
     }
   } catch (error) {
     console.error("Error generating metadata:", error);
   }
   return {
-    title: "Collection",
+    title: "Collection | ThreadCo",
   };
 }
 
@@ -62,7 +78,7 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
-      <ProductList />
+      <ProductList initialCategory={category} />
     </>
   );
 }
