@@ -5,7 +5,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../../services/api";
-import { TextField, Typography, MenuItem, CircularProgress } from "@mui/material";
+import { TextField, Typography, MenuItem } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomModal from "../../components/Modal";
@@ -26,7 +26,7 @@ const CategoryManagement: React.FC = () => {
     status: "Active",
   });
 
-  const fetchCategories = async (pageNum: number) => {
+  const fetchCategories = async (pageNum?: number) => {
     setIsLoading(true);
     try {
       const data = await getCategories(undefined, pageNum, 10);

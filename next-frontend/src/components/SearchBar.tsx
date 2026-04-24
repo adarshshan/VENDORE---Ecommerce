@@ -18,6 +18,19 @@ const SearchBar: React.FC = () => {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const fetchSuggestions = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getSearchSuggestions(query);
+      setSuggestions(data);
+      setShowDropdown(true);
+    } catch (error) {
+      console.error("Failed to fetch suggestions:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [query]);
+
   // Debounce logic
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,7 +42,7 @@ const SearchBar: React.FC = () => {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, fetchSuggestions]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -44,19 +57,6 @@ const SearchBar: React.FC = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const fetchSuggestions = async () => {
-    setLoading(true);
-    try {
-      const data = await getSearchSuggestions(query);
-      setSuggestions(data);
-      setShowDropdown(true);
-    } catch (error) {
-      console.error("Failed to fetch suggestions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

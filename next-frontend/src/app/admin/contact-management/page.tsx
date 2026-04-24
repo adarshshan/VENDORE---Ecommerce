@@ -27,11 +27,7 @@ const ContactManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    fetchContacts(page);
-  }, [page]);
-
-  const fetchContacts = async (pageNum: number) => {
+  const fetchContacts = React.useCallback(async (pageNum: number) => {
     setLoading(true);
     try {
       const response = await getAllContacts(pageNum, 10);
@@ -42,7 +38,11 @@ const ContactManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchContacts(page);
+  }, [page, fetchContacts]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);

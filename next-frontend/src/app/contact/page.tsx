@@ -72,7 +72,8 @@ const ContactUs: React.FC = () => {
             Contact Us
           </h1>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">
-            Whether you have a question about our collections, orders, or just want to say hi, we're here to help.
+            Whether you have a question about our collections, orders, or just
+            want to say hi, we're here to help.
           </p>
         </div>
 
@@ -260,4 +261,3 @@ const ContactUs: React.FC = () => {
 };
 
 export default ContactUs;
-

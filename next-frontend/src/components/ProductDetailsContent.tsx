@@ -441,7 +441,7 @@ const ImageSlider: React.FC<ImageSliderInterface> = ({
 }) => {
   const wishlist = useStore((state) => state.wishlist);
   const isInWishlist = wishlist.some((item) => item?._id === id);
-  var settings = {
+  const settings = {
     dots: true,
     infinite: true,
     speed: 500,

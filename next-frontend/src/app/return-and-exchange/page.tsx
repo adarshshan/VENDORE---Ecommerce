@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { getMyOrders, requestReturn } from "@/src/services/api";
 import CustomButton from "@/src/components/CustomButton";
@@ -11,7 +11,7 @@ import { Alert, Snackbar } from "@mui/material";
 const ReturnAndExchange = () => {
   const searchParams = useSearchParams();
   const orderIdFromQuery = searchParams.get("orderId");
-  
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<string>(
@@ -26,12 +26,7 @@ const ReturnAndExchange = () => {
     severity: "success" | "error" | "info";
   } | null>(null);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const data = await getMyOrders();
       // Filter for delivered orders only
@@ -44,7 +39,12 @@ const ReturnAndExchange = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchOrders();
+  }, [fetchOrders]);
 
   const isEligible = (deliveredAt: string | undefined) => {
     if (!deliveredAt) return false;
@@ -322,4 +322,3 @@ const ReturnAndExchange = () => {
 };
 
 export default ReturnAndExchange;
-

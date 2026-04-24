@@ -29,7 +29,7 @@ const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const style = {
-    position: "absolute" as "absolute",
+    position: "absolute" as const,
     top: isMobile ? "auto" : "50%",
     bottom: isMobile ? 0 : "auto",
     left: "50%",

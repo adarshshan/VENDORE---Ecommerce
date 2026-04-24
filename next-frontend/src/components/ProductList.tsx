@@ -199,6 +199,19 @@ const ProductList: React.FC = () => {
     fetchProductsData();
   }, [filters]);
 
+  const fetchSuggestions = useCallback(async () => {
+    setLoadingSuggestions(true);
+    try {
+      const data = await getSearchSuggestions(searchQuery);
+      setSuggestions(data);
+      setShowDropdown(true);
+    } catch (error) {
+      console.error("Failed to fetch suggestions:", error);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  }, [searchQuery]);
+
   // Debounce logic for suggestions and main filter
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -216,7 +229,7 @@ const ProductList: React.FC = () => {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, fetchSuggestions]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -231,19 +244,6 @@ const ProductList: React.FC = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const fetchSuggestions = async () => {
-    setLoadingSuggestions(true);
-    try {
-      const data = await getSearchSuggestions(searchQuery);
-      setSuggestions(data);
-      setShowDropdown(true);
-    } catch (error) {
-      console.error("Failed to fetch suggestions:", error);
-    } finally {
-      setLoadingSuggestions(false);
-    }
-  };
 
   const handlePriceChange = (_event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
@@ -294,7 +294,7 @@ const ProductList: React.FC = () => {
     );
   };
 
-  const FilterContent = () => (
+  const filterContent = (
     <div className="p-6 h-full flex flex-col">
       <h3 className="text-xl font-bold mb-6 text-text-primary border-b border-border pb-4">
         Filters
@@ -441,7 +441,7 @@ const ProductList: React.FC = () => {
                   suggestions?.brands?.length === 0 &&
                   !loadingSuggestions ? (
                     <div className="p-4 text-center text-text-secondary text-sm">
-                      No results found for "{searchQuery}"
+                      No results found for &quot;{searchQuery}&quot;
                     </div>
                   ) : (
                     <>
@@ -604,7 +604,7 @@ const ProductList: React.FC = () => {
           {/* Desktop Sidebar */}
           <aside className="hidden md:block w-64 flex-shrink-0 sticky top-24">
             <div className="card bg-surface p-0 border border-border">
-              <FilterContent />
+              {filterContent}
             </div>
           </aside>
 
@@ -625,7 +625,7 @@ const ProductList: React.FC = () => {
               },
             }}
           >
-            <FilterContent />
+            {filterContent}
           </Drawer>
 
           {/* Product Grid */}
@@ -669,7 +669,7 @@ const ProductList: React.FC = () => {
                   )}
                   {!hasMore && products.length > 0 && (
                     <p className="text-text-muted text-sm font-bold uppercase tracking-widest">
-                      You've reached the end
+                      You&apos;ve reached the end
                     </p>
                   )}
                 </div>

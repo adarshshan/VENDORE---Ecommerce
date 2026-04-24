@@ -27,7 +27,7 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({
   if (!product) return null;
 
   const style = {
-    position: "absolute" as "absolute",
+    position: "absolute" as const,
     top: isMobile ? "auto" : "50%",
     bottom: isMobile ? 0 : "auto",
     left: "50%",

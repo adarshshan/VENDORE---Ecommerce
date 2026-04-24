@@ -115,8 +115,9 @@ const Addresses: React.FC = () => {
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string | undefined) => {
     e.stopPropagation();
+    if (!id) return;
     if (window.confirm("Are you sure you want to delete this address?")) {
       try {
         const data = await deleteAddress(id);
@@ -220,7 +221,7 @@ const Addresses: React.FC = () => {
                     <EditIcon />
                   </button>
                   <button
-                    onClick={(e) => handleDelete(e, defaultAddress?._id!)}
+                    onClick={(e) => handleDelete(e, defaultAddress?._id)}
                     className="p-4 bg-background hover:bg-surface-hover text-text-secondary hover:text-error rounded-2xl transition-all border border-border"
                     title="Delete"
                   >
